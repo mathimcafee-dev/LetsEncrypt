@@ -477,6 +477,36 @@ export default function ComplianceWitness({ user }) {
     const fmtT = iso => { try { return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) } catch { return iso } }
     const fmtD = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' }) } catch { return iso } }
 
+    // Verification seal — unique per report: carries this report's integrity-hash snippet
+    const hashSnip = (pkg.package_hash || '').substring(0, 8).toUpperCase()
+    const sealYear = new Date(pkg.generated_at).getFullYear()
+    const sealSVG = (size) => `
+      <svg width="${size}" height="${size}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SSLVault verification seal">
+        <defs>
+          <linearGradient id="sealGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#0077b6"/><stop offset="1" stop-color="#0091d6"/>
+          </linearGradient>
+          <path id="arcTop" d="M 100,100 m -76,0 a 76,76 0 1,1 152,0"/>
+          <path id="arcBot" d="M 100,100 m -76,0 a 76,76 0 1,0 152,0"/>
+        </defs>
+        <circle cx="100" cy="100" r="97" fill="#fff" stroke="url(#sealGrad)" stroke-width="3"/>
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#0077b6" stroke-width="1" stroke-dasharray="2.5 3.5" opacity="0.55"/>
+        <circle cx="100" cy="100" r="62" fill="none" stroke="rgba(0,119,182,0.18)" stroke-width="1"/>
+        <text font-family="'DM Sans','Segoe UI',sans-serif" font-size="12.5" font-weight="800" fill="#0077b6" letter-spacing="2.5">
+          <textPath href="#arcTop" startOffset="50%" text-anchor="middle">SSLVAULT COMPLIANCE WITNESS</textPath>
+        </text>
+        <text font-family="'DM Sans','Segoe UI',sans-serif" font-size="10.5" font-weight="700" fill="#5a86a8" letter-spacing="2.2">
+          <textPath href="#arcBot" startOffset="50%" text-anchor="middle">TAMPER-EVIDENT EVIDENCE</textPath>
+        </text>
+        <g transform="translate(100,76)">
+          <path d="M0,-20 L16,-13 L16,2 C16,13 8,21 0,25 C-8,21 -16,13 -16,2 L-16,-13 Z" fill="url(#sealGrad)"/>
+          <path d="M-7,1 L-2,7 L8,-6" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <text x="100" y="121" text-anchor="middle" font-family="'DM Sans','Segoe UI',sans-serif" font-size="13" font-weight="800" fill="#0d1117" letter-spacing="1.5">VERIFIED</text>
+        <text x="100" y="136" text-anchor="middle" font-family="'JetBrains Mono','Courier New',monospace" font-size="9.5" font-weight="700" fill="#0077b6" letter-spacing="1">SEAL ${hashSnip}</text>
+        <text x="100" y="150" text-anchor="middle" font-family="'DM Sans','Segoe UI',sans-serif" font-size="9" font-weight="600" fill="#7a8694" letter-spacing="1.5">EST. ${sealYear}</text>
+      </svg>`
+
     const FRAMEWORKS_R = {
       SOC2: { name:'SOC 2 Type II',      plain:'A widely-used trust audit standard in North America. Proves a company manages customer data securely.' },
       ISO:  { name:'ISO 27001:2022',     plain:'The international standard for information security management.' },
@@ -642,9 +672,12 @@ export default function ComplianceWitness({ user }) {
   @media print { body { padding: 14px } .verdict, .summary .stat, .howto { break-inside: avoid } }
 </style></head><body>
 
-  <div class="header">
-    <h1>Certificate Compliance Evidence Report</h1>
-    <div class="sub">Prepared automatically by SSLVault Compliance Witness · ${genDate} · Account: ${esc(pkg.account_email)}</div>
+  <div class="header" style="display:flex;align-items:center;justify-content:space-between;gap:20px">
+    <div>
+      <h1>Certificate Compliance Evidence Report</h1>
+      <div class="sub">Prepared automatically by SSLVault Compliance Witness · ${genDate} · Account: ${esc(pkg.account_email)}</div>
+    </div>
+    <div style="flex-shrink:0">${sealSVG(124)}</div>
   </div>
 
   <!-- EXECUTIVE SUMMARY -->
@@ -710,10 +743,13 @@ export default function ComplianceWitness({ user }) {
     <dt>Readiness score</dt><dd>0–100 measure of how well the domain is set up operationally (auto-renewal on, monitoring active, keys protected). 80+ is strong.</dd>
   </dl>
 
-  <div class="footer">
-    <strong>Report Integrity Code (SHA-256)</strong> — anyone can use this code to verify the underlying data was not altered after ${genDate}:
+  <div class="footer" style="display:flex;gap:20px;align-items:flex-start">
+    <div style="flex-shrink:0">${sealSVG(92)}</div>
+    <div style="flex:1">
+    <strong>Report Integrity Code (SHA-256)</strong> — anyone can use this code to verify the underlying data was not altered after ${genDate}. The seal on this report carries the first 8 characters (<span style="font-family:monospace;font-weight:700;color:#0077b6">${hashSnip}</span>) — if the seal code and the integrity code below don't match, the report has been tampered with:
     <div class="pkg-hash">${esc(pkg.package_hash)}</div>
     <p style="margin-top:12px">Generated automatically by SSLVault Compliance Witness (easysecurity.in). The underlying event ledger is append-only and tamper-evident. The machine-readable JSON export contains the complete hash chain for programmatic verification.</p>
+    </div>
   </div>
 </body></html>`
   }

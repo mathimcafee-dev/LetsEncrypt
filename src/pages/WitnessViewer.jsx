@@ -23,6 +23,38 @@ function fmtDate(iso) {
   try { return new Date(iso).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) } catch { return iso }
 }
 
+// Verification seal — light blue system, inline SVG (prints cleanly)
+function TrustSeal({ size = 110, code = '' }) {
+  const year = new Date().getFullYear()
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" role="img" aria-label="SSLVault verification seal">
+      <defs>
+        <linearGradient id="vsealGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#0077b6"/><stop offset="1" stopColor="#0091d6"/>
+        </linearGradient>
+        <path id="vArcTop" d="M 100,100 m -76,0 a 76,76 0 1,1 152,0"/>
+        <path id="vArcBot" d="M 100,100 m -76,0 a 76,76 0 1,0 152,0"/>
+      </defs>
+      <circle cx="100" cy="100" r="97" fill="#fff" stroke="url(#vsealGrad)" strokeWidth="3"/>
+      <circle cx="100" cy="100" r="88" fill="none" stroke="#0077b6" strokeWidth="1" strokeDasharray="2.5 3.5" opacity="0.55"/>
+      <circle cx="100" cy="100" r="62" fill="none" stroke="rgba(0,119,182,0.18)" strokeWidth="1"/>
+      <text fontFamily="'DM Sans','Segoe UI',sans-serif" fontSize="12.5" fontWeight="800" fill="#0077b6" letterSpacing="2.5">
+        <textPath href="#vArcTop" startOffset="50%" textAnchor="middle">SSLVAULT COMPLIANCE WITNESS</textPath>
+      </text>
+      <text fontFamily="'DM Sans','Segoe UI',sans-serif" fontSize="10.5" fontWeight="700" fill="#5a86a8" letterSpacing="2.2">
+        <textPath href="#vArcBot" startOffset="50%" textAnchor="middle">TAMPER-EVIDENT EVIDENCE</textPath>
+      </text>
+      <g transform="translate(100,76)">
+        <path d="M0,-20 L16,-13 L16,2 C16,13 8,21 0,25 C-8,21 -16,13 -16,2 L-16,-13 Z" fill="url(#vsealGrad)"/>
+        <path d="M-7,1 L-2,7 L8,-6" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"/>
+      </g>
+      <text x="100" y="121" textAnchor="middle" fontFamily="'DM Sans','Segoe UI',sans-serif" fontSize="13" fontWeight="800" fill="#0d1117" letterSpacing="1.5">VERIFIED</text>
+      {code && <text x="100" y="136" textAnchor="middle" fontFamily="'JetBrains Mono','Courier New',monospace" fontSize="9.5" fontWeight="700" fill="#0077b6" letterSpacing="1">SEAL {code}</text>}
+      <text x="100" y={code ? 150 : 140} textAnchor="middle" fontFamily="'DM Sans','Segoe UI',sans-serif" fontSize="9" fontWeight="600" fill="#7a8694" letterSpacing="1.5">EST. {year}</text>
+    </svg>
+  )
+}
+
 const EVENT_META = {
   issued:               { label:'Certificate Issued',        color:'#0077b6', icon: ShieldCheck, plain:'A new SSL certificate was obtained from the certificate authority and recorded.' },
   renewed:              { label:'Certificate Renewed',       color:'#00a550', icon: RefreshCw,   plain:'The certificate was replaced before expiry — the website stayed secure with no interruption.' },
@@ -147,8 +179,11 @@ export default function WitnessViewer() {
             : totalGaps > 0
               ? 'Overall healthy: certificates are managed continuously; a small number of non-critical improvements are disclosed below.'
               : 'Fully healthy: certificates are continuously managed, renewed automatically, and independently verified, with no open gaps.'
+          // Seal code: derived from the latest event hash so each dossier's seal is unique
+          const sealCode = ((events[0]?.event_hash) || '').substring(0, 8).toUpperCase()
           return (
-            <div style={{ background:vBg, border:`1px solid ${vCol}33`, borderRadius:14, padding:'20px 24px', marginBottom:20 }}>
+            <div style={{ background:vBg, border:`1px solid ${vCol}33`, borderRadius:14, padding:'20px 24px', marginBottom:20, display:'flex', gap:22, alignItems:'flex-start', flexWrap:'wrap' }}>
+              <div style={{ flex:'1 1 420px' }}>
               <div style={{ fontSize:13, fontWeight:800, color:vCol, textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10 }}>Executive Summary</div>
               <p style={{ fontSize:13, color:'#3d4a58', lineHeight:1.8, margin:'0 0 10px' }}>
                 This dossier documents how the SSL/TLS certificates protecting <strong>{dossiers.length} domain{dossiers.length!==1?'s':''}</strong> have
@@ -173,6 +208,11 @@ export default function WitnessViewer() {
                 )
               })()}
               <p style={{ fontSize:13, color:'#0d1117', lineHeight:1.8, margin:0 }}><strong>Conclusion:</strong> {verdict}</p>
+              </div>
+              <div style={{ flexShrink:0, textAlign:'center' }}>
+                <TrustSeal size={118} code={sealCode}/>
+                <div style={{ fontSize:9.5, color:'#7a8694', marginTop:6, maxWidth:130, lineHeight:1.5, margin:'6px auto 0' }}>Seal code matches this dossier's latest ledger entry</div>
+              </div>
             </div>
           )
         })()}
