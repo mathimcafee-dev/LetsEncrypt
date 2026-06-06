@@ -1,44 +1,50 @@
 // SLAReportViewer.jsx — renders SLA compliance report from token
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 const SB_FN = 'https://frthcwkntciaakqsppss.supabase.co/functions/v1/sla-report-gen'
 
 export default function SLAReportViewer() {
-  const [state,  setState]  = useState('loading') // loading | ready | error
+  const [state,  setState]  = useState('loading')
   const [srcDoc, setSrcDoc] = useState('')
   const [errMsg, setErrMsg] = useState('')
+  const iframeRef = useRef(null)
 
   useEffect(() => {
     const token = new URLSearchParams(window.location.search).get('token')
     if (!token) { setState('error'); setErrMsg('No report token in URL.'); return }
 
     const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), 20000) // 20s timeout
+    const timer = setTimeout(() => controller.abort(), 20000)
 
     fetch(`${SB_FN}?token=${encodeURIComponent(token)}`, { signal: controller.signal })
       .then(async res => {
         clearTimeout(timer)
-        if (!res.ok) {
-          const txt = await res.text().catch(() => res.statusText)
-          throw new Error(txt || `HTTP ${res.status}`)
-        }
+        if (!res.ok) throw new Error(await res.text().catch(() => `HTTP ${res.status}`))
         return res.text()
       })
       .then(html => {
-        setSrcDoc(html)
+        // Replace window.print() inside iframe with a postMessage to parent
+        const patched = html.replace(
+          /onclick="window\.print\(\)"/g,
+          'onclick="window.parent.postMessage(\'print\',\'*\')"'
+        )
+        setSrcDoc(patched)
         setState('ready')
       })
       .catch(e => {
         clearTimeout(timer)
-        if (e.name === 'AbortError') {
-          setErrMsg('Request timed out. Please try again.')
-        } else {
-          setErrMsg(e.message || 'Failed to load report.')
-        }
+        setErrMsg(e.name === 'AbortError' ? 'Request timed out. Please try again.' : e.message || 'Failed to load report.')
         setState('error')
       })
 
     return () => { clearTimeout(timer); controller.abort() }
+  }, [])
+
+  // Listen for print message from iframe
+  useEffect(() => {
+    const handler = (e) => { if (e.data === 'print') window.print() }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
   }, [])
 
   const S = { page: { display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
@@ -78,13 +84,21 @@ export default function SLAReportViewer() {
     </div>
   )
 
-  // Ready — full-page iframe with srcdoc
   return (
-    <iframe
-      srcDoc={srcDoc}
-      style={{ width:'100vw', height:'100vh', border:'none', display:'block' }}
-      title="SSLVault Compliance Report"
-      sandbox="allow-scripts allow-same-origin"
-    />
+    <>
+      <style>{`
+        @media print {
+          #report-iframe { position:fixed; top:0; left:0; width:100%; height:100%; border:none; }
+        }
+      `}</style>
+      <iframe
+        id="report-iframe"
+        ref={iframeRef}
+        srcDoc={srcDoc}
+        style={{ width:'100vw', height:'100vh', border:'none', display:'block' }}
+        title="SSLVault Compliance Report"
+        sandbox="allow-scripts allow-same-origin"
+      />
+    </>
   )
 }
