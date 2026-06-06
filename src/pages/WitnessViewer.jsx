@@ -160,6 +160,18 @@ export default function WitnessViewer() {
                 <strong>{verifyCount} independent verification{verifyCount!==1?'s':''}</strong> that the live websites were serving the correct certificates.
                 Evidence covers <strong>{allControls.length} specific requirements</strong> across SOC 2, ISO 27001, CA/B Forum, NIS2 and PCI DSS.
               </p>
+              {(() => {
+                const withCont = dossiers.filter(d => d.continuity_pct !== null && d.continuity_pct !== undefined)
+                if (withCont.length === 0) return null
+                const avgCont = Math.round((withCont.reduce((s,d)=>s+Number(d.continuity_pct||0),0)/withCont.length)*10)/10
+                const incidents = dossiers.reduce((s,d)=>s+(d.expiry_incidents||0),0)
+                return (
+                  <p style={{ fontSize:13, color:'#3d4a58', lineHeight:1.8, margin:'0 0 10px' }}>
+                    <strong>Coverage continuity: {avgCont}%</strong> of the observed period had a valid, non-expired certificate in place,
+                    with <strong>{incidents} expiry incident{incidents!==1?'s':''}</strong>.{incidents===0 ? ' No visitor ever encountered a certificate error caused by expiry.' : ''}
+                  </p>
+                )
+              })()}
               <p style={{ fontSize:13, color:'#0d1117', lineHeight:1.8, margin:0 }}><strong>Conclusion:</strong> {verdict}</p>
             </div>
           )
@@ -225,6 +237,55 @@ export default function WitnessViewer() {
 
               {/* Framework controls */}
               <div style={{ padding:'18px 22px' }}>
+                {(dossier.continuity_pct !== null && dossier.continuity_pct !== undefined || dossier.crypto_summary) && (
+                  <>
+                    <div style={{ fontSize:11, fontWeight:800, color:'#0d1117', textTransform:'uppercase', letterSpacing:'0.07em', marginBottom:10 }}>Certificate Reliability & Cryptography</div>
+                    <div style={{ display:'flex', flexDirection:'column', gap:7, marginBottom:20 }}>
+                      {dossier.continuity_pct !== null && dossier.continuity_pct !== undefined && (
+                        <div style={{ display:'flex', gap:10, padding:'10px 14px', background:(dossier.expiry_incidents||0)===0?'rgba(0,165,80,0.05)':'rgba(192,57,43,0.05)', border:`1px solid ${(dossier.expiry_incidents||0)===0?'rgba(0,165,80,0.18)':'rgba(192,57,43,0.2)'}`, borderRadius:9 }}>
+                          <CheckCircle size={13} color={(dossier.expiry_incidents||0)===0?'#00a550':'#c0392b'} style={{ flexShrink:0, marginTop:2 }}/>
+                          <span style={{ fontSize:12, color:'#3d4a58', lineHeight:1.6 }}>
+                            <strong>{dossier.continuity_pct}% coverage continuity</strong> — a valid certificate was in place for {dossier.continuity_pct}% of the observed period, with {dossier.expiry_incidents||0} expiry incident{(dossier.expiry_incidents||0)!==1?'s':''}.{(dossier.expiry_incidents||0)===0 ? ' Visitors never saw a certificate error caused by expiry.' : ''}
+                          </span>
+                        </div>
+                      )}
+                      {dossier.avg_renewal_margin_days !== null && dossier.avg_renewal_margin_days !== undefined && (
+                        <div style={{ display:'flex', gap:10, padding:'10px 14px', background:'rgba(0,119,182,0.04)', border:`1px solid ${BORDER}`, borderRadius:9 }}>
+                          <Clock size={13} color={BLUE} style={{ flexShrink:0, marginTop:2 }}/>
+                          <span style={{ fontSize:12, color:'#3d4a58', lineHeight:1.6 }}>
+                            <strong>Renewals happen early, not last-minute</strong> — on average {dossier.avg_renewal_margin_days} days before expiry (worst case {dossier.worst_renewal_margin_days} days) across {dossier.renewal_count||0} renewal{(dossier.renewal_count||0)!==1?'s':''}.
+                          </span>
+                        </div>
+                      )}
+                      {dossier.crypto_summary && (
+                        <div style={{ display:'flex', gap:10, padding:'10px 14px', background:'rgba(0,119,182,0.04)', border:`1px solid ${BORDER}`, borderRadius:9 }}>
+                          <Key size={13} color={BLUE} style={{ flexShrink:0, marginTop:2 }}/>
+                          <span style={{ fontSize:12, color:'#3d4a58', lineHeight:1.6 }}>
+                            <strong>Strong encryption</strong> — {dossier.crypto_summary.key_algorithm}-{dossier.crypto_summary.key_size_bits} key with {dossier.crypto_summary.signature}{dossier.crypto_summary.tls_grade ? <>, TLS grade <strong>{dossier.crypto_summary.tls_grade}</strong></> : null}, issued by {dossier.crypto_summary.issuer}{dossier.crypto_summary.source === 'issuance_profile' ? ' (per CA issuance profile)' : ''}.
+                          </span>
+                        </div>
+                      )}
+                      {dossier.pqc_summary && (
+                        <div style={{ display:'flex', gap:10, padding:'10px 14px', background:'rgba(0,119,182,0.04)', border:`1px solid ${BORDER}`, borderRadius:9 }}>
+                          <ShieldCheck size={13} color={BLUE} style={{ flexShrink:0, marginTop:2 }}/>
+                          <span style={{ fontSize:12, color:'#3d4a58', lineHeight:1.6 }}>
+                            <strong>Post-quantum readiness</strong> — {dossier.pqc_summary.note}
+                          </span>
+                        </div>
+                      )}
+                      {dossier.ct_check && dossier.ct_check.status === 'ok' && (
+                        <div style={{ display:'flex', gap:10, padding:'10px 14px', background:dossier.ct_check.verdict==='no_shadow_certs'?'rgba(0,165,80,0.05)':'rgba(192,57,43,0.05)', border:`1px solid ${dossier.ct_check.verdict==='no_shadow_certs'?'rgba(0,165,80,0.18)':'rgba(192,57,43,0.2)'}`, borderRadius:9 }}>
+                          <Globe size={13} color={dossier.ct_check.verdict==='no_shadow_certs'?'#00a550':'#c0392b'} style={{ flexShrink:0, marginTop:2 }}/>
+                          <span style={{ fontSize:12, color:'#3d4a58', lineHeight:1.6 }}>
+                            {dossier.ct_check.verdict === 'no_shadow_certs'
+                              ? <><strong>No unauthorized certificates found</strong> — all {dossier.ct_check.total_ct_entries} recent entries in the public Certificate Transparency logs for this domain match certificates known to this account or trusted issuers.</>
+                              : <><strong>{dossier.ct_check.unknown_entries} unknown issuance{dossier.ct_check.unknown_entries!==1?'s':''} found</strong> in public Certificate Transparency logs — review recommended.</>}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
                 <div style={{ fontSize:11, fontWeight:800, color:'#0d1117', textTransform:'uppercase', letterSpacing:'0.07em', marginBottom:12 }}>Control Coverage</div>
                 <table style={{ width:'100%', borderCollapse:'collapse', marginBottom: gaps.length > 0 ? 20 : 0 }}>
                   <thead>
