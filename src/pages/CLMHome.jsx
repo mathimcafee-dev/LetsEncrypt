@@ -3,7 +3,8 @@ import {
   Shield, Plus, Server, TrendingUp, History, CalendarDays, BarChart2,
   ShieldCheck, LayoutDashboard, Settings, Lock, BookOpen,
   LogOut, Bell, Menu, X, ChevronDown, ChevronRight,
-  Globe, Activity, Star, Upload
+  Globe, Activity, Star, Upload,
+  ClipboardCheck, Fingerprint, KeyRound, FilePlus2
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import Dashboard from './Dashboard'
@@ -101,18 +102,18 @@ export default function CLMHome({ user, nav, initialSection }) {
   const NAV = [
     { group:'Manage', items:[
       {id:'dashboard',         label:'Dashboard',        icon:LayoutDashboard},
-      {id:'issue',             label:'New Certificate',  icon:Plus},
+      {id:'issue',             label:'New Certificate',  icon:FilePlus2},
       {id:'cert-timeline',     label:'Cert Timeline',    icon:CalendarDays},
-    ]},
-    { group:'Monitor', items:[
-      {id:'compliance-centre', label:'Compliance',       icon:Shield, badge:'NEW'},
-      {id:'compliance-witness',  label:'Witness Ledger',    icon:ShieldCheck, badge:'NEW'},
-    ]},
-    { group:'Secure', items:[
-      {id:'key-intelligence',  label:'Key Vault',        icon:Shield},
     ]},
     { group:'Automate', items:[
       {id:'domain-manager',    label:'Domain Manager',   icon:Globe},
+    ]},
+    { group:'Secure', items:[
+      {id:'key-intelligence',  label:'Key Vault',        icon:KeyRound},
+    ]},
+    { group:'Monitor', items:[
+      {id:'compliance-centre', label:'Compliance',       icon:ClipboardCheck, badge:'NEW'},
+      {id:'compliance-witness',  label:'Witness Ledger',    icon:Fingerprint, badge:'NEW'},
     ]},
     { group:'Intelligence', items:[
       {id:'ca-intelligence',   label:'PKI Intelligence', icon:TrendingUp},
