@@ -876,15 +876,21 @@ export default function ComplianceWitness({ user }) {
       if (format === 'html') {
         // Human-readable report — opens in new tab, printable to PDF
         const html = buildReportHTML(pkg, { schedule, auditDates })
-        const win = window.open('', '_blank')
-        if (win) { win.document.write(html); win.document.close() }
-        else {
-          const blob = new Blob([html], { type: 'text/html' })
+        // Open as a real blob: URL so the tab has a proper address (refreshable,
+        // bookmarkable, shareable) instead of about:blank.
+        const blob = new Blob([html], { type: 'text/html' })
+        const blobUrl = URL.createObjectURL(blob)
+        const win = window.open(blobUrl, '_blank')
+        if (win) {
+          // Revoke after the tab has had time to load the document.
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 60000)
+        } else {
+          // Popup blocked — fall back to a normal download.
           const a = document.createElement('a')
-          a.href = URL.createObjectURL(blob)
+          a.href = blobUrl
           a.download = `sslvault-evidence-report-${dateStr}.html`
           a.click()
-          URL.revokeObjectURL(a.href)
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
         }
       } else {
         // Machine-readable JSON for auditor tooling
