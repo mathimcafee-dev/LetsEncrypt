@@ -80,7 +80,7 @@ function CertPreview({ domain, fn, ln, em, product, years }) {
           </div>
         ))}
       </div>
-      <div style={{ padding:'10px 18px', borderTop:`1px solid ${BORDER}`, display:'flex', alignItems:'center', gap:6, background:BLUE_BG }}>
+      <div style={{ padding:'10px 18px', borderTop:'1px solid #e8eef4', display:'flex', alignItems:'center', gap:6, background:'#fafbfd' }}>
         <div style={{ width:7,height:7,borderRadius:'50%',background:domain?'#00a550':'#7a8694',boxShadow:domain?'0 0 0 3px rgba(0,165,80,0.2)':undefined }}/>
         <span style={{ fontSize:10,color:'#7a8694',fontFamily:F }}>{domain?'Ready to issue':'Enter domain to preview'}</span>
         <span style={{ marginLeft:'auto',fontSize:9,fontWeight:800,color:BLUE,textTransform:'uppercase',letterSpacing:'0.05em' }}>{p.badge}</span>
@@ -525,7 +525,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
         {/* DNS record card */}
         <div style={{ background:'#ffffff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', marginBottom:20, boxShadow:'0 2px 12px rgba(0,119,182,0.08)' }}>
-          <div style={{ background:BLUE_BG, padding:'11px 18px', display:'flex', alignItems:'center', gap:7, borderBottom:`1px solid ${BORDER}` }}>
+          <div style={{ background:'#fff', padding:'13px 18px', display:'flex', alignItems:'center', gap:7, borderBottom:'1px solid #e8eef4' }}>
             <div style={{ display:'flex', gap:5 }}>
               {['#b03425','#9a6400','#00a550'].map(c=><span key={c} style={{ width:9,height:9,borderRadius:'50%',background:c,display:'block' }}/>)}
             </div>
