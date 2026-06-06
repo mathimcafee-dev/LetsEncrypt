@@ -29,6 +29,8 @@ const daysColor = d =>
   d === null || d === undefined ? MUTED2 :
   d <= 0 ? RED : d <= 7 ? RED : d <= 30 ? '#c77800' : GRN
 
+const sevColor = s => ({ CRITICAL: '#b03425', HIGH: '#d14829', MEDIUM: '#c77800', LOW: '#7a8694' }[s] || MUTED2)
+
 function useIsMobile(bp = 820) {
   const [m, setM] = useState(typeof window !== 'undefined' ? window.innerWidth <= bp : false)
   useEffect(() => {
@@ -118,6 +120,8 @@ export default function SslMonitor({ user }) {
   const [discLoading, setDiscLoading] = useState(false)
   const [discResults, setDiscResults] = useState(null)
   const [discAdding, setDiscAdding] = useState({})
+  const [deep, setDeep] = useState({})        // domain_id -> latest deep scan row
+  const [deepBusy, setDeepBusy] = useState({})
   const isMobile = useIsMobile()
 
   const invoke = useCallback(async (body) => {
@@ -184,7 +188,31 @@ export default function SslMonitor({ user }) {
   const expand = (id) => {
     const next = expanded === id ? null : id
     setExpanded(next)
-    if (next) loadHistory(next)
+    if (next) { loadHistory(next); loadDeep(next) }
+  }
+
+  const loadDeep = useCallback(async (id) => {
+    try { const r = await invoke({ action: 'deep_status', domain_id: id }); setDeep(p => ({ ...p, [id]: r.scan })); return r.scan }
+    catch { return null }
+  }, [invoke])
+
+  const pollDeep = (id) => {
+    let n = 0
+    const iv = setInterval(async () => {
+      n++
+      const scan = await loadDeep(id)
+      if (!scan || ['done', 'error'].includes(scan.status) || n > 80) clearInterval(iv)
+    }, 6000)
+  }
+
+  const runDeep = async (id) => {
+    setDeepBusy(p => ({ ...p, [id]: true })); setError('')
+    try {
+      const r = await invoke({ action: 'deep_scan', domain_id: id })
+      setDeep(p => ({ ...p, [id]: r.scan }))
+      pollDeep(id)
+    } catch (e) { setError(e.message) }
+    setDeepBusy(p => ({ ...p, [id]: false }))
   }
 
   const discover = async () => {
@@ -234,8 +262,113 @@ export default function SslMonitor({ user }) {
           ))}
         </div>
       )}
+
+      {/* ── Deep Scan ── */}
+      <DeepPanel row={row} />
     </div>
   )
+
+  const DeepPanel = ({ row }) => {
+    const scan = deep[row.id]
+    const running = scan && (scan.status === 'pending' || scan.status === 'running')
+    const s = scan?.summary || {}
+    return (
+      <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px solid ${LINE}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
+          <span style={{ fontFamily: MONO, fontSize: 9, fontWeight: 800, letterSpacing: '.14em', color: MUTED2 }}>DEEP SCAN</span>
+          {scan?.status === 'done' && scan.grade && (
+            <span style={{ fontFamily: DM, fontWeight: 900, fontSize: 13, color: gradeColor(scan.grade) }}>Grade {scan.grade}</span>
+          )}
+          <button onClick={() => runDeep(row.id)} disabled={running || deepBusy[row.id]} style={{
+            marginLeft: 'auto', fontFamily: DM, fontWeight: 800, fontSize: 11.5,
+            background: running ? 'rgba(0,119,182,0.1)' : GRAD, color: running ? BLUE : '#fff',
+            border: 'none', borderRadius: 9, padding: '8px 16px', cursor: running ? 'default' : 'pointer',
+          }}>
+            {running ? 'Scanning…' : scan?.status === 'done' ? 'Re-run deep scan' : 'Run deep scan'}
+          </button>
+        </div>
+
+        {!scan && (
+          <p style={{ fontSize: 11.5, color: MUTED, margin: 0, lineHeight: 1.5 }}>
+            A full TLS exam: every protocol and cipher tested live, plus Heartbleed, POODLE, ROBOT and other vulnerability checks — with fixes. Runs on a free cloud runner (~2–5 min).
+          </p>
+        )}
+        {running && (
+          <div style={{ fontSize: 11.5, color: BLUE, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <RefreshCw size={13} style={{ animation: 'svmSpin 1s linear infinite' }} />
+            Queued on a free runner — this takes a few minutes. The report appears here automatically.
+          </div>
+        )}
+        {scan?.status === 'error' && (
+          <div style={{ fontSize: 11.5, color: RED }}>Scan failed: {scan.error || 'unknown error'}. Try again.</div>
+        )}
+
+        {scan?.status === 'done' && (
+          <div>
+            {/* severity counts */}
+            <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', marginBottom: 12 }}>
+              {['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].map(k => (
+                <span key={k} style={{
+                  fontFamily: MONO, fontSize: 9.5, fontWeight: 800, padding: '3px 9px', borderRadius: 6,
+                  color: (s.counts?.[k] || 0) ? sevColor(k) : MUTED2,
+                  background: (s.counts?.[k] || 0) ? `${sevColor(k)}14` : 'transparent',
+                  border: `1px solid ${(s.counts?.[k] || 0) ? sevColor(k) + '55' : LINE}`,
+                }}>{s.counts?.[k] || 0} {k}</span>
+              ))}
+            </div>
+
+            {/* protocols */}
+            {!!(s.protocols?.length) && (
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontFamily: MONO, fontSize: 8.5, fontWeight: 800, letterSpacing: '.12em', color: MUTED2, marginBottom: 6 }}>PROTOCOLS</div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {s.protocols.map(p => (
+                    <span key={p.name} style={{
+                      fontFamily: MONO, fontSize: 9.5, fontWeight: 700, padding: '3px 8px', borderRadius: 6,
+                      color: p.ok ? GRN : RED, background: p.ok ? 'rgba(0,165,80,0.08)' : 'rgba(176,52,37,0.08)',
+                      border: `1px solid ${p.ok ? 'rgba(0,165,80,0.25)' : 'rgba(176,52,37,0.3)'}`,
+                    }}>{p.name} · {p.offered ? 'on' : 'off'}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* vulnerabilities */}
+            {!!(s.vulns?.length) && (
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontFamily: MONO, fontSize: 8.5, fontWeight: 800, letterSpacing: '.12em', color: MUTED2, marginBottom: 6 }}>VULNERABILITIES</div>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)', gap: 5 }}>
+                  {s.vulns.map(v => (
+                    <span key={v.name} title={v.note} style={{
+                      fontFamily: MONO, fontSize: 9.5, fontWeight: 700, padding: '4px 8px', borderRadius: 6,
+                      color: v.vulnerable ? RED : GRN, background: v.vulnerable ? 'rgba(176,52,37,0.08)' : 'rgba(0,165,80,0.06)',
+                      border: `1px solid ${v.vulnerable ? 'rgba(176,52,37,0.3)' : 'rgba(0,165,80,0.2)'}`,
+                      display: 'flex', justifyContent: 'space-between', gap: 6,
+                    }}><span>{v.name}</span><span>{v.vulnerable ? '✗' : '✓'}</span></span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* findings */}
+            {!!(s.findings?.length) && (
+              <div>
+                <div style={{ fontFamily: MONO, fontSize: 8.5, fontWeight: 800, letterSpacing: '.12em', color: MUTED2, marginBottom: 6 }}>FINDINGS ({s.total_findings})</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 240, overflowY: 'auto' }}>
+                  {s.findings.map((f, i) => (
+                    <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'baseline', fontSize: 11, fontFamily: F, padding: '5px 9px', background: '#fff', border: `1px solid ${LINE}`, borderRadius: 7 }}>
+                      <span style={{ fontFamily: MONO, fontSize: 8, fontWeight: 800, color: sevColor(f.severity), minWidth: 56 }}>{f.severity}</span>
+                      <span style={{ color: BODY, flex: 1 }}>{f.finding}{f.cve ? ` (${f.cve})` : ''}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   /* ── one signal card ── */
   const SignalCard = ({ row }) => {

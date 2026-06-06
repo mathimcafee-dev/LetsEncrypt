@@ -1,0 +1,22 @@
+name: SSLVault Deep Scan
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # every 5 minutes, picks up queued deep scans
+  workflow_dispatch: {}      # allow manual / API trigger
+concurrency:
+  group: deep-scan
+  cancel-in-progress: false
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Get testssl.sh
+        run: git clone --depth 1 https://github.com/drwetter/testssl.sh.git
+      - name: Run deep scans
+        env:
+          SB_URL: ${{ secrets.SB_URL }}
+          SB_SERVICE_KEY: ${{ secrets.SB_SERVICE_KEY }}
+        run: |
+          curl -fsSL -o deepscan.py https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/scripts/deepscan.py
+          python3 deepscan.py
