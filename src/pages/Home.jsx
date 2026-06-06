@@ -1122,23 +1122,6 @@ export default function Home({ nav }) {
               </div>
             ))}
           </div>
-          <div style={{marginBottom:20,display:'flex',justifyContent:'center'}}>
-            <div style={{background:'#0f1923',border:'1px solid rgba(255,255,255,0.08)',borderRadius:10,padding:'10px 20px',display:'inline-flex',alignItems:'center',gap:16,flexWrap:'wrap',justifyContent:'center'}}>
-              <div style={{width:28,height:28,borderRadius:7,background:'rgba(61,191,176,0.12)',border:'1px solid rgba(61,191,176,0.2)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3dbfb0" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              {[['AES-256-GCM','Key vault'],['RFC 8555','ACME v2'],['RapidSSL','CA partner'],['GDPR','No tracking'],['No ads','No tracking']].map(([val,sub])=>(
-                <div key={val} style={{textAlign:'center'}}>
-                  <div style={{fontSize:11,fontWeight:600,color:'#3dbfb0',fontFamily:MONO,lineHeight:1}}>{val}</div>
-                  <div style={{fontSize:9,color:'rgba(255,255,255,0.3)',marginTop:2}}>{sub}</div>
-                </div>
-              ))}
-              <div style={{display:'flex',alignItems:'center',gap:4,fontSize:9,color:GRN,fontFamily:MONO}}>
-                <div style={{width:5,height:5,borderRadius:'50%',background:GRN}}/>
-                LIVE
-              </div>
-            </div>
-          </div>
           <div style={{borderTop:`1px solid rgba(0,0,0,0.06)`,paddingTop:18,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.35)',fontFamily:MONO}}>Made with ♥ towards PKI · Built by a real PKI engineer</span>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.35)'}}>© 2026 SSLVault. All rights reserved.</span>
