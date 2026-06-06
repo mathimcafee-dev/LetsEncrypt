@@ -29,21 +29,24 @@ SEV_RANK = {"CRITICAL": 4, "HIGH": 3, "MEDIUM": 2, "LOW": 1}
 def parse(path):
     with open(path) as f:
         items = json.load(f)
+    proto_lk = {k.upper(): v for k, v in PROTO_IDS.items()}
+    vuln_lk = {k.upper(): v for k, v in VULN_IDS.items()}
     protocols, vulns, findings = [], [], []
     grade = None
     counts = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0}
     for it in items:
         iid = it.get("id", "")
+        iidu = iid.upper()
         sev = (it.get("severity") or "").upper()
         fin = it.get("finding", "")
-        if iid in PROTO_IDS:
+        if iidu in proto_lk:
             offered = "not offered" not in fin.lower() and "offered" in fin.lower()
-            insecure = iid in ("SSLv2", "SSLv3", "TLS1", "TLS1_1")
-            protocols.append({"name": PROTO_IDS[iid], "offered": offered,
+            insecure = iidu in ("SSLV2", "SSLV3", "TLS1", "TLS1_1")
+            protocols.append({"name": proto_lk[iidu], "offered": offered,
                               "ok": (not offered) if insecure else True})
-        if iid in VULN_IDS:
+        if iidu in vuln_lk:
             vulnerable = sev not in ("OK", "INFO", "")
-            vulns.append({"name": VULN_IDS[iid], "vulnerable": vulnerable, "note": fin,
+            vulns.append({"name": vuln_lk[iidu], "vulnerable": vulnerable, "note": fin,
                           "cve": it.get("cve", "")})
         if iid == "overall_grade":
             grade = fin
