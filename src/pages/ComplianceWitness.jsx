@@ -676,15 +676,30 @@ export default function ComplianceWitness({ user }) {
       const serial  = ev.details?.serial || cert?.serial_number || null
       const orderId = ev.details?.ggs_order_id || cert?.ggs_order_id || null
       const idBits  = [serial ? `Serial ${esc(String(serial))}` : null, orderId ? `Order ${esc(String(orderId))}` : null].filter(Boolean).join(' · ')
-      const certPill = (isIssuance && cert)
-        ? (cert.is_current && cert.status === 'active'
-            ? ' <span class="pill pg">Active</span>'
-            : cert.status === 'revoked'
-              ? ' <span class="pill px">Superseded</span>'
-              : ` <span class="pill px">${esc(cert.status)}</span>`)
-        : ''
+      // Accurate lifecycle labelling:
+      //  • Renewal  = a brand-new certificate for a new subscription term (cert.is_renewal === true)
+      //  • Reissue  = a replacement cert WITHIN the existing subscription period (this cert spawned one:
+      //               reissue_count > 0 / last_reissued_at set)
+      //  • Superseded = an older cert that was replaced (revoked + not current) by a reissue in the same subscription
+      //  • Active   = the current live cert
+      let certPill = ''
+      if (isIssuance && cert) {
+        if (cert.is_current && cert.status === 'active') {
+          certPill = ' <span class="pill pg">Active</span>'
+        } else if (cert.is_renewal) {
+          certPill = ' <span class="pill pb">Renewal</span>'
+        } else if (cert.status === 'revoked' || cert.is_current === false) {
+          certPill = ' <span class="pill px">Superseded · reissue</span>'
+        } else {
+          certPill = ` <span class="pill px">${esc(cert.status)}</span>`
+        }
+        // If this cert itself triggered a reissue, note it (additive, informational)
+        if ((cert.reissue_count || 0) > 0 || cert.last_reissued_at) {
+          certPill += ' <span class="pill pb">Reissued</span>'
+        }
+      }
       return `<tr>
-        <td class="num">${events.length - i}</td>
+        <td class="num">${i + 1}</td>
         <td class="mono ts">${tsCell}</td>
         <td>${esc(ep.label)}${certPill}${idBits ? `<div class="ev-note">${idBits}</div>` : ''}</td>
         <td class="mono">${esc(ev.domain)}</td>
@@ -739,7 +754,7 @@ export default function ComplianceWitness({ user }) {
   td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
   .mono { font-family:monospace; font-size:11px; }
   .pill { display:inline-block; font-size:10px; font-weight:700; padding:1px 9px; border-radius:10px; white-space:nowrap; }
-  .pg { background:#e3f5ea; color:#1a7d43; } .pa { background:#faf0d8; color:#8a6510; } .pr { background:#fae3df; color:#b03425; } .px { background:#eef1f4; color:var(--mut); }
+  .pg { background:#e3f5ea; color:#1a7d43; } .pa { background:#faf0d8; color:#8a6510; } .pr { background:#fae3df; color:#b03425; } .px { background:#eef1f4; color:var(--mut); } .pb { background:#e2eefb; color:#0a558c; }
   .ok { color:#1a7d43; font-weight:700; }
   .bar { display:inline-block; height:8px; border-radius:4px; background:linear-gradient(90deg,#0091d6,var(--blue)); vertical-align:middle; }
   .barbox { display:flex; align-items:center; gap:8px; }
@@ -832,7 +847,14 @@ export default function ComplianceWitness({ user }) {
 
   <!-- APPENDIX A: LEDGER -->
   <h2><span class="sec">A</span>Appendix A — Event Ledger (full history)</h2>
-  <div class="secnote">Every recorded event, newest first. Each entry is hash-chained to the previous one; altering any past record visibly breaks the chain.</div>
+  <div class="secnote">Every recorded event, in chronological order (oldest first) — read top to bottom to follow each domain's certificate lifecycle. Each entry is hash-chained to the previous one; altering any past record visibly breaks the chain.</div>
+  <div class="secnote" style="margin-top:6px">
+    <strong>Label key:</strong>
+    <span class="pill pg">Active</span> currently live certificate &nbsp;·&nbsp;
+    <span class="pill px">Superseded · reissue</span> replaced by a reissued certificate within the same subscription period (normal lifecycle) &nbsp;·&nbsp;
+    <span class="pill pb">Reissued</span> this certificate triggered a reissue &nbsp;·&nbsp;
+    <span class="pill pb">Renewal</span> a new certificate issued for a new subscription term
+  </div>
   <table><thead><tr>
     <th class="num">#</th><th>Timestamp</th><th>Event</th><th>Domain</th><th>Result</th><th>Integrity code</th>
   </tr></thead><tbody>${eventRows}</tbody></table>
@@ -868,7 +890,7 @@ export default function ComplianceWitness({ user }) {
       if (!pkg.certs) {
         try {
           const { data: certRows } = await supabase.from('certificates')
-            .select('id,domain,status,is_current,serial_number,ggs_order_id')
+            .select('id,domain,status,is_current,serial_number,ggs_order_id,is_renewal,reissue_count,last_reissued_at')
           pkg.certs = certRows || []
         } catch { pkg.certs = [] }
       }
