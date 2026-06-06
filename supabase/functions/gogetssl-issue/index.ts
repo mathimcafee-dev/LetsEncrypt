@@ -290,8 +290,8 @@ function buildSubject(cn: string): Uint8Array {
   return derSeq(new Uint8Array([
     ...rdn([0x55,0x04,0x03], cn),
     ...rdn([0x55,0x04,0x0a], 'SSLVault'),
-    ...rdn([0x55,0x04,0x07], 'Amsterdam'),
-    ...rdn([0x55,0x04,0x08], 'Noord-Holland'),
+    ...rdn([0x55,0x04,0x07], 'Global'),
+    ...rdn([0x55,0x04,0x08], 'Global'),
     ...rdn([0x55,0x04,0x06], 'NL'),
   ]))
 }
@@ -349,6 +349,45 @@ async function upsertCert(ggsOrderId: number, data: Record<string, any>): Promis
     // INSERT new row (new order or renewal)
     const { data: inserted } = await adminDb().from('certificates').insert({ ...data, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }).select('id').single()
     return inserted?.id || null
+  }
+}
+
+// ── Schedule renewal_events for a cert ───────────────────────────────
+// Called every time a cert activates (new order, reissue, renewal).
+// Deletes stale events for this cert then inserts fresh ones.
+// Fully wrapped in try/catch — never blocks cert issuance or install.
+
+async function scheduleRenewalEvents(certId: string, expiresAt: string, subscriptionEndDate: string): Promise<void> {
+  try {
+    await adminDb().from('renewal_events').delete().eq('cert_id', certId)
+
+    const exp = new Date(expiresAt)
+    const sub = new Date(subscriptionEndDate)
+
+    const events = [
+      { event_type: 'cert_warning_30d', scheduled_date: new Date(exp.getTime() - 30*24*60*60*1000) },
+      { event_type: 'cert_warning_14d', scheduled_date: new Date(exp.getTime() - 14*24*60*60*1000) },
+      { event_type: 'cert_warning_7d',  scheduled_date: new Date(exp.getTime() -  7*24*60*60*1000) },
+      { event_type: 'cert_warning_1d',  scheduled_date: new Date(exp.getTime() -  1*24*60*60*1000) },
+      { event_type: 'cert_reissue',     scheduled_date: new Date(exp.getTime() -  1*24*60*60*1000) },
+      { event_type: 'sub_warning_30d',  scheduled_date: new Date(sub.getTime() - 30*24*60*60*1000) },
+      { event_type: 'sub_warning_14d',  scheduled_date: new Date(sub.getTime() - 14*24*60*60*1000) },
+      { event_type: 'sub_warning_7d',   scheduled_date: new Date(sub.getTime() -  7*24*60*60*1000) },
+      { event_type: 'sub_warning_1d',   scheduled_date: new Date(sub.getTime() -  1*24*60*60*1000) },
+      { event_type: 'sub_end',          scheduled_date: sub },
+    ]
+
+    await adminDb().from('renewal_events').insert(
+      events.map(e => ({
+        cert_id:        certId,
+        event_type:     e.event_type,
+        scheduled_date: e.scheduled_date.toISOString(),
+        status:         'pending',
+      }))
+    )
+    console.log(`[scheduleRenewalEvents] ${events.length} events scheduled for cert ${certId}`)
+  } catch (e: any) {
+    console.warn('[scheduleRenewalEvents] failed (non-fatal):', e.message)
   }
 }
 
@@ -433,6 +472,11 @@ async function runPollPending() {
       if (keyId) certData.keylocker_key_id = keyId
 
       const certId = await upsertCert(order.ggs_order_id, certData)
+
+      // Schedule renewal_events for this cert (fresh events, correct cert ID)
+      if (certId && certData.expires_at && certData.subscription_end_date) {
+        await scheduleRenewalEvents(certId, certData.expires_at, certData.subscription_end_date)
+      }
 
       // Link keylocker entry → cert
       if (keyId && certId) {
@@ -774,6 +818,12 @@ serve(async (req) => {
           order_type:            order.order_purpose || 'original',
           is_current:            true,
         })
+
+        // Schedule renewal_events for this cert (fresh events, correct cert ID)
+        if (certId && statusRes.valid_till) {
+          const subEnd = calcSubscriptionEnd(statusRes.valid_from || new Date().toISOString(), order.period || 12)
+          await scheduleRenewalEvents(certId, statusRes.valid_till, subEnd)
+        }
 
         // Link keylocker entry to cert row
         if (keyId && certId) {

@@ -48,12 +48,12 @@ export default function Developer({ nav }) {
               Mathi (Spartan)
             </h1>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:14 }}>
-              {[['Certified PKI Specialist', GRN],['PKI Industry Professional', AMB],['Netherlands 🇳🇱', PRP]].map(([t, c]) => (
+              {[['Certified PKI Specialist', GRN],['PKI Industry Professional', AMB]].map(([t, c]) => (
                 <span key={t} style={{ fontSize:11, fontWeight:500, color:c, background:`${c}18`, border:`1px solid ${c}40`, borderRadius:4, padding:'3px 10px', fontFamily:MONO }}>{t}</span>
               ))}
             </div>
             <p style={{ fontSize:14, color:T2, lineHeight:1.85, maxWidth:520 }}>
-              MSc from Kongu Engineering College. Deep expertise in certificate lifecycle management, CA/B Forum standards, DCV methods, and PKI automation. Based in the Netherlands.
+              MSc from Kongu Engineering College. Deep expertise in certificate lifecycle management, CA/B Forum standards, DCV methods, and PKI automation. 
             </p>
           </div>
         </div>

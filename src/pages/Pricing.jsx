@@ -154,7 +154,7 @@ export default function Pricing({ nav }) {
           titleAccent="Everything you need."
           subtitle="Start small, scale to enterprise. Full certificate lifecycle management — agents, auto-renewal, DNS automation, CertBind, CA intelligence, AES-256 key vault, 47-day readiness."
           stats={[{n:'2',l:'Plans'},{n:'47d',l:'Ready'},{n:'∞',l:'Renewals'},{n:'AES-256',l:'Key vault'}]}
-          tags={['RapidSSL partner','AES-256-GCM','47-day ready','DNS automation','CA/B Forum 2026','GDPR compliant','Netherlands PKI']}
+          tags={['RapidSSL partner','AES-256-GCM','47-day ready','DNS automation','CA/B Forum 2026','GDPR compliant','CA/B Forum 2026']}
         />
 
         {/* PLAN CARDS */}

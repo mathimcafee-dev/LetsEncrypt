@@ -35,7 +35,7 @@ export default function DeveloperInner({ nav }) {
             <div style={{ fontSize:18, fontWeight:500, color:'#111111', letterSpacing:'-.3px', marginBottom:4 }}>Mathivanan Kathirvel</div>
             <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:10 }}>
               <span style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:11, color:'#333333' }}>
-                <MapPin size={11} color="#777777"/> Netherlands
+                
               </span>
             </div>
             <p style={{ fontSize:12, color:'#333333', lineHeight:1.7, margin:'0 0 14px', maxWidth:580 }}>

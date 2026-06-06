@@ -121,7 +121,7 @@ export default function Terms({ nav }) {
             </Section>
 
             <Section title='11. Governing law'>
-              <p style={p}>These Terms are governed by the laws of the Netherlands. Disputes will be resolved in the courts of the Netherlands, except where local consumer protection law gives you the right to sue in your home jurisdiction.</p>
+              <p style={p}>These Terms are governed by applicable law. Disputes will be resolved in a competent court of jurisdiction, except where local consumer protection law gives you the right to sue in your home jurisdiction.</p>
             </Section>
 
             <Section title='12. Changes to these Terms'>

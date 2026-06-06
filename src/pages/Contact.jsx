@@ -21,8 +21,8 @@ export default function Contact({ nav }) {
         eyebrow="SSLVault · Support"
         title="Get in touch."
         subtitle="Bug reports, feature requests, partnership ideas, or just saying hi — every message gets read and replied to within 1–2 days."
-        stats={[{n:'1–2d',l:'Reply time'},{n:'3',l:'Languages'},{n:'PKI',l:'Specialist'},{n:'🇳🇱',l:'Netherlands'}]}
-        tags={['English · Tamil · Dutch','No ads · No tracking','Certified PKI Specialist','GDPR compliant','Netherlands-based']}
+        stats={[{n:'1–2d',l:'Reply time'},{n:'3',l:'Languages'},{n:'PKI',l:'Specialist'},{n:'PKI',l:'Specialist'}]}
+        tags={['English · Tamil · Dutch','No ads · No tracking','Certified PKI Specialist','GDPR compliant']}
       />
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: 'clamp(32px,5vw,56px) clamp(20px,4vw,40px) 80px' }}>
@@ -131,7 +131,7 @@ export default function Contact({ nav }) {
             </div>
           ))}
           <div style={{ padding: '12px 18px', background: '#fafbfc' }}>
-            <div style={{ fontSize: 11, color: '#aaa', textAlign: 'center' }}>Netherlands-based · Certified PKI Specialist · GDPR compliant</div>
+            <div style={{ fontSize: 11, color: '#aaa', textAlign: 'center' }}>Certified PKI Specialist · GDPR compliant</div>
           </div>
         </div>
 

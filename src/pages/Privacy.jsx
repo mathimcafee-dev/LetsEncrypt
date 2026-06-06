@@ -55,7 +55,7 @@ export default function Privacy({ nav }) {
 
             <Section title='1. Who we are'>
               SSLVault (also operated under the names FreeEncryption and EasySecurity) is a personal,
-              independent project run by Mathivanan Kathirvel from the Netherlands. There is no parent
+              independent project run by Mathivanan Kathirvel. There is no parent
               company, no investors, and no third-party data buyers.
             </Section>
 

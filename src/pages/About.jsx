@@ -163,7 +163,7 @@ export default function About({ nav }) {
             <div>
               <h2 style={{ fontSize:'clamp(18px,3vw,26px)', fontWeight:700, color:T1, letterSpacing:'-0.5px', marginBottom:10 }}>Mathi — Certified PKI Specialist</h2>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:14 }}>
-                {[['PKI Industry Professional', GRN],['Certified PKI Specialist', AMB],['Netherlands 🇳🇱', PRP]].map(([t, c]) => (
+                {[['PKI Industry Professional', GRN],['Certified PKI Specialist', AMB]].map(([t, c]) => (
                   <span key={t} style={{ fontSize:11, fontWeight:500, color:c, background:`${c}18`, border:`1px solid ${c}40`, borderRadius:4, padding:'3px 10px', fontFamily:MONO }}>{t}</span>
                 ))}
               </div>

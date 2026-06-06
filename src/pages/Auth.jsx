@@ -169,7 +169,7 @@ export default function Auth({ nav }) {
 
             {/* Bottom strip */}
             <div style={{marginTop:20,paddingTop:16,borderTop:'1px solid rgba(255,255,255,.1)',display:'flex',gap:16,flexWrap:'wrap'}}>
-              {['RFC 8555','AES-256-GCM','CA/B Forum 2026','GoGetSSL','Netherlands PKI'].map(t=>(
+              {['RFC 8555','AES-256-GCM','CA/B Forum 2026','GoGetSSL','GoGetSSL'].map(t=>(
                 <span key={t} style={{fontSize:9,color:'rgba(255,255,255,.3)',letterSpacing:'.07em',fontFamily:MONO,whiteSpace:'nowrap'}}>{t}</span>
               ))}
             </div>
