@@ -171,12 +171,7 @@ export default function Home({ nav }) {
             </span>
             SSLVault
           </button>
-          {!isMobile && <>
-            <button onClick={() => nav('/buy')} style={navLink}>Issue Certificate</button>
-            <button onClick={() => nav('/monitor')} style={navLink}>Inventory &amp; Monitor</button>
-            <button onClick={() => nav('/verify')} style={navLink}>Verify a Report</button>
-            <button onClick={() => nav('/pricing')} style={navLink}>Pricing</button>
-          </>}
+          {!isMobile && <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.5)', fontFamily: MONO }}>PKI-first CLM · Tamper-evident compliance evidence</span>}
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
             <button onClick={() => nav('/auth')} style={{ color: '#fff', background: 'transparent', border: '1.5px solid rgba(255,255,255,0.45)', borderRadius: 9, padding: '8px 16px', fontSize: 13, fontWeight: 700, fontFamily: DM, cursor: 'pointer' }}>Sign in</button>
             {!isMobile && <button onClick={() => nav('/auth')} style={{ background: '#fff', color: BLUE, border: 'none', borderRadius: 9, padding: '9px 16px', fontSize: 13, fontWeight: 800, fontFamily: DM, cursor: 'pointer' }}>Start free →</button>}
@@ -355,8 +350,8 @@ export default function Home({ nav }) {
             </div>
           </div>
           {[
-            { h: 'Product', links: [['Compliance Witness', () => nav('/verify'), true], ['CertBind Verification', () => nav('/certbind')], ['Zero-Touch Renewal', () => nav('/buy')], ['Pricing', () => nav('/pricing')], ['Dashboard', () => nav('/dashboard')]] },
-            { h: 'Trust & Security', links: [['Verify a Report', () => nav('/verify'), true], ['CertVault & KeyLocker', () => nav('/certvault')], ['CT Monitoring', () => nav('/monitor')], ['47-Day Readiness', () => nav('/readiness')]] },
+            { h: 'Product', links: [['Compliance Witness', () => nav('/verify'), true], ['CertBind Verification', () => nav('/certbind')], ['Zero-Touch Renewal', () => nav('/buy')], ['Pricing', () => nav('/pricing')], ['Get Started', () => nav('/get-started')]] },
+            { h: 'Trust & Security', links: [['Verify a Report', () => nav('/verify'), true], ['CertVault & KeyLocker', () => nav('/certvault')], ['CT Monitoring', () => nav('/ct-monitor')], ['47-Day Readiness', () => nav('/readiness')]] },
             { h: 'Intelligence', links: [['CA Trust Store', () => nav('/ca-trust-explorer')], ['CAB Forum Hub', () => nav('/cab-forum')], ['Global PKI Hub', () => nav('/pki-hub')], ['CAA Checker', () => nav('/caa-check')]] },
             { h: 'Company', links: [['About', () => nav('/about')], ['Contact', () => nav('/contact')], ['Knowledge Base', () => nav('/knowledge-base')], ['Install Guide', () => nav('/install')]] },
           ].map(col => (
@@ -387,4 +382,3 @@ export default function Home({ nav }) {
   )
 }
 
-const navLink = { color: 'rgba(255,255,255,0.78)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: "'Inter',system-ui,sans-serif", padding: 0 }
