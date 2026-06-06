@@ -1,6 +1,7 @@
 // KnowledgeBase.jsx — SSLVault docs v2 (kb-refresh)
 import { useState, useEffect } from 'react'
 import PageHero from '../components/PageHero'
+import { PublicNav, PublicFooter } from '../components/PublicLayout'
 
 const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
@@ -163,39 +164,27 @@ export default function KnowledgeBase({ nav }) {
   )
 
   return (
-    <div style={{ minHeight:'100vh', background:`#f7f5f0`, fontFamily:F, color:C.heading }}>
+    <div style={{ minHeight:'100vh', background:`#f8f9fa`, fontFamily:F, color:C.heading }}>
       <style>{`@keyframes fadeIn{from{opacity:0}to{opacity:1}} *{box-sizing:border-box;margin:0;padding:0}
         @media(max-width:min(767px,100%)){
           .kb-body{padding:16px 14px!important}
           .kb-tabs{padding:0 10px!important;overflow-x:auto!important}
         }`}</style>
 
-      {/* Nav */}
-      <header style={{ background:'rgba(8,12,20,0.92)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(0,0,0,0.05)', height:58, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 clamp(16px,4vw,40px)', position:'sticky', top:0, zIndex:100 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:9, cursor:'pointer' }} onClick={() => nav('/')}>
-          <div style={{ width:28, height:28, background:C.teal, borderRadius:7, display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <span style={{ fontSize:15, fontWeight:600, color:'#111111' }}>SSLVault</span>
-          <span style={{ fontSize:11, color:'#555555', fontFamily:MONO }}>/ Knowledge Base</span>
-        </div>
-        <div style={{ display:'flex', gap:8 }}>
-          <button onClick={() => nav('/install')} style={{ background:'none', border:`1px solid rgba(0,0,0,0.07)`, cursor:'pointer', fontFamily:F, fontSize:12, color:'#b5aea8', padding:'6px 14px', borderRadius:100 }}>Install guide</button>
-          <button onClick={() => nav('/auth')} style={{ background:C.teal, border:'none', cursor:'pointer', fontFamily:F, fontSize:13, fontWeight:600, color:'#111111', padding:'7px 18px', borderRadius:100 }}>Get started</button>
-        </div>
-      </header>
+      <PublicNav nav={nav}/>
 
-      <div style={{ maxWidth:860, margin:'0 auto', padding:'clamp(40px,6vw,72px) clamp(20px,4vw,40px) 100px' }}>
-
-        {/* Header */}
-        <PageHero
-          eyebrow="SSLVault Documentation"
-          title="Knowledge Base"
-          subtitle="Complete documentation for SSLVault — issue, monitor, auto-renew, and secure certificates across every server and CA."
-          stats={[{n:'13',l:'Articles'},{n:'46',l:'FAQs'},{n:'RFC 8555',l:'ACME standard'},{n:'AES-256',l:'Key vault'}]}
-          tags={['Getting started','Install guide','API reference','cPanel','VPS agent','DNS automation','Troubleshooting']}
+      <PageHero
+        eyebrow="SSLVault Documentation"
+        title="Knowledge Base"
+        subtitle="Complete documentation for SSLVault — issue, monitor, auto-renew, and secure certificates across every server and CA."
+        stats={[{n:'13',l:'Articles'},{n:'46',l:'FAQs'},{n:'RFC 8555',l:'ACME standard'},{n:'AES-256',l:'Key vault'}]}
+        tags={['Getting started','Install guide','API reference','cPanel','VPS agent','DNS automation','Troubleshooting']}
         />
-        <div style={{marginBottom:48,marginTop:32}}>
+
+      <div style={{ maxWidth:860, margin:'0 auto', padding:'clamp(28px,4vw,48px) clamp(20px,4vw,40px) 100px' }}>
+
+
+        <div style={{marginBottom:48,marginTop:0}}>
 
           {/* Search */}
           <div style={{ position:'relative', maxWidth:440 }}>
@@ -970,6 +959,7 @@ export default function KnowledgeBase({ nav }) {
         </div>
 
       </div>
+      <PublicFooter nav={nav}/>
     </div>
   )
 }

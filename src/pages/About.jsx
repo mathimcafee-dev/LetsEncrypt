@@ -1,5 +1,7 @@
 // About.jsx — SSLVault company page
 import portrait from '../assets/mathi-portrait.jpg'
+import PageHero from '../components/PageHero'
+import { PublicNav, PublicFooter } from '../components/PublicLayout'
 
 const F    = "'Inter',system-ui,sans-serif"
 const MONO = "'SF Mono','Menlo','Consolas',monospace"
@@ -30,41 +32,18 @@ function Stat({ val, label, sub, color }) {
 
 export default function About({ nav }) {
   return (
-    <div style={{ minHeight:'100vh', background:`#f7f5f0`, fontFamily:F, color:T1 }}>
+    <div style={{ minHeight:'100vh', background:`#f8f9fa`, fontFamily:F, color:T1 }}>
       <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}`}</style>
 
-      {/* Nav */}
-      <header style={{ background:'#ffffff', borderBottom:`1px solid ${LN}`, height:52, display:'flex', alignItems:'center', justifyContent:'space-between', padding:`0 ${P}`, position:'sticky', top:0, zIndex:100 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer' }} onClick={() => nav('/')}>
-          <div style={{ width:22, height:22, background:RED, borderRadius:4, display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <span style={{ fontSize:13, fontWeight:600, color:'#111111' }}>SSLVault</span>
-          <span style={{ fontSize:11, color:'#888888', fontFamily:MONO }}> / About</span>
-        </div>
-        <div style={{ display:'flex', gap:8 }}>
-          <button onClick={() => nav('/pricing')} style={{ background:'none', border:`1px solid ${LN2}`, cursor:'pointer', fontFamily:F, fontSize:12, color:T2, padding:'6px 14px', borderRadius:5 }}>Pricing</button>
-          <button onClick={() => nav('/auth')} style={{ background:RED, border:'none', cursor:'pointer', fontFamily:F, fontSize:12, fontWeight:600, color:'#fff', padding:'7px 16px', borderRadius:5 }}>Get started</button>
-        </div>
-      </header>
+      <PublicNav nav={nav}/>
 
-      {/* Hero */}
-      <section style={{ padding:`clamp(64px,8vw,96px) ${P} clamp(48px,6vw,72px)`, borderBottom:`1px solid ${LN}` }}>
-        <div style={{ maxWidth:860, margin:'0 auto' }}>
-          <div style={{ fontSize:10, fontWeight:500, color:T3, letterSpacing:'0.08em', textTransform:'uppercase', fontFamily:MONO, marginBottom:16 }}>About SSLVault</div>
-          <h1 style={{ fontSize:'clamp(30px,5vw,54px)', fontWeight:700, letterSpacing:'-1.5px', lineHeight:1.08, color:T1, marginBottom:20, maxWidth:640 }}>
-            Enterprise certificate lifecycle management. Built by a PKI engineer, for everyone.
-          </h1>
-          <p style={{ fontSize:15, color:T2, lineHeight:1.85, maxWidth:580, marginBottom:32 }}>
-            SSLVault automates the full SSL/TLS certificate lifecycle — from issuance through DNS validation, deployment, monitoring, and renewal. Built on open standards. No proprietary black boxes.
-          </p>
-          <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-            {[['RFC 8555 · ACME v2', GRN],['AES-256-GCM', PRP],['DigiCert trust chain', AMB],['CA/B Forum 2026 compliant', RED]].map(([t, c]) => (
-              <span key={t} style={{ fontSize:11, fontWeight:500, color:c, background:`${c}18`, border:`1px solid ${c}40`, borderRadius:4, padding:'3px 10px', fontFamily:MONO }}>{t}</span>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="About SSLVault"
+        title="Enterprise certificate lifecycle management."
+        titleAccent="Built by a PKI engineer, for everyone."
+        subtitle="SSLVault automates the full SSL/TLS certificate lifecycle — from issuance through DNS validation, deployment, monitoring, and renewal. Built on open standards. No proprietary black boxes."
+        tags={['RFC 8555 · ACME v2','AES-256-GCM','DigiCert trust chain','CA/B Forum 2026 compliant','Tamper-evident ledger']}
+      />
 
       {/* Stats */}
       <section style={{ background:'#f0f4fa', borderBottom:`1px solid ${LN}`, padding:`32px ${P}` }}>
@@ -237,16 +216,9 @@ export default function About({ nav }) {
           </div>
         </div>
 
-        {/* Footer links */}
-        <div style={{ marginTop:36, paddingTop:24, borderTop:`1px solid ${LN}`, display:'flex', gap:20, flexWrap:'wrap' }}>
-          {[['← Home','/'],['Pricing','/pricing'],['Knowledge Base','/knowledge-base'],['Install Guide','/install']].map(([l, p]) => (
-            <button key={l} onClick={() => nav(p)} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:F, fontSize:12, color:T3, padding:0 }}
-              onMouseEnter={e => e.currentTarget.style.color = T1}
-              onMouseLeave={e => e.currentTarget.style.color = T3}>{l}</button>
-          ))}
-        </div>
 
       </div>
+      <PublicFooter nav={nav}/>
     </div>
   )
 }

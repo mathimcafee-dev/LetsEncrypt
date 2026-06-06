@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
+import { PublicNav, PublicFooter } from '../components/PublicLayout'
 
 const MONO = "'JetBrains Mono','JetBrains Mono',monospace"
 const FONT = "'Segoe UI',-apple-system,system-ui,sans-serif"
@@ -111,12 +112,12 @@ export default function GlobalPKIHub({ nav }) {
   return (
     <div style={{ fontFamily: FONT, background: '#f8f9fa', minHeight: '100vh' }}>
       <style>{`
-        .hub-hero{background:${BLUE};padding:36px ${P} 0;color:#fff}
+        .hub-hero{background:linear-gradient(160deg,${BLUE} 0%,#006aa3 60%,#005d90 100%);padding:48px ${P} 0;color:#fff}
         .hub-hero-grid{display:grid;grid-template-columns:${isMobile?'1fr':'1fr 1fr'};gap:24px;align-items:start}
-        .hub-eyebrow{font-size:10px;letter-spacing:.14em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px}
-        .hub-h1{font-size:${isMobile?'22px':'28px'};font-weight:600;line-height:1.2;margin-bottom:10px;color:#fff}
-        .hub-h1 span{color:#3dbfb0}
-        .hub-sub{font-size:13px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:20px}
+        .hub-eyebrow{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.12em;color:rgba(255,255,255,.85);text-transform:uppercase;margin-bottom:14px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.18);border-radius:20px;padding:5px 14px}
+        .hub-h1{font-size:${isMobile?'27px':'38px'};font-weight:900;line-height:1.12;margin-bottom:12px;color:#fff;font-family:'DM Sans','Inter',system-ui,sans-serif;letter-spacing:-0.01em}
+        .hub-h1 span{color:#a8e0ff}
+        .hub-sub{font-size:14.5px;color:rgba(255,255,255,.85);line-height:1.7;margin-bottom:22px}
         .hub-stats{display:flex;gap:${isMobile?'16px':'28px'};flex-wrap:wrap;margin-bottom:28px}
         .hub-sn{font-size:${isMobile?'18px':'22px'};font-weight:600;color:#fff;line-height:1}
         .hub-sl{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
@@ -171,6 +172,8 @@ export default function GlobalPKIHub({ nav }) {
         .pqc-status-pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;display:inline-block}
         @media(max-width:768px){.hub-hero-grid{grid-template-columns:1fr}.hub-right-hide{display:none}}
       `}</style>
+
+      <PublicNav nav={nav}/>
 
       {/* ── HERO ── */}
       <div className="hub-hero">
@@ -372,6 +375,7 @@ export default function GlobalPKIHub({ nav }) {
           )}
         </div>
       )}
+      <PublicFooter nav={nav}/>
     </div>
   )
 }

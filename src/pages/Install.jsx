@@ -2,6 +2,7 @@
 // Owlish white · Inter · no CSS class dependencies
 import { useState } from 'react'
 import PageHero from '../components/PageHero'
+import { PublicNav, PublicFooter } from '../components/PublicLayout'
 
 const F    = "'Inter var','Inter',system-ui,-apple-system,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
@@ -105,6 +106,7 @@ export default function Install({ nav }) {
     <div style={{ minHeight:'100vh', background:`#f8f9fa`, fontFamily:F, color:C.heading }}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0}`}</style>
 
+      <PublicNav nav={nav}/>
       <PageHero
         eyebrow="SSLVault · Setup"
         title="Install Guide"
@@ -371,6 +373,7 @@ sudo systemctl reload apache2`} lang="bash"/>
         </div>
 
       </div>
+      <PublicFooter nav={nav}/>
     </div>
   )
 }

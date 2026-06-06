@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PageHero from '../components/PageHero'
+import { PublicNav, PublicFooter } from '../components/PublicLayout'
 
 const FONT = "'Inter',system-ui,sans-serif"
 const MONO = "'JetBrains Mono','Fira Mono','Menlo',monospace"
@@ -17,11 +18,12 @@ export default function Contact({ nav }) {
 
   return (
     <div style={{ fontFamily: FONT, background: '#f8f9fa', minHeight: '100vh' }}>
+      <PublicNav nav={nav}/>
       <PageHero
         eyebrow="SSLVault · Support"
         title="Get in touch."
         subtitle="Bug reports, feature requests, partnership ideas, or just saying hi — every message gets read and replied to within 1–2 days."
-        stats={[{n:'1–2d',l:'Reply time'},{n:'3',l:'Languages'},{n:'PKI',l:'Specialist'},{n:'PKI',l:'Specialist'}]}
+        stats={[{n:'1–2d',l:'Reply time'},{n:'3',l:'Languages'},{n:'PKI',l:'Specialist'},{n:'Free',l:'Support'}]}
         tags={['English · Tamil · Dutch','No ads · No tracking','Certified PKI Specialist','GDPR compliant']}
       />
 
@@ -136,6 +138,7 @@ export default function Contact({ nav }) {
         </div>
 
       </div>
+      <PublicFooter nav={nav}/>
     </div>
   )
 }
