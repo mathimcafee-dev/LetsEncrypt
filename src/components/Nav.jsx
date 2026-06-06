@@ -91,12 +91,6 @@ export default function Nav({ nav, page }) {
         {/* Desktop CTA */}
         {!sm && (
           <div style={{display:'flex',alignItems:'center',gap:6,flexShrink:0}}>
-            <button onClick={()=>nav('/vaultbrain')}
-              style={{background:'rgba(0,119,182,0.08)',border:'1px solid rgba(0,119,182,0.18)',cursor:'pointer',fontFamily:F,fontSize:12,fontWeight:600,color:'#0077b6',padding:'6px 13px',borderRadius:7,display:'flex',alignItems:'center',gap:5,transition:'all .12s'}}
-              onMouseEnter={e=>{e.currentTarget.style.background='rgba(0,119,182,0.14)'}}
-              onMouseLeave={e=>{e.currentTarget.style.background='rgba(0,119,182,0.08)'}}>
-              Ask AI
-            </button>
             <button onClick={()=>nav('/auth')}
               style={{background:'none',border:'none',cursor:'pointer',fontFamily:F,fontSize:13,fontWeight:500,color:T2,padding:'6px 12px',borderRadius:7,transition:'all .12s'}}
               onMouseEnter={e=>{e.currentTarget.style.color=T1;e.currentTarget.style.background='rgba(0,0,0,0.04)'}}

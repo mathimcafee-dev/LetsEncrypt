@@ -33,7 +33,6 @@ import ComplianceWitness from './ComplianceWitness'
 import CertBind from './CertBind'
 import KeyIntelligence from './KeyIntelligence'
 import Pricing from './Pricing'
-import VaultBrainPanel from '../components/VaultBrainPanel'
 import { F, DM, MONO, BLUE, BLUE2, INK, BG, BORDER, LINE, MUTED, MUTED2, BODY, GRN, RED, GRAD, SHADOW_LG } from '../components/AppKit'
 
 function useIsMobile(bp=860) {
@@ -52,7 +51,6 @@ export default function CLMHome({ user, nav, initialSection }) {
   const [notifs, setNotifs] = useState([])
   const [unread, setUnread] = useState(0)
   const [bellOpen, setBellOpen] = useState(false)
-  const [aiOpen, setAiOpen] = useState(false)
   const [session, setSession] = useState(null)
   const email = user?.email || ''
   const initials = email.slice(0,2).toUpperCase()
@@ -122,7 +120,7 @@ export default function CLMHome({ user, nav, initialSection }) {
   }
 
   const content = () => {
-    if(sec==='dashboard')        return <Dashboard nav={sideNav} onIssue={()=>go('issue')} onOpenAI={()=>setAiOpen(true)}/>
+    if(sec==='dashboard')        return <Dashboard nav={sideNav} onIssue={()=>go('issue')}/>
     if(sec==='readiness')        return <ReadinessDashboard user={user} onNav={go}/>
     if(sec==='issue')            return <BuyCertificate nav={sideNav} embedded onDashboard={()=>go('dashboard')} onIssueAnother={()=>go('issue')}/>
     if(sec==='integrations')     return <Integrations nav={sideNav}/>
@@ -201,18 +199,6 @@ export default function CLMHome({ user, nav, initialSection }) {
           </div>
         ))}
       </div>
-
-      {/* VaultBrain AI card */}
-      <button onClick={()=>{setAiOpen(o=>!o);if(isMobile)setSideOpen(false)}} style={{
-        margin:'10px 12px 12px', background: aiOpen ? 'rgba(0,119,182,0.30)' : 'rgba(0,119,182,0.16)',
-        border:`1px solid ${aiOpen ? 'rgba(0,145,214,0.6)' : 'rgba(0,145,214,0.35)'}`, borderRadius:10,
-        padding:'10px 12px', cursor:'pointer', textAlign:'left', fontFamily:F, transition:'all .12s',
-      }}
-        onMouseEnter={e=>{e.currentTarget.style.background='rgba(0,119,182,0.28)'}}
-        onMouseLeave={e=>{e.currentTarget.style.background=aiOpen?'rgba(0,119,182,0.30)':'rgba(0,119,182,0.16)'}}>
-        <div style={{fontSize:11.5,fontWeight:800,fontFamily:DM,color:'#fff',display:'flex',alignItems:'center',gap:7}}>🧠 VaultBrain AI</div>
-        <div style={{fontSize:9.5,color:'rgba(255,255,255,0.55)',marginTop:3,lineHeight:1.4}}>Ask anything about your certs, agents, or DNS — answers from live data.</div>
-      </button>
 
       {/* Bottom nav */}
       <div style={{borderTop:'1px solid rgba(255,255,255,0.08)',padding:'8px 0 4px'}}>
@@ -346,12 +332,6 @@ export default function CLMHome({ user, nav, initialSection }) {
           </div>
         </div>
 
-        {/* VaultBrain AI panel */}
-        <VaultBrainPanel
-          open={aiOpen}
-          onClose={()=>setAiOpen(false)}
-          session={session}
-        />
       </div>
 
       <style>{`

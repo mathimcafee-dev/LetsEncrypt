@@ -2516,7 +2516,7 @@ function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
   )
 }
 
-function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
+function LoggedInDashboard({ user, nav, onIssue }) {
   const isMobile = useIsMobile()
   const [certs,   setCerts]  = useState([])
   const [orders,  setOrders] = useState([])
@@ -2838,12 +2838,6 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                       <div style={{ fontSize:8, color:'#7a8694', marginTop:3, textTransform:'uppercase', letterSpacing:'.06em', fontFamily:"'JetBrains Mono',monospace" }}>{s.label}</div>
                     </div>
                   ))}
-                  <div onClick={()=>onOpenAI?.()} style={{ padding:'9px', borderRadius:9, background:'rgba(0,119,182,0.09)', border:'1px solid #b8d0f0', textAlign:'center', cursor:'pointer', transition:'background .15s' }}
-                    onMouseEnter={e=>e.currentTarget.style.background='#d0e5f7'}
-                    onMouseLeave={e=>e.currentTarget.style.background='rgba(0,119,182,0.09)'}>
-                    <Activity size={16} color="#0077b6"/>
-                    <div style={{ fontSize:8, color:'#0077b6', marginTop:2, fontFamily:"'JetBrains Mono',monospace" }}>AI</div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -3775,7 +3769,7 @@ function MarketingDashboard({ nav }) {
   )
 }
 
-export default function Dashboard({ nav, onIssue, onOpenAI }) {
+export default function Dashboard({ nav, onIssue }) {
   const isMobile = useIsMobile()
   const { user, loading } = useAuth()
   if (loading) return (
@@ -3790,5 +3784,5 @@ export default function Dashboard({ nav, onIssue, onOpenAI }) {
     </div>
   )
   if (!user) return <MarketingDashboard nav={nav}/>
-  return <LoggedInDashboard user={user} nav={nav} onIssue={onIssue} onOpenAI={onOpenAI}/>
+  return <LoggedInDashboard user={user} nav={nav} onIssue={onIssue}/>
 }

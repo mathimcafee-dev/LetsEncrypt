@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import {
   ShieldCheck, Search, Loader2, CheckCircle, XCircle,
-  FileCheck2, Brain, KeyRound, BarChart3, Library
+  FileCheck2, Send, KeyRound, BarChart3, Library
 } from 'lucide-react'
 import {
   PublicNav, PublicFooter, VerifyInput, useIsMobile,
@@ -111,7 +111,7 @@ export default function Home({ nav }) {
   const shipped = [
     { ic: <FileCheck2 size={17}/>, t: 'Compliance Witness', isNew: true, d: 'Tamper-evident evidence ledger, per-domain dossiers, gap register, monthly auto-delivery to auditors, and public report verification.', go: () => nav('/verify') },
     { ic: <ShieldCheck size={17}/>, t: 'CertBind', d: 'Industry-first active binding verification: cryptographic key-cert match, TLS fingerprint, chain integrity, multi-node consistency.', go: () => nav('/auth') },
-    { ic: <Brain size={17}/>, t: 'VaultBrain AI', d: 'An AI support agent answering from your live data — certificates, orders, agents, DNS, audit log — not canned help articles.', go: () => nav('/auth') },
+    { ic: <Send size={17}/>, t: 'Monthly Auditor Delivery', d: 'Evidence reports generated, sealed, and emailed to your auditor automatically every month — with a 90-day read-only dossier link.', go: () => nav('/verify') },
     { ic: <KeyRound size={17}/>, t: 'CertVault + KeyLocker', d: 'Encrypted AES-256-GCM storage for certificates and private keys, with full custody tracking in the evidence ledger.', go: () => nav('/auth') },
     { ic: <BarChart3 size={17}/>, t: 'SLA Dashboard & Reports', d: 'Uptime and renewal-punctuality reporting for teams that answer to their own customers.', go: () => nav('/auth') },
     { ic: <Library size={17}/>, t: 'PKI Intelligence Hubs', d: 'CA Trust Store explorer, CAB Forum ballot tracker with compliance countdowns, and the Global PKI Hub with PQC tracking.', go: () => nav('/pki-hub') },
