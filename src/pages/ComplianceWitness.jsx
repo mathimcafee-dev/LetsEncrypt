@@ -771,10 +771,12 @@ export default function ComplianceWitness({ user }) {
 
   const card = { background: '#fff', border: `1px solid ${BORDER}`, borderRadius: 14, boxShadow: '0 2px 10px rgba(0,119,182,0.06)' }
   const tab  = (id) => ({
-    display: 'flex', alignItems: 'center', gap: 6, padding: '10px 16px', fontSize: 12, fontWeight: activeTab === id ? 700 : 500,
-    cursor: 'pointer', fontFamily: F, background: 'none', border: 'none',
+    display: 'flex', alignItems: 'center', gap: 7, padding: '13px 16px', fontSize: 12, fontWeight: activeTab === id ? 700 : 500,
+    cursor: 'pointer', fontFamily: F, border: 'none',
+    background: activeTab === id ? 'rgba(0,119,182,0.05)' : 'none',
     borderBottom: activeTab === id ? `2px solid ${BLUE}` : '2px solid transparent',
-    color: activeTab === id ? BLUE : '#7a8694', transition: 'all .15s', marginBottom: '-1px',
+    borderRadius: activeTab === id ? '8px 8px 0 0' : 0,
+    color: activeTab === id ? BLUE : '#7a8694', transition: 'all .15s', marginBottom: '-1px', whiteSpace: 'nowrap',
   })
 
   if (loading) return (
@@ -830,84 +832,78 @@ export default function ComplianceWitness({ user }) {
           </div>
         )}
 
-        {/* ── ACCOUNT OVERVIEW SCORES ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 14, marginBottom: 24 }}>
-          {/* Audit evidence score */}
-          <div style={{ ...card, padding: '20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-            <ScoreRing score={avgAudit} size={72}/>
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: BLUE, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Audit Evidence</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#0d1117' }}>{scoreLbl(avgAudit)}</div>
-              <div style={{ fontSize: 11, color: '#7a8694', marginTop: 2 }}>{allControls.length} controls documented</div>
-            </div>
-          </div>
-          {/* Readiness score */}
-          <div style={{ ...card, padding: '20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-            <ScoreRing score={avgReadiness} size={72}/>
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: BLUE, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Operational Readiness</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#0d1117' }}>{scoreLbl(avgReadiness)}</div>
-              <div style={{ fontSize: 11, color: '#7a8694', marginTop: 2 }}>{dossiers.length} domain{dossiers.length !== 1 ? 's' : ''} monitored</div>
-            </div>
-          </div>
-          {/* Continuity — client-enriched */}
-          {(() => {
-            const withCont = dossiers.filter(d => d.continuity_pct !== null && d.continuity_pct !== undefined)
-            if (withCont.length === 0) return null
-            const avgCont = Math.round((withCont.reduce((s,d)=>s+Number(d.continuity_pct||0),0)/withCont.length)*10)/10
-            const incidents = dossiers.reduce((s,d)=>s+(d.expiry_incidents||0),0)
-            const col = incidents === 0 && avgCont >= 99 ? '#00a550' : avgCont >= 90 ? '#9a6400' : '#c0392b'
-            return (
-              <div style={{ ...card, padding: '20px' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: BLUE, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Coverage Continuity</div>
-                <div style={{ fontSize: 32, fontWeight: 800, color: col, lineHeight: 1, fontFamily: "'JetBrains Mono',monospace", marginBottom: 4 }}>{avgCont}%</div>
-                <div style={{ fontSize: 11, color: '#7a8694' }}>{incidents} expiry incident{incidents !== 1 ? 's' : ''} in observed period</div>
+        {/* ── HERO: unified verdict + stats ── */}
+        <div style={{ ...card, padding: 0, marginBottom: 20, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+
+            {/* Verdict block */}
+            <div style={{ flex: '1 1 340px', display: 'flex', alignItems: 'center', gap: 20, padding: '26px 28px', background: 'linear-gradient(135deg, rgba(0,119,182,0.05), rgba(0,145,214,0.02))' }}>
+              <ScoreRing score={avgAudit} size={96}/>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 800, color: BLUE, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Audit Evidence Position</div>
+                <div style={{ fontSize: 21, fontWeight: 800, color: '#0d1117', letterSpacing: '-0.3px', lineHeight: 1.15 }}>
+                  {avgAudit >= 80 ? 'Audit-ready' : avgAudit >= 50 ? 'Getting there' : 'Needs work'}
+                </div>
+                <div style={{ fontSize: 12, color: '#5a6776', marginTop: 6, lineHeight: 1.6, maxWidth: 300 }}>
+                  {criticalGaps > 0
+                    ? <>{criticalGaps} critical item{criticalGaps !== 1 ? 's' : ''} need{criticalGaps === 1 ? 's' : ''} fixing before your evidence fully satisfies an audit.</>
+                    : totalGaps > 0
+                      ? <>{allControls.length} requirements evidenced across {dossiers.length} domain{dossiers.length !== 1 ? 's' : ''}. {totalGaps} minor improvement{totalGaps !== 1 ? 's' : ''} suggested.</>
+                      : <>{allControls.length} requirements evidenced across {dossiers.length} domain{dossiers.length !== 1 ? 's' : ''}, with no open gaps.</>}
+                </div>
               </div>
-            )
-          })()}
-          {/* Event count */}
-          <div style={{ ...card, padding: '20px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: BLUE, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Ledger Events</div>
-            <div style={{ fontSize: 32, fontWeight: 800, color: '#0d1117', lineHeight: 1, fontFamily: "'JetBrains Mono',monospace", marginBottom: 4 }}>{events.length}</div>
-            <div style={{ fontSize: 11, color: '#7a8694' }}>Timestamped + hash-chained</div>
-          </div>
-          {/* Gaps */}
-          <div style={{ ...card, padding: '20px', borderColor: criticalGaps > 0 ? 'rgba(192,57,43,0.25)' : BORDER }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: criticalGaps > 0 ? '#c0392b' : BLUE, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Control Gaps</div>
-            <div style={{ fontSize: 32, fontWeight: 800, color: criticalGaps > 0 ? '#c0392b' : '#0d1117', lineHeight: 1, fontFamily: "'JetBrains Mono',monospace", marginBottom: 4 }}>{totalGaps}</div>
-            <div style={{ fontSize: 11, color: '#7a8694' }}>{criticalGaps} critical · needs action</div>
-          </div>
-          {/* Framework coverage pills */}
-          <div style={{ ...card, padding: '20px', gridColumn: 'span 1' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: BLUE, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Framework Coverage</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              {Object.entries(FRAMEWORK_COLORS).map(([key, fc]) => {
-                const count = allControls.filter(c => c.startsWith(key)).length
-                return (
-                  <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 9, fontWeight: 800, padding: '2px 7px', borderRadius: 4, background: fc.bg, color: fc.color, border: `1px solid ${fc.border}`, minWidth: 60, textAlign: 'center' }}>{fc.label.split(' ').slice(0,2).join(' ')}</span>
-                    <div style={{ flex: 1, height: 4, background: 'rgba(0,119,182,0.08)', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${Math.min(100, count * 15)}%`, background: fc.color, borderRadius: 99, transition: 'width 1s ease' }}/>
-                    </div>
-                    <span style={{ fontSize: 10, color: fc.color, fontWeight: 700, minWidth: 20 }}>{count}</span>
-                  </div>
-                )
-              })}
             </div>
+
+            {/* Stat row */}
+            <div style={{ flex: '2 1 460px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', alignContent: 'center', padding: '18px 12px' }}>
+              {(() => {
+                const withCont = dossiers.filter(d => d.continuity_pct !== null && d.continuity_pct !== undefined)
+                const avgCont  = withCont.length ? Math.round((withCont.reduce((s,d)=>s+Number(d.continuity_pct||0),0)/withCont.length)*10)/10 : null
+                const incidents = dossiers.reduce((s,d)=>s+(d.expiry_incidents||0),0)
+                const stats = [
+                  { label: 'Readiness', value: avgReadiness, suffix: '/100', color: scoreColor(avgReadiness), sub: `${dossiers.length} domain${dossiers.length !== 1 ? 's' : ''}` },
+                  ...(avgCont !== null ? [{ label: 'Continuity', value: avgCont, suffix: '%', color: incidents === 0 && avgCont >= 99 ? '#00a550' : '#9a6400', sub: `${incidents} expiry incident${incidents !== 1 ? 's' : ''}` }] : []),
+                  { label: 'Ledger Events', value: events.length, suffix: '', color: '#0d1117', sub: 'hash-chained' },
+                  { label: 'Open Gaps', value: totalGaps, suffix: '', color: criticalGaps > 0 ? '#c0392b' : totalGaps > 0 ? '#9a6400' : '#00a550', sub: criticalGaps > 0 ? `${criticalGaps} critical` : totalGaps > 0 ? 'minor only' : 'all clear' },
+                ]
+                return stats.map((s, i) => (
+                  <div key={s.label} style={{ padding: '10px 18px', borderLeft: i > 0 ? `1px solid ${BORDER}` : 'none' }}>
+                    <div style={{ fontSize: 9, fontWeight: 800, color: '#7a8694', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 7 }}>{s.label}</div>
+                    <div style={{ fontSize: 26, fontWeight: 800, color: s.color, fontFamily: "'JetBrains Mono',monospace", lineHeight: 1 }}>
+                      {s.value}<span style={{ fontSize: 13, fontWeight: 600, color: '#b0bac4' }}>{s.suffix}</span>
+                    </div>
+                    <div style={{ fontSize: 10.5, color: '#7a8694', marginTop: 5 }}>{s.sub}</div>
+                  </div>
+                ))
+              })()}
+            </div>
+          </div>
+
+          {/* Framework strip */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', padding: '13px 28px', borderTop: `1px solid ${BORDER}`, background: 'rgba(0,119,182,0.02)' }}>
+            <span style={{ fontSize: 9, fontWeight: 800, color: '#7a8694', textTransform: 'uppercase', letterSpacing: '0.07em', marginRight: 4 }}>Frameworks</span>
+            {Object.entries(FRAMEWORK_COLORS).map(([key, fc]) => {
+              const count = allControls.filter(c => c.startsWith(key)).length
+              return (
+                <span key={key} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 700, background: count > 0 ? fc.bg : '#fff', color: count > 0 ? fc.color : '#b0bac4', border: `1px solid ${count > 0 ? fc.border : BORDER}` }}>
+                  {fc.label}
+                  <span style={{ fontSize: 10, fontWeight: 800, background: count > 0 ? '#fff' : 'transparent', borderRadius: 99, padding: '1px 7px', minWidth: 14, textAlign: 'center' }}>{count}</span>
+                </span>
+              )
+            })}
           </div>
         </div>
 
-        {/* ── DOMAIN FILTER ── */}
+        {/* ── DOMAIN FILTER: segmented control ── */}
         {dossiers.length > 0 && (
-          <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#7a8694' }}>Domain:</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBottom: 16, background: '#fff', border: `1px solid ${BORDER}`, borderRadius: 11, padding: 4, boxShadow: '0 1px 4px rgba(0,119,182,0.05)' }}>
             <button onClick={() => setSelectedDomain(null)}
-              style={{ padding: '5px 12px', borderRadius: 20, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: F, background: !selectedDomain ? BLUE : '#fff', color: !selectedDomain ? '#fff' : '#3d4a58', border: `1.5px solid ${!selectedDomain ? BLUE : BORDER}`, transition: 'all .15s' }}>
+              style={{ padding: '7px 16px', borderRadius: 8, fontSize: 11.5, fontWeight: 700, cursor: 'pointer', fontFamily: F, background: !selectedDomain ? BLUE : 'transparent', color: !selectedDomain ? '#fff' : '#5a6776', border: 'none', transition: 'all .15s', boxShadow: !selectedDomain ? '0 2px 6px rgba(0,119,182,0.25)' : 'none' }}>
               All domains
             </button>
             {dossiers.map(d => (
               <button key={d.domain} onClick={() => setSelectedDomain(d.domain)}
-                style={{ padding: '5px 12px', borderRadius: 20, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: F, background: selectedDomain === d.domain ? BLUE : '#fff', color: selectedDomain === d.domain ? '#fff' : '#3d4a58', border: `1.5px solid ${selectedDomain === d.domain ? BLUE : BORDER}`, fontFamily: MONO, transition: 'all .15s' }}>
+                style={{ padding: '7px 16px', borderRadius: 8, fontSize: 11.5, fontWeight: 600, cursor: 'pointer', fontFamily: MONO, background: selectedDomain === d.domain ? BLUE : 'transparent', color: selectedDomain === d.domain ? '#fff' : '#5a6776', border: 'none', transition: 'all .15s', boxShadow: selectedDomain === d.domain ? '0 2px 6px rgba(0,119,182,0.25)' : 'none' }}>
                 {d.domain}
               </button>
             ))}
@@ -917,7 +913,7 @@ export default function ComplianceWitness({ user }) {
         {/* ── TAB BAR ── */}
         <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
           {/* Tabs */}
-          <div style={{ display: 'flex', borderBottom: `1px solid ${BORDER}`, background: '#fff', padding: '0 4px' }}>
+          <div style={{ display: 'flex', borderBottom: `1px solid ${BORDER}`, background: '#fff', padding: '0 8px', overflowX: 'auto' }}>
             {[
               { id: 'dossiers', label: 'Evidence Dossiers', icon: ShieldCheck },
               { id: 'ledger',   label: 'Event Ledger',      icon: Hash },
