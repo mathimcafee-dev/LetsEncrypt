@@ -366,10 +366,16 @@ export default function ComplianceCentre({ nav, user }) {
                         </div>
                       </div>
                       {r.report_url && (
-                        <a href={r.report_url} target="_blank" rel="noreferrer"
-                          style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'#0077b6', textDecoration:'none', fontWeight:600, flexShrink:0 }}>
+                        <button onClick={async () => {
+                          try {
+                            const res = await fetch(r.report_url)
+                            const htmlContent = await res.text()
+                            const win = window.open('', '_blank')
+                            if (win) { win.document.write(htmlContent); win.document.close() }
+                          } catch { window.open(r.report_url, '_blank') }
+                        }} style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'#0077b6', background:'none', border:'none', fontWeight:600, flexShrink:0, cursor:'pointer', fontFamily:'inherit' }}>
                           <Download size={12}/>View
-                        </a>
+                        </button>
                       )}
                     </div>
                   )
