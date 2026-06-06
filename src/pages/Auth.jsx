@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import TrustSeal from '../components/TrustSeal'
 import { supabase } from '../lib/supabase'
 
 const FONT = "'Inter',system-ui,sans-serif"
@@ -168,10 +169,13 @@ export default function Auth({ nav }) {
             </div>
 
             {/* Bottom strip */}
-            <div style={{marginTop:20,paddingTop:16,borderTop:'1px solid rgba(255,255,255,.1)',display:'flex',gap:16,flexWrap:'wrap'}}>
-              {['RFC 8555','AES-256-GCM','CA/B Forum 2026','GoGetSSL','GoGetSSL'].map(t=>(
-                <span key={t} style={{fontSize:9,color:'rgba(255,255,255,.3)',letterSpacing:'.07em',fontFamily:MONO,whiteSpace:'nowrap'}}>{t}</span>
-              ))}
+            <div style={{marginTop:20,paddingTop:16,borderTop:'1px solid rgba(255,255,255,.1)',display:'flex',alignItems:'center',gap:16}}>
+              <div style={{flexShrink:0}}><TrustSeal size={74} idSuffix="auth"/></div>
+              <div style={{display:'flex',gap:'8px 14px',flexWrap:'wrap'}}>
+                {['RFC 8555','AES-256-GCM','CA/B Forum 2026','RapidSSL','Tamper-evident ledger'].map(t=>(
+                  <span key={t} style={{fontSize:9,color:'rgba(255,255,255,.35)',letterSpacing:'.07em',fontFamily:MONO,whiteSpace:'nowrap'}}>{t}</span>
+                ))}
+              </div>
             </div>
           </div>
         )}

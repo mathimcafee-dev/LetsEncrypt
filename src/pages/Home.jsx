@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import TrustSeal from '../components/TrustSeal'
 import { supabase } from '../lib/supabase'
 
 // ── Resend.com design tokens — pure black/white ────────────────────────
@@ -1015,6 +1016,14 @@ export default function Home({ nav }) {
                 <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
                   <BtnPrimary label="Get started" onClick={()=>nav('/auth')}/>
                   <BtnGhost label="View pricing" onClick={()=>nav('/pricing')}/>
+                </div>
+                {/* Trust seal */}
+                <div style={{display:'flex',alignItems:'center',gap:18,marginTop:32,padding:'16px 20px',background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.18)',borderRadius:14,maxWidth:420}}>
+                  <div style={{flexShrink:0}}><TrustSeal size={92} idSuffix="home"/></div>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:700,color:'#fff',marginBottom:4}}>Cryptographically sealed evidence</div>
+                    <div style={{fontSize:11.5,color:'rgba(255,255,255,0.65)',lineHeight:1.6}}>Every compliance report carries this verification seal, coded to its tamper-evident hash chain — auditors can verify it in seconds.</div>
+                  </div>
                 </div>
               </div>
             </FadeUp>
