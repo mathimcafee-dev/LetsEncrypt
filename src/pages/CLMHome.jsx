@@ -100,15 +100,14 @@ export default function CLMHome({ user, nav, initialSection }) {
   const NAV = [
     { group:'Manage', items:[
       {id:'dashboard',         label:'Dashboard',        icon:LayoutDashboard},
-      {id:'issue',             label:'Issue cert',       icon:Plus},
-      {id:'cert-timeline',     label:'Certificate Timeline', icon:CalendarDays},
+      {id:'issue',             label:'New Certificate',  icon:Plus},
+      {id:'cert-timeline',     label:'Cert Timeline',    icon:CalendarDays},
     ]},
     { group:'Monitor', items:[
-      {id:'shield',            label:'Security monitor', icon:ShieldCheck},
-      {id:'compliance-centre', label:'Compliance Centre', icon:Shield, badge:'NEW'},
+      {id:'compliance-centre', label:'Compliance',       icon:Shield, badge:'NEW'},
     ]},
     { group:'Secure', items:[
-      {id:'key-intelligence',  label:'Key Intelligence', icon:Shield},
+      {id:'key-intelligence',  label:'Key Vault',        icon:Shield},
     ]},
     { group:'Automate', items:[
       {id:'domain-manager',    label:'Domain Manager',   icon:Globe},
@@ -127,11 +126,12 @@ export default function CLMHome({ user, nav, initialSection }) {
     'renewal-calendar':'Renewal calendar', certvault:'CertVault', certbind:'CertBind',
     'domain-manager':'Domain Manager', 'my-servers':'Domain Manager',
     'infrastructure':'Domain Manager', 'servers':'Domain Manager', 'agent-health':'Domain Manager',
-    shield:'Security monitor',
-    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage', 'compliance-centre':'Compliance Centre',
+    shield:'PKI Intelligence',
+    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage', 'compliance-centre':'Compliance',
     'admin-calendar':'Admin Calendar',
-    'cert-timeline':'Certificate Timeline',
+    'cert-timeline':'Cert Timeline',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
+    issue:'New Certificate', dashboard:'Dashboard', 'key-intelligence':'Key Vault',
   }
 
   const content = () => {
