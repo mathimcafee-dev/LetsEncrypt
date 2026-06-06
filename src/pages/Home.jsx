@@ -523,14 +523,19 @@ export default function Home({ nav }) {
                 </button>
               </div>
 
-              {/* Stats */}
-              <div style={{display:'flex',gap:0,borderTop:'1px solid rgba(255,255,255,0.1)',paddingTop:24}}>
-                {[{val:certCount?`${count.toLocaleString()}+`:'—',label:'Certs managed'},{val:'99.9%',label:'Renewal rate'},{val:'12',label:'PKI bodies tracked'}].map((m,i)=>(
-                  <div key={m.label} style={{flex:1,paddingLeft:i>0?24:0,borderLeft:i>0?'1px solid rgba(255,255,255,0.1)':'none',marginLeft:i>0?24:0}}>
-                    <div style={{fontSize:24,fontWeight:900,color:'#ffffff',fontFamily:MONO,letterSpacing:'-1px',lineHeight:1}}>{m.val}</div>
-                    <div style={{fontSize:11,color:'rgba(255,255,255,0.45)',marginTop:5,letterSpacing:'.01em'}}>{m.label}</div>
-                  </div>
-                ))}
+              {/* Stats + trust seal */}
+              <div style={{display:'flex',alignItems:'center',gap:isMobile?18:26,borderTop:'1px solid rgba(255,255,255,0.1)',paddingTop:24}}>
+                <div style={{flexShrink:0,filter:'drop-shadow(0 4px 14px rgba(0,0,0,0.3))'}}>
+                  <TrustSeal size={isMobile?86:104} idSuffix="hero"/>
+                </div>
+                <div style={{display:'flex',gap:0,flex:1}}>
+                  {[{val:certCount?`${count.toLocaleString()}+`:'—',label:'Certs managed'},{val:'99.9%',label:'Renewal rate'},{val:'100%',label:'Tamper-evident ledger'}].map((m,i)=>(
+                    <div key={m.label} style={{flex:1,paddingLeft:i>0?20:0,borderLeft:i>0?'1px solid rgba(255,255,255,0.1)':'none',marginLeft:i>0?20:0}}>
+                      <div style={{fontSize:24,fontWeight:900,color:'#ffffff',fontFamily:MONO,letterSpacing:'-1px',lineHeight:1}}>{m.val}</div>
+                      <div style={{fontSize:11,color:'rgba(255,255,255,0.45)',marginTop:5,letterSpacing:'.01em'}}>{m.label}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
