@@ -178,18 +178,8 @@ export default function SLADashboard({ nav }) {
                   <div style={S.sub}>Score: <span style={{ color: scoreCol(r.compliance_score), fontWeight: 600 }}>{r.compliance_score}/100</span> - {r.certs_covered} certs covered</div>
                 </div>
                 {r.report_url && (
-                  <button onClick={async () => {
-                    try {
-                      const res = await fetch(r.report_url)
-                      const html = await res.text()
-                      const blob = new Blob([html], { type: 'text/html' })
-                      const url = URL.createObjectURL(blob)
-                      window.open(url, '_blank')
-                      setTimeout(() => URL.revokeObjectURL(url), 10000)
-                    } catch {
-                      window.open(r.report_url, '_blank')
-                    }
-                  }} style={{ fontSize: 12, color: '#0077b6', background: 'rgba(0,119,182,0.08)', border: '1px solid rgba(0,119,182,0.2)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontWeight: 600, flexShrink: 0, fontFamily: 'inherit' }}>
+                  <button onClick={() => window.open(r.report_url, '_blank')}
+                    style={{ fontSize: 12, color: '#0077b6', background: 'rgba(0,119,182,0.08)', border: '1px solid rgba(0,119,182,0.2)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontWeight: 600, flexShrink: 0, fontFamily: 'inherit' }}>
                     View Report
                   </button>
                 )}
