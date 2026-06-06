@@ -16,7 +16,7 @@ const GREEN  = '#00a550'
 const STATUS = {
   expired: { color: RED,   bg: 'rgba(0,119,182,0.09)', border: 'rgba(239,83,80,0.3)', bar: RED,   text: '#0077b6' },
   warning: { color: AMBER, bg: 'rgba(239,68,68,0.08)', border: '#fcd34d', bar: AMBER, text: '#9a6400' },
-  healthy: { color: GREEN, bg: 'transparent', border: '#86efac', bar: GREEN, text: '#00a550' },
+  healthy: { color: GREEN, bg: 'transparent', border: '#bfe5cd', bar: GREEN, text: '#00a550' },
   today:   { color: ACCENT,bg: 'transparent', border: 'rgba(0,119,182,0.2)', bar: ACCENT,text: '#0091d6' },
 }
 
@@ -579,7 +579,7 @@ export default function RenewalCalendar({ user }) {
           {[
             { label:'Expired',        color:RED,   bg:'rgba(0,119,182,0.09)', border:'rgba(239,83,80,0.3)' },
             { label:'Expiring ≤30d',  color:AMBER, bg:'rgba(239,68,68,0.08)', border:'#fcd34d' },
-            { label:'Healthy (>30d)', color:GREEN, bg:'transparent', border:'#86efac' },
+            { label:'Healthy (>30d)', color:GREEN, bg:'transparent', border:'#bfe5cd' },
             { label:'Today',          color:ACCENT,bg:'transparent', border:'rgba(0,119,182,0.2)' },
           ].map(({label,color,bg,border})=>(
             <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>

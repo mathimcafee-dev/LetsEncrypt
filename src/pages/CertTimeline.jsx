@@ -28,8 +28,8 @@ function fmtDateShort(iso) {
 
 function expiryStyle(days) {
   if (days === null) return { color: '#555555', bg: 'transparent', border: 'transparent' }
-  if (days <= 7)  return { color: '#0077b6', bg: 'rgba(248,113,113,0.12)', border: 'rgba(192,57,43,0.2)' }
-  if (days <= 30) return { color: '#9a6400', bg: 'rgba(251,191,36,0.10)',  border: 'rgba(251,191,36,0.3)' }
+  if (days <= 7)  return { color: '#b03425', bg: '#fae3df', border: '#eec3ba' }
+  if (days <= 30) return { color: '#9a6400', bg: '#faf0d8',  border: '#ecd9a8' }
   return { color: '#00a550', bg: 'transparent', border: 'transparent' }
 }
 
@@ -37,20 +37,20 @@ function eventTypeLabel(type) {
   const map = {
     // DB event_type values
     'cert_warning_30d': { label: 'Cert warning 30d', color: '#9a6400' },
-    'cert_warning_14d': { label: 'Cert warning 14d', color: '#f97316' },
+    'cert_warning_14d': { label: 'Cert warning 14d', color: '#9a6400' },
     'cert_warning_7d':  { label: 'Cert warning 7d',  color: '#0077b6' },
-    'cert_warning_1d':  { label: 'Cert warning 1d',  color: '#ef4444' },
+    'cert_warning_1d':  { label: 'Cert warning 1d',  color: '#b03425' },
     'cert_reissue':     { label: 'Auto-reissue',     color: '#0077b6' },
     'sub_warning_30d':  { label: 'Sub warning 30d',  color: '#9a6400' },
-    'sub_warning_14d':  { label: 'Sub warning 14d',  color: '#f97316' },
+    'sub_warning_14d':  { label: 'Sub warning 14d',  color: '#9a6400' },
     'sub_warning_7d':   { label: 'Sub warning 7d',   color: '#0077b6' },
-    'sub_warning_1d':   { label: 'Sub warning 1d',   color: '#ef4444' },
+    'sub_warning_1d':   { label: 'Sub warning 1d',   color: '#b03425' },
     'sub_end':          { label: 'Subscription end', color: '#0077b6' },
     // Legacy keys kept for backward compat
     '30d_warning':    { label: 'Cert warning 30d', color: '#9a6400' },
-    '14d_warning':    { label: 'Cert warning 14d', color: '#f97316' },
+    '14d_warning':    { label: 'Cert warning 14d', color: '#9a6400' },
     '7d_warning':     { label: 'Cert warning 7d',  color: '#0077b6' },
-    'final_warning':  { label: 'Cert warning 1d',  color: '#ef4444' },
+    'final_warning':  { label: 'Cert warning 1d',  color: '#b03425' },
     'auto_reissue':   { label: 'Auto-reissue',     color: '#0077b6' },
     'sub_30d':        { label: 'Sub warning 30d',  color: '#9a6400' },
     'sub_14d':        { label: 'Sub warning 14d',  color: '#0077b6' },
@@ -205,18 +205,18 @@ export default function CertTimeline({ user }) {
         {/* ── Summary cards ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 20 }}>
           {[
-            { label: 'Active certs',  value: certs.length,  color: '#333333', bg: 'rgba(0,0,0,0.03)', border: 'rgba(0,0,0,0.06)', icon: <Shield size={14}/> },
-            { label: 'Expiring ≤30d', value: expiring30,    color: expiring30 > 0 ? '#9a6400' : '#00a550', bg: expiring30 > 0 ? 'rgba(184,120,0,0.06)' : 'rgba(74,222,128,0.06)', border: expiring30 > 0 ? 'rgba(184,120,0,0.2)' : 'rgba(0,165,80,0.14)', icon: <Clock size={14}/> },
-            { label: 'Critical ≤7d',  value: expiring7,     color: expiring7  > 0 ? '#0077b6' : '#00a550', bg: expiring7  > 0 ? 'rgba(192,57,43,0.07)' : 'rgba(74,222,128,0.06)', border: expiring7  > 0 ? 'rgba(0,0,0,0.08)' : 'rgba(0,165,80,0.14)', icon: <AlertTriangle size={14}/> },
-            { label: 'Auto-renew on', value: autoRenew,     color: '#00a550',  bg: 'rgba(74,222,128,0.06)', border: 'rgba(0,165,80,0.14)', icon: <RotateCcw size={14}/> },
+            { label: 'Active certs',  value: certs.length,  color: '#111111', icon: <Shield size={13}/> },
+            { label: 'Expiring ≤30d', value: expiring30,    color: expiring30 > 0 ? '#9a6400' : '#1a7d43', icon: <Clock size={13}/> },
+            { label: 'Critical ≤7d',  value: expiring7,     color: expiring7  > 0 ? '#b03425' : '#1a7d43', icon: <AlertTriangle size={13}/> },
+            { label: 'Auto-renew on', value: autoRenew,     color: '#1a7d43', icon: <RotateCcw size={13}/> },
           ].map(s => (
-            <div key={s.label} style={{ padding: '14px 16px', borderRadius: 10,
-              background: s.bg, border: `1px solid ${s.border}` }}>
+            <div key={s.label} style={{ padding: '13px 16px', borderRadius: 12,
+              background: '#fff', border: '1px solid rgba(0,119,182,0.12)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8,
-                fontSize: 11, fontWeight: 700, color: s.color, textTransform: 'uppercase', letterSpacing: '0.7px' }}>
+                fontSize: 9, fontWeight: 700, color: '#7a8694', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: "'JetBrains Mono',monospace" }}>
                 {s.icon}{s.label}
               </div>
-              <div style={{ fontSize: 30, fontWeight: 800, color: s.color, fontFamily: MONO, lineHeight: 1 }}>
+              <div style={{ fontSize: 26, fontWeight: 900, color: s.color, fontFamily: "'DM Sans','Inter',sans-serif", lineHeight: 1 }}>
                 {s.value}
               </div>
             </div>
@@ -363,7 +363,7 @@ export default function CertTimeline({ user }) {
                             {row.install_method ? (
                               <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 6,
                                 background: row.install_method === 'agent' ? 'rgba(99,102,241,0.15)' : 'rgba(0,119,182,0.09)',
-                                color: row.install_method === 'agent' ? '#818cf8' : '#0077b6',
+                                color: row.install_method === 'agent' ? '#0077b6' : '#0077b6',
                                 border: `1px solid ${row.install_method === 'agent' ? 'rgba(99,102,241,0.3)' : 'rgba(0,0,0,0.1)'}`,
                                 textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                                 {row.install_method}

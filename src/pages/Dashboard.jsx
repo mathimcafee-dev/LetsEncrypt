@@ -3241,7 +3241,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                   {activeCerts.map((cert, i) => {
                     const d        = daysLeft(cert.expires_at)
                     const notLive  = !cert.is_live_on_server
-                    const col      = notLive              ? '#818cf8'
+                    const col      = notLive              ? '#0077b6'
                                    : d !== null && d <= 0 ? '#0077b6'
                                    : d !== null && d <= 30? '#9a6400'
                                    :                        '#00a550'
@@ -3295,7 +3295,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                         <span style={{ fontSize:9, fontWeight:700, padding:'2px 8px',
                           borderRadius:99, flexShrink:0,
                           background: notLive ? 'rgba(129,140,248,0.1)' : d !== null && d <= 30 ? 'rgba(184,120,0,0.07)' : 'rgba(0,165,80,0.07)',
-                          color: notLive ? '#818cf8' : d !== null && d <= 30 ? '#9a6400' : '#00a550',
+                          color: notLive ? '#0077b6' : d !== null && d <= 30 ? '#9a6400' : '#00a550',
                           border: `1px solid ${notLive ? 'rgba(0,119,182,0.2)' : d !== null && d <= 30 ? 'rgba(251,191,36,0.2)' : 'rgba(74,222,128,0.18)'}` }}>
                           {notLive ? 'INSTALL' : d !== null && d <= 0 ? 'EXPIRED' : d !== null && d <= 30 ? 'EXPIRING' : 'LIVE'}
                         </span>
@@ -3414,7 +3414,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                   {activeCerts.map((cert, i) => {
                     const d        = daysLeft(cert.expires_at)
                     const notLive  = !cert.is_live_on_server
-                    const col      = notLive              ? '#818cf8'
+                    const col      = notLive              ? '#0077b6'
                                    : d !== null && d <= 0 ? '#0077b6'
                                    : d !== null && d <= 30? '#9a6400'
                                    :                        '#00a550'
@@ -3465,7 +3465,7 @@ function LoggedInDashboard({ user, nav, onIssue }) {
                           <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px',
                             borderRadius:99,
                             background: notLive ? 'rgba(129,140,248,0.1)' : 'rgba(0,165,80,0.07)',
-                            color: notLive ? '#818cf8' : '#00a550',
+                            color: notLive ? '#0077b6' : '#00a550',
                             border: `1px solid ${notLive ? 'rgba(129,140,248,0.2)' : 'rgba(74,222,128,0.18)'}` }}>
                             {notLive ? 'INSTALL' : 'LIVE'}
                           </span>

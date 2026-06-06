@@ -92,7 +92,7 @@ function PulseDot({ color, animate }) {
 }
 
 // ── Entropy dot visualiser ────────────────────────────────────────────
-const ENTROPY_COLORS = ['#00a550','#00a550','#86efac','#9a6400','#f97316','#fb923c','#0077b6','#ef4444','#fca5a5','#818cf8','#a78bfa','#38bdf8','#67e8f9','#0077b6','#0077b6']
+const ENTROPY_COLORS = ['#0077b6','#0091d6','#33a7de','#66bde6','#99d3ef','#005d90','#2b87bf','#4d9fcc','#80c4e6','#0077b6','#1a8ccb','#5badd9','#8ccaec','#006aa3','#3d97c9']
 function EntropyDots() {
   const N = 36
   const [dots, setDots] = useState(() =>

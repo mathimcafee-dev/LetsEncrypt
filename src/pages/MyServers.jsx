@@ -48,18 +48,18 @@ function daysLeft(iso) {
 
 // ── DNS Provider logos (text) ─────────────────────────────────────────
 const DNS_PROVIDERS = {
-  cloudflare:   { name: 'Cloudflare',    color: '#e67e22', initials: 'CF' },
-  vercel:       { name: 'Vercel',        color: '#333333', initials: '▲'  },
-  route53:      { name: 'Route 53',      color: '#ff9900', initials: 'R53' },
-  godaddy:      { name: 'GoDaddy',       color: '#00a550', initials: 'GD' },
+  cloudflare:   { name: 'Cloudflare',    color: '#0077b6', initials: 'CF' },
+  vercel:       { name: 'Vercel',        color: '#0077b6', initials: '▲'  },
+  route53:      { name: 'Route 53',      color: '#0077b6', initials: 'R53' },
+  godaddy:      { name: 'GoDaddy',       color: '#0077b6', initials: 'GD' },
   digitalocean: { name: 'DigitalOcean',  color: '#0077b6', initials: 'DO' },
-  namecheap:    { name: 'Namecheap',     color: '#fb923c', initials: 'NC' },
-  porkbun:      { name: 'Porkbun',       color: '#a78bfa', initials: 'PB' },
-  gandi:        { name: 'Gandi',         color: '#9a6400', initials: 'GA' },
+  namecheap:    { name: 'Namecheap',     color: '#0077b6', initials: 'NC' },
+  porkbun:      { name: 'Porkbun',       color: '#0077b6', initials: 'PB' },
+  gandi:        { name: 'Gandi',         color: '#0077b6', initials: 'GA' },
   hetzner:      { name: 'Hetzner DNS',   color: '#0077b6', initials: 'HZ' },
-  linode:       { name: 'Linode',        color: '#00a550', initials: 'LN' },
-  vultr:        { name: 'Vultr',         color: '#a78bfa', initials: 'VU' },
-  bunny:        { name: 'Bunny DNS',     color: '#fb923c', initials: 'BN' },
+  linode:       { name: 'Linode',        color: '#0077b6', initials: 'LN' },
+  vultr:        { name: 'Vultr',         color: '#0077b6', initials: 'VU' },
+  bunny:        { name: 'Bunny DNS',     color: '#0077b6', initials: 'BN' },
   dnsimple:     { name: 'DNSimple',      color: '#0077b6', initials: 'DS' },
 }
 
@@ -224,7 +224,7 @@ function ServerCard({ agent, certs }) {
 // ── DNS Credential card ───────────────────────────────────────────────
 function DnsCard({ cred, onDelete, deletingId }) {
   const isConfirming = deletingId === cred.id
-  const p = DNS_PROVIDERS[cred.provider] || { name: cred.provider, color: '#888888', initials: cred.provider?.slice(0,2).toUpperCase() }
+  const p = DNS_PROVIDERS[cred.provider] || { name: cred.provider, color: '#0077b6', initials: cred.provider?.slice(0,2).toUpperCase() }
   return (
     <div style={{
       background: 'var(--v2-surface)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10,
