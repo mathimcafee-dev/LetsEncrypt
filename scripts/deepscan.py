@@ -66,7 +66,7 @@ def run_one(scan):
         # --fast + targeted sections (protocols, vulns, server defaults) keeps the
         # scan well under the runner timeout while still producing the headline report.
         proc = subprocess.run(
-            ["bash", "./testssl.sh/testssl.sh", "--jsonfile", out, "--severity", "LOW",
+            ["bash", "./testssl.sh/testssl.sh", "--jsonfile", out,
              "--fast", "-p", "-U", "-S", "--quiet", "--color", "0", "--warnings", "batch",
              "--openssl-timeout", "20", domain],
             timeout=300, check=False, capture_output=True, text=True)
