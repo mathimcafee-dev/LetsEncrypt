@@ -151,9 +151,9 @@ export default function Home({ nav }) {
   ]
   const shipped = [
     { ic: <FileCheck2 size={17}/>, t: 'Compliance Witness', isNew: true, d: 'Tamper-evident evidence ledger, per-domain dossiers, gap register, monthly auto-delivery to auditors, and public report verification.', go: () => nav('/verify') },
-    { ic: <ShieldCheck size={17}/>, t: 'CertBind', d: 'Industry-first active binding verification: cryptographic key-cert match, TLS fingerprint, chain integrity, multi-node consistency.', go: () => nav('/certbind') },
+    { ic: <ShieldCheck size={17}/>, t: 'CertBind', d: 'Industry-first active binding verification: cryptographic key-cert match, TLS fingerprint, chain integrity, multi-node consistency.', go: () => nav('/auth') },
     { ic: <Brain size={17}/>, t: 'VaultBrain AI', d: 'An AI support agent answering from your live data — certificates, orders, agents, DNS, audit log — not canned help articles.', go: () => nav('/auth') },
-    { ic: <KeyRound size={17}/>, t: 'CertVault + KeyLocker', d: 'Encrypted AES-256-GCM storage for certificates and private keys, with full custody tracking in the evidence ledger.', go: () => nav('/certvault') },
+    { ic: <KeyRound size={17}/>, t: 'CertVault + KeyLocker', d: 'Encrypted AES-256-GCM storage for certificates and private keys, with full custody tracking in the evidence ledger.', go: () => nav('/auth') },
     { ic: <BarChart3 size={17}/>, t: 'SLA Dashboard & Reports', d: 'Uptime and renewal-punctuality reporting for teams that answer to their own customers.', go: () => nav('/auth') },
     { ic: <Library size={17}/>, t: 'PKI Intelligence Hubs', d: 'CA Trust Store explorer, CAB Forum ballot tracker with compliance countdowns, and the Global PKI Hub with PQC tracking.', go: () => nav('/pki-hub') },
   ]
@@ -350,8 +350,8 @@ export default function Home({ nav }) {
             </div>
           </div>
           {[
-            { h: 'Product', links: [['Compliance Witness', () => nav('/verify'), true], ['CertBind Verification', () => nav('/certbind')], ['Zero-Touch Renewal', () => nav('/buy')], ['Pricing', () => nav('/pricing')], ['Get Started', () => nav('/get-started')]] },
-            { h: 'Trust & Security', links: [['Verify a Report', () => nav('/verify'), true], ['CertVault & KeyLocker', () => nav('/certvault')], ['CT Monitoring', () => nav('/ct-monitor')], ['47-Day Readiness', () => nav('/readiness')]] },
+            { h: 'Product', links: [['Compliance Witness', () => nav('/verify'), true], ['CertBind Verification', () => nav('/auth')], ['Zero-Touch Renewal', () => nav('/auth')], ['Pricing', () => nav('/pricing')], ['Get Started', () => nav('/get-started')]] },
+            { h: 'Trust & Security', links: [['Verify a Report', () => nav('/verify'), true], ['CertVault & KeyLocker', () => nav('/auth')], ['CT Monitoring', () => nav('/auth')], ['47-Day Readiness', () => nav('/auth')]] },
             { h: 'Intelligence', links: [['CA Trust Store', () => nav('/ca-trust-explorer')], ['CAB Forum Hub', () => nav('/cab-forum')], ['Global PKI Hub', () => nav('/pki-hub')], ['CAA Checker', () => nav('/caa-check')]] },
             { h: 'Company', links: [['About', () => nav('/about')], ['Contact', () => nav('/contact')], ['Knowledge Base', () => nav('/knowledge-base')], ['Install Guide', () => nav('/install')]] },
           ].map(col => (
