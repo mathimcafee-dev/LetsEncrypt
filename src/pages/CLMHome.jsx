@@ -1,10 +1,11 @@
+// CLMHome.jsx — SSLVault CLM shell (Phase 1 redesign: landing-page benchmark)
+// Ink sidebar in the landing footer's design language · white topbar · AppKit tokens.
+// All routing/notification/session logic identical to the previous shell.
 import { useState, useEffect, useRef } from 'react'
 import {
-  Shield, Plus, Server, TrendingUp, History, CalendarDays, BarChart2,
-  ShieldCheck, LayoutDashboard, Settings, Lock, BookOpen,
-  LogOut, Bell, Menu, X, ChevronDown, ChevronRight,
-  Globe, Activity, Star, Upload,
-  ClipboardCheck, Fingerprint, KeyRound, FilePlus2
+  Plus, CalendarDays, LayoutDashboard, Settings, BookOpen,
+  LogOut, Bell, Menu, X, Globe, KeyRound, FilePlus2,
+  ClipboardCheck, Fingerprint, TrendingUp,
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import Dashboard from './Dashboard'
@@ -33,23 +34,7 @@ import CertBind from './CertBind'
 import KeyIntelligence from './KeyIntelligence'
 import Pricing from './Pricing'
 import VaultBrainPanel from '../components/VaultBrainPanel'
-
-// ── Design tokens ──────────────────────────────────────────────────────
-const F = "'Inter',system-ui,sans-serif"
-const NAVY  = '#f0f4fa'        // page bg — warm parchment
-const CARD  = 'rgba(0,119,182,0.08)'  // hover bg — teal tint
-const CARD2 = '#ffffff'              // elevated card
-const CARD3 = '#f2efea'              // input bg
-const LINE  = 'rgba(0,0,0,0.07)'
-const LINE2 = 'rgba(0,0,0,0.12)'
-const INK   = 'rgba(0,0,0,0.06)'
-const BODY  = '#94a3b8'
-const MUTED = '#64748b'
-const BLUE  = '#0077b6'
-const BLUEH = '#0091d6'
-const GREEN = '#00a550'
-const RED   = '#0077b6'
-const AMBER = '#9a6400'
+import { F, DM, MONO, BLUE, BLUE2, INK, BG, BORDER, LINE, MUTED, MUTED2, BODY, GRN, RED, GRAD, SHADOW_LG } from '../components/AppKit'
 
 function useIsMobile(bp=860) {
   const [m,setM] = useState(window.innerWidth<=bp)
@@ -60,7 +45,6 @@ function useIsMobile(bp=860) {
 export default function CLMHome({ user, nav, initialSection }) {
   const [sec, setSec] = useState(initialSection || 'dashboard')
   const [key, setKey] = useState(0)
-  const [open, setOpen] = useState({'Manage':true,'Automate':true,'Monitor':true,'Secure':true})
   const [sideOpen, setSideOpen] = useState(false)
   const isMobile = useIsMobile()
   const sideRef = useRef(null)
@@ -111,9 +95,9 @@ export default function CLMHome({ user, nav, initialSection }) {
     { group:'Secure', items:[
       {id:'key-intelligence',  label:'Key Vault',        icon:KeyRound},
     ]},
-    { group:'Monitor', items:[
-      {id:'compliance-centre', label:'Compliance',       icon:ClipboardCheck, badge:'NEW'},
-      {id:'compliance-witness',  label:'Witness Ledger',    icon:Fingerprint, badge:'NEW'},
+    { group:'Prove', items:[
+      {id:'compliance-witness',  label:'Compliance Witness', icon:Fingerprint, badge:'NEW'},
+      {id:'compliance-centre',   label:'Compliance',         icon:ClipboardCheck},
     ]},
     { group:'Intelligence', items:[
       {id:'ca-intelligence',   label:'PKI Intelligence', icon:TrendingUp},
@@ -145,7 +129,6 @@ export default function CLMHome({ user, nav, initialSection }) {
     if(sec==='install')          return <Install nav={sideNav}/>
     if(sec==='kb')               return <KnowledgeBase nav={sideNav}/>
     if(sec==='pricing')          return <Pricing nav={sideNav}/>
-    // Domain Manager — new wizard-based add domain flow
     if(sec==='domain-manager')   return <DomainManager user={user} nav={sideNav}/>
     if(sec==='my-servers')       return <MyServers user={user}/>
     if(sec==='infrastructure')   return <MyServers user={user}/>
@@ -167,27 +150,27 @@ export default function CLMHome({ user, nav, initialSection }) {
     return null
   }
 
+  // ── Sidebar item — footer-language link, blue-gradient pill when active ──
   const NavItem = ({id, label, icon:Icon, badge}) => {
     const on = sec===id
     return (
       <button onClick={()=>go(id)} style={{
         display:'flex', alignItems:'center', gap:10,
-        padding:'8px 12px 8px 16px',
-        width:'100%', textAlign:'left', fontFamily:F,
-        fontSize:13, fontWeight:on?500:400,
-        color: on ? '#60c8ff' : BODY,
-        background: on ? 'rgba(0,119,182,0.35)' : 'transparent',
-        borderLeft: `3px solid ${on ? '#60c8ff' : 'transparent'}`,
+        margin:'0 8px 2px', padding:'8px 10px',
+        width:'calc(100% - 16px)', textAlign:'left', fontFamily:F,
+        fontSize:12.5, fontWeight:on?700:500,
+        color: on ? '#fff' : 'rgba(255,255,255,0.62)',
+        background: on ? GRAD : 'transparent',
+        boxShadow: on ? '0 4px 14px rgba(0,119,182,0.35)' : 'none',
         border:'none', cursor:'pointer',
-        borderRadius:'0 6px 6px 0',
-        marginBottom:1, transition:'all 0.1s',
+        borderRadius:8, transition:'all 0.12s',
       }}
-        onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(255,255,255,0.07)';e.currentTarget.style.color='#e2e8f0'}}}
-        onMouseLeave={e=>{if(!on){e.currentTarget.style.background='transparent';e.currentTarget.style.color=BODY}}}>
-        <Icon size={14} strokeWidth={on?2.2:1.8} color={on?BLUE:undefined} style={{flexShrink:0}}/>
-        <span style={{flex:1}}>{label}</span>
-        {badge&&!on&&<span style={{fontSize:9,fontWeight:700,padding:'1px 6px',borderRadius:3,
-          background:BLUEH+'22',color:BLUE,letterSpacing:'0.02em'}}>{badge}</span>}
+        onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(255,255,255,0.06)';e.currentTarget.style.color='#fff'}}}
+        onMouseLeave={e=>{if(!on){e.currentTarget.style.background='transparent';e.currentTarget.style.color='rgba(255,255,255,0.62)'}}}>
+        <Icon size={15} strokeWidth={on?2.2:1.8} style={{flexShrink:0, opacity:0.92}}/>
+        <span style={{flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{label}</span>
+        {badge&&!on&&<span style={{fontSize:8,fontWeight:800,padding:'1px 5px',borderRadius:4,
+          background:'rgba(0,165,80,0.18)',color:'#39d98a',letterSpacing:'0.05em',flexShrink:0}}>{badge}</span>}
       </button>
     )
   }
@@ -195,56 +178,68 @@ export default function CLMHome({ user, nav, initialSection }) {
   const Sidebar = () => (
     <div style={{display:'flex',flexDirection:'column',height:'100%'}}>
       {/* Logo */}
-      <div style={{padding:'16px 16px 14px',borderBottom:`1px solid rgba(255,255,255,0.08)`,flexShrink:0}}>
+      <div style={{padding:'16px 16px 14px',borderBottom:'1px solid rgba(255,255,255,0.08)',flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <div style={{width:30,height:30,borderRadius:8,background:BLUE,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+          <div style={{width:30,height:30,borderRadius:8,background:GRAD,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <div>
-            <div style={{fontSize:13,fontWeight:700,color:'#f1f5f9',letterSpacing:'-0.2px',lineHeight:1.2}}>SSLVault</div>
-            <div style={{fontSize:10,color:'#64748b',marginTop:1}}>Certificate Manager</div>
+            <div style={{fontSize:13.5,fontWeight:800,color:'#fff',letterSpacing:'-0.2px',lineHeight:1.15,fontFamily:DM}}>SSLVault</div>
+            <div style={{fontSize:9.5,color:'rgba(255,255,255,0.45)',marginTop:1,fontFamily:MONO,letterSpacing:'0.04em'}}>CLM PLATFORM</div>
           </div>
         </div>
       </div>
 
       {/* Nav */}
-      <div style={{flex:1,overflowY:'auto',padding:'10px 8px 8px'}}>
+      <div style={{flex:1,overflowY:'auto',padding:'4px 0 8px'}}>
         {NAV.map(({group,items})=>(
-          <div key={group} style={{marginBottom:4}}>
-            <div style={{padding:'6px 8px 2px 10px'}}>
-              <span style={{fontSize:10,fontWeight:600,letterSpacing:'0.06em',textTransform:'uppercase',color:'#475569'}}>{group}</span>
+          <div key={group}>
+            <div style={{padding:'14px 16px 6px'}}>
+              <span style={{fontSize:9.5,fontWeight:700,letterSpacing:'0.09em',textTransform:'uppercase',color:'rgba(255,255,255,0.38)',fontFamily:MONO}}>{group}</span>
             </div>
             {items.map(it=><NavItem key={it.id} {...it}/>)}
           </div>
         ))}
       </div>
 
+      {/* VaultBrain AI card */}
+      <button onClick={()=>{setAiOpen(o=>!o);if(isMobile)setSideOpen(false)}} style={{
+        margin:'10px 12px 12px', background: aiOpen ? 'rgba(0,119,182,0.30)' : 'rgba(0,119,182,0.16)',
+        border:`1px solid ${aiOpen ? 'rgba(0,145,214,0.6)' : 'rgba(0,145,214,0.35)'}`, borderRadius:10,
+        padding:'10px 12px', cursor:'pointer', textAlign:'left', fontFamily:F, transition:'all .12s',
+      }}
+        onMouseEnter={e=>{e.currentTarget.style.background='rgba(0,119,182,0.28)'}}
+        onMouseLeave={e=>{e.currentTarget.style.background=aiOpen?'rgba(0,119,182,0.30)':'rgba(0,119,182,0.16)'}}>
+        <div style={{fontSize:11.5,fontWeight:800,fontFamily:DM,color:'#fff',display:'flex',alignItems:'center',gap:7}}>🧠 VaultBrain AI</div>
+        <div style={{fontSize:9.5,color:'rgba(255,255,255,0.55)',marginTop:3,lineHeight:1.4}}>Ask anything about your certs, agents, or DNS — answers from live data.</div>
+      </button>
+
       {/* Bottom nav */}
-      <div style={{borderTop:`1px solid rgba(255,255,255,0.08)`,padding:'8px 8px 4px'}}>
+      <div style={{borderTop:'1px solid rgba(255,255,255,0.08)',padding:'8px 0 4px'}}>
         {BOTTOM.map(it=><NavItem key={it.id} {...it}/>)}
       </div>
 
       {/* User */}
-      <div style={{borderTop:`1px solid rgba(255,255,255,0.08)`,padding:'12px 14px',flexShrink:0}}>
+      <div style={{borderTop:'1px solid rgba(255,255,255,0.08)',padding:'12px 14px',flexShrink:0}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,#0077b6,#0091d6)`,
+          <div style={{width:30,height:30,borderRadius:'50%',background:GRAD,
             display:'flex',alignItems:'center',justifyContent:'center',
-            fontSize:11,fontWeight:700,color:'#111111',flexShrink:0,letterSpacing:'-0.3px'}}>
+            fontSize:11,fontWeight:800,color:'#fff',flexShrink:0,letterSpacing:'-0.3px',fontFamily:DM}}>
             {initials}
           </div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:12,fontWeight:500,color:'#e2e8f0',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+            <div style={{fontSize:11.5,fontWeight:600,color:'#fff',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
               {email.split('@')[0]}
             </div>
-            <div style={{fontSize:10,color:MUTED,marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+            <div style={{fontSize:9.5,color:'rgba(255,255,255,0.4)',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
               {email.split('@')[1]||''}
             </div>
           </div>
           <button onClick={()=>supabase.auth.signOut()}
-            style={{background:'none',border:'none',cursor:'pointer',color:MUTED,padding:4,borderRadius:4,display:'flex',transition:'color .12s'}}
+            style={{background:'none',border:'none',cursor:'pointer',color:'rgba(255,255,255,0.4)',padding:4,borderRadius:4,display:'flex',transition:'color .12s'}}
             title="Sign out"
-            onMouseEnter={e=>e.currentTarget.style.color=RED}
-            onMouseLeave={e=>e.currentTarget.style.color=MUTED}>
+            onMouseEnter={e=>e.currentTarget.style.color='#fff'}
+            onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.4)'}>
             <LogOut size={13}/>
           </button>
         </div>
@@ -253,59 +248,67 @@ export default function CLMHome({ user, nav, initialSection }) {
   )
 
   return (
-    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:NAVY,color:'#111111'}}>
+    <div style={{display:'flex',flexDirection:'column',minHeight:'100vh',fontFamily:F,background:BG,color:'#111111'}}>
 
       {/* ── Topbar ── */}
       <div style={{
-        background:'#ffffff', borderBottom:`1px solid ${LINE}`,
-        height:50, display:'flex', alignItems:'center',
+        background:'#ffffff', borderBottom:`1px solid ${BORDER}`,
+        height:52, display:'flex', alignItems:'center',
         justifyContent:'space-between', padding:'0 20px',
         flexShrink:0, position:'sticky', top:0, zIndex:50,
-        boxShadow:'0 1px 0 rgba(0,0,0,0.04)',
       }}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           {isMobile&&(
             <button onClick={()=>setSideOpen(o=>!o)}
-              style={{background:'none',border:'none',cursor:'pointer',color:'#555555',padding:4,display:'flex',borderRadius:4}}>
+              style={{background:'none',border:'none',cursor:'pointer',color:BODY,padding:4,display:'flex',borderRadius:4}}>
               {sideOpen?<X size={16}/>:<Menu size={16}/>}
             </button>
           )}
-          <div>
-            <span style={{fontSize:13,fontWeight:600,color:'#111111'}}>{TITLES[sec]||'SSLVault'}</span>
-            {sec==='dashboard'&&<span style={{fontSize:12,color:MUTED,marginLeft:8}}>
-              {email}
-            </span>}
+          <div style={{display:'flex',alignItems:'baseline',gap:8}}>
+            {!isMobile&&<span style={{fontSize:10.5,color:MUTED2,fontFamily:MONO}}>CLM /</span>}
+            <span style={{fontSize:14,fontWeight:800,color:'#111111',fontFamily:DM}}>{TITLES[sec]||'SSLVault'}</span>
           </div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
+          {/* New certificate */}
+          {sec!=='issue'&&(
+            <button onClick={()=>go('issue')} style={{
+              display:'inline-flex',alignItems:'center',gap:6,background:BLUE,color:'#fff',
+              border:'none',borderRadius:8,padding:isMobile?'7px 10px':'7px 13px',fontSize:11.5,fontWeight:800,
+              fontFamily:DM,cursor:'pointer',transition:'background .12s'}}
+              onMouseEnter={e=>e.currentTarget.style.background=BLUE2}
+              onMouseLeave={e=>e.currentTarget.style.background=BLUE}>
+              <Plus size={13}/>{!isMobile&&'New certificate'}
+            </button>
+          )}
           {/* Bell */}
           <div ref={bellRef} style={{position:'relative'}}>
             <button onClick={()=>{setBellOpen(o=>!o);if(!bellOpen)loadNotifs()}}
-              style={{background:'none',border:'none',cursor:'pointer',color:'#555555',width:32,height:32,
-                display:'flex',alignItems:'center',justifyContent:'center',borderRadius:6,position:'relative',
+              style={{background:'#fff',border:`1px solid ${BORDER}`,cursor:'pointer',color:BODY,width:32,height:32,
+                display:'flex',alignItems:'center',justifyContent:'center',borderRadius:8,position:'relative',
                 transition:'all .12s'}}
-              onMouseEnter={e=>{e.currentTarget.style.background='rgba(0,119,182,0.08)';e.currentTarget.style.color='#0077b6'}}
-              onMouseLeave={e=>{e.currentTarget.style.background='none';e.currentTarget.style.color=BODY}}>
-              <Bell size={15}/>
-              {unread>0&&<span style={{position:'absolute',top:5,right:5,width:6,height:6,
-                borderRadius:'50%',background:RED,border:`1.5px solid ${CARD}`}}/>}
+              onMouseEnter={e=>{e.currentTarget.style.background='rgba(0,119,182,0.06)';e.currentTarget.style.color=BLUE}}
+              onMouseLeave={e=>{e.currentTarget.style.background='#fff';e.currentTarget.style.color=BODY}}>
+              <Bell size={14}/>
+              {unread>0&&<span style={{position:'absolute',top:6,right:6,width:6,height:6,
+                borderRadius:'50%',background:RED,border:'1.5px solid #fff'}}/>}
             </button>
             {bellOpen&&(
-              <div style={{position:'absolute',right:0,top:'calc(100% + 8px)',background:CARD2,
-                border:`1px solid ${LINE2}`,borderRadius:8,width:300,
-                boxShadow:'0 8px 24px rgba(0,0,0,0.4)',zIndex:100,overflow:'hidden'}}>
+              <div style={{position:'absolute',right:0,top:'calc(100% + 8px)',background:'#fff',
+                border:`1px solid ${BORDER}`,borderRadius:12,width:300,
+                boxShadow:SHADOW_LG,zIndex:100,overflow:'hidden'}}>
                 <div style={{padding:'12px 16px',borderBottom:`1px solid ${LINE}`,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                  <span style={{fontSize:13,fontWeight:600,color:'#111111'}}>Notifications</span>
+                  <span style={{fontSize:12.5,fontWeight:800,color:'#111111',fontFamily:DM}}>Notifications</span>
                   <button onClick={()=>setBellOpen(false)} style={{background:'none',border:'none',cursor:'pointer',color:MUTED,fontSize:11,fontFamily:F}}>Close</button>
                 </div>
                 {notifs.length===0
                   ? <div style={{padding:'28px 16px',textAlign:'center',color:MUTED,fontSize:12}}>No notifications yet</div>
                   : notifs.map(n=>(
                     <div key={n.id} style={{padding:'10px 16px',borderBottom:`1px solid ${LINE}`,
-                      background:n.read?'transparent':'rgba(56,139,253,0.04)',display:'flex',gap:10,alignItems:'flex-start'}}>
-                      <span style={{width:6,height:6,borderRadius:'50%',background:n.read?MUTED:BLUE,marginTop:4,flexShrink:0}}/>
+                      background:n.read?'transparent':'rgba(0,119,182,0.04)',display:'flex',gap:10,alignItems:'flex-start'}}>
+                      <span style={{width:6,height:6,borderRadius:'50%',background:n.read?MUTED2:BLUE,marginTop:4,flexShrink:0}}/>
                       <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:12,fontWeight:n.read?400:500,color:'#111111',marginBottom:1,lineHeight:1.3}}>{n.title}</div>
+                        <div style={{fontSize:12,fontWeight:n.read?400:600,color:'#111111',marginBottom:1,lineHeight:1.3}}>{n.title}</div>
                         <div style={{fontSize:11,color:MUTED,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{n.body}</div>
                       </div>
                     </div>
@@ -313,62 +316,37 @@ export default function CLMHome({ user, nav, initialSection }) {
               </div>
             )}
           </div>
-          {/* Sign out */}
-          <button onClick={()=>supabase.auth.signOut()}
-            style={{display:'flex',alignItems:'center',gap:6,background:'none',border:`1px solid ${LINE}`,
-              cursor:'pointer',color:'#555555',fontSize:12,fontFamily:F,padding:'5px 10px',borderRadius:6,
-              transition:'all .12s'}}
-            onMouseEnter={e=>{e.currentTarget.style.borderColor=LINE2;e.currentTarget.style.color=INK}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor=LINE;e.currentTarget.style.color=BODY}}>
-            <LogOut size={12}/>{!isMobile&&' Sign out'}
-          </button>
-          {/* VaultBrain AI toggle */}
-          <button
-            onClick={()=>setAiOpen(o=>!o)}
-            title="Ask VaultBrain AI"
-            style={{
-              display:'flex',alignItems:'center',gap:5,
-              background:aiOpen?'rgba(0,119,182,0.1)':'none',
-              border:`1px solid ${aiOpen?'rgba(0,119,182,0.35)':LINE}`,
-              cursor:'pointer',color:aiOpen?'#0077b6':'#c8c0b8',
-              fontSize:12,fontFamily:F,padding:'5px 10px',borderRadius:6,
-              transition:'all .12s',
-            }}
-            onMouseEnter={e=>{if(!aiOpen){e.currentTarget.style.borderColor='rgba(0,119,182,0.3)';e.currentTarget.style.color='#0077b6'}}}
-            onMouseLeave={e=>{if(!aiOpen){e.currentTarget.style.borderColor=LINE;e.currentTarget.style.color='#c8c0b8'}}}>
-            🧠{!isMobile&&<span style={{marginLeft:2}}>AI</span>}
-          </button>
         </div>
       </div>
 
       {/* ── Body ── */}
       <div style={{display:'flex',flex:1,position:'relative'}}>
         {isMobile&&sideOpen&&(
-          <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.6)',zIndex:39}} onClick={()=>setSideOpen(false)}/>
+          <div style={{position:'fixed',inset:0,background:'rgba(13,17,23,0.55)',zIndex:39}} onClick={()=>setSideOpen(false)}/>
         )}
 
         {/* Sidebar */}
         <nav ref={sideRef} style={{
-          width:240, background:'#0a2540', borderRight:`1px solid rgba(0,0,0,0.18)`,
+          width:232, background:INK, borderRight:'1px solid rgba(0,0,0,0.18)',
           flexShrink:0, overflowY:'auto',
           ...(isMobile
-            ? {position:'fixed',left:0,top:50,bottom:0,zIndex:40,
+            ? {position:'fixed',left:0,top:52,bottom:0,zIndex:40,
                transform:sideOpen?'translateX(0)':'translateX(-100%)',
                transition:'transform 0.22s cubic-bezier(0.4,0,0.2,1)',
-               boxShadow:'4px 0 20px rgba(0,0,0,0.12)'}
-            : {position:'sticky',top:50,height:'calc(100vh - 50px)'}),
+               boxShadow:'4px 0 20px rgba(0,0,0,0.25)'}
+            : {position:'sticky',top:52,height:'calc(100vh - 52px)'}),
         }}>
           <Sidebar/>
         </nav>
 
         {/* Main */}
-        <div style={{flex:1,minWidth:0,background:NAVY,overflowY:'auto',minHeight:'calc(100vh - 50px)'}}>
+        <div style={{flex:1,minWidth:0,background:BG,overflowY:'auto',minHeight:'calc(100vh - 52px)'}}>
           <div key={key} style={{minHeight:'100%',animation:'fadein 0.18s ease'}}>
             {content()}
           </div>
         </div>
 
-        {/* VaultBrain AI panel — third column, no backdrop, no z-index issues */}
+        {/* VaultBrain AI panel */}
         <VaultBrainPanel
           open={aiOpen}
           onClose={()=>setAiOpen(false)}
@@ -378,14 +356,12 @@ export default function CLMHome({ user, nav, initialSection }) {
 
       <style>{`
         @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-        body{font-family:'Inter',system-ui,sans-serif;background:'#f0f4fa'}
-        ::-webkit-scrollbar{width:5px;height:5px}
-        ::-webkit-scrollbar-track{background:'#f0f4fa'}
-        ::-webkit-scrollbar-thumb{background:rgba(240,237,232,0.12);border-radius:99px}
-        ::-webkit-scrollbar-thumb:hover{background:rgba(240,237,232,0.22)}
+        body{font-family:'Inter',system-ui,sans-serif;background:#f0f4fa}
+        ::-webkit-scrollbar{width:6px;height:6px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:rgba(0,119,182,0.22);border-radius:99px}
+        ::-webkit-scrollbar-thumb:hover{background:rgba(0,119,182,0.38)}
       `}</style>
     </div>
   )
 }
-
-
