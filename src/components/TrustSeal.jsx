@@ -49,7 +49,7 @@ export function SiteTrustBadge({ dark = false }) {
   const title  = dark ? '#fff' : '#0d1117'
   const sub    = dark ? 'rgba(255,255,255,0.5)' : '#5a6776'
   return (
-    <a href="/verify" title="Verify a compliance report" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 12, background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: '10px 18px 10px 12px', boxShadow: dark ? 'none' : '0 2px 10px rgba(0,119,182,0.08)', cursor: 'pointer' }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: '10px 18px 10px 12px', boxShadow: dark ? 'none' : '0 2px 10px rgba(0,119,182,0.08)' }}>
       {/* Shield + lock */}
       <svg width="38" height="38" viewBox="0 0 48 48" aria-hidden="true">
         <defs>
@@ -71,8 +71,41 @@ export function SiteTrustBadge({ dark = false }) {
         <div style={{ fontSize: 10, color: sub, marginTop: 2, fontFamily: "'DM Sans','Segoe UI',sans-serif", letterSpacing: '0.02em' }}>
           256-bit TLS encryption · Tamper-evident audit ledger
         </div>
+      </div>
+    </div>
+  )
+}
+
+// VerifyReportBadge — separate footer element: confirm an SSLVault evidence report is genuine
+export function VerifyReportBadge({ dark = false }) {
+  const border = dark ? 'rgba(255,255,255,0.18)' : 'rgba(0,119,182,0.2)'
+  const bg     = dark ? 'rgba(255,255,255,0.05)' : '#fff'
+  const title  = dark ? '#fff' : '#0d1117'
+  const sub    = dark ? 'rgba(255,255,255,0.5)' : '#5a6776'
+  return (
+    <a href="/verify" title="Verify a compliance report"
+      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 12, background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: '10px 18px 10px 12px', boxShadow: dark ? 'none' : '0 2px 10px rgba(0,119,182,0.08)', cursor: 'pointer' }}>
+      {/* Document + check icon */}
+      <svg width="38" height="38" viewBox="0 0 48 48" aria-hidden="true">
+        <defs>
+          <linearGradient id="vrbGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#0077b6"/><stop offset="1" stopColor="#0091d6"/>
+          </linearGradient>
+        </defs>
+        <rect x="10" y="6" width="24" height="32" rx="3" fill="url(#vrbGrad)"/>
+        <rect x="14" y="12" width="16" height="2.4" rx="1.2" fill="rgba(255,255,255,0.85)"/>
+        <rect x="14" y="17" width="12" height="2.4" rx="1.2" fill="rgba(255,255,255,0.6)"/>
+        <rect x="14" y="22" width="14" height="2.4" rx="1.2" fill="rgba(255,255,255,0.6)"/>
+        <circle cx="32" cy="33" r="9" fill="#00a550" stroke={dark ? '#1a1a1a' : '#fff'} strokeWidth="2.5"/>
+        <path d="M28 33 L31 36 L36.5 30" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+      <div>
+        <div style={{ fontSize: 12.5, fontWeight: 800, color: title, letterSpacing: '0.02em', fontFamily: "'DM Sans','Segoe UI',sans-serif" }}>Verify a Compliance Report</div>
+        <div style={{ fontSize: 10, color: sub, marginTop: 2, fontFamily: "'DM Sans','Segoe UI',sans-serif", letterSpacing: '0.02em' }}>
+          Confirm any SSLVault evidence report is genuine &amp; unaltered
+        </div>
         <div style={{ fontSize: 10, color: '#0091d6', marginTop: 2, fontWeight: 700, fontFamily: "'DM Sans','Segoe UI',sans-serif", letterSpacing: '0.02em' }}>
-          Verify a compliance report →
+          easysecurity.in/verify →
         </div>
       </div>
     </a>

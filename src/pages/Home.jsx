@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import TrustSeal, { SiteTrustBadge } from '../components/TrustSeal'
+import TrustSeal, { SiteTrustBadge, VerifyReportBadge } from '../components/TrustSeal'
 import { supabase } from '../lib/supabase'
 
 // ── Resend.com design tokens — pure black/white ────────────────────────
@@ -1106,7 +1106,7 @@ export default function Home({ nav }) {
             </div>
             <span style={{fontSize:13,fontWeight:600,color:'#ffffff'}}>SSLVault</span>
             <span style={{fontSize:11,color:'rgba(255,255,255,0.35)',fontFamily:MONO,marginLeft:4}}>PKI-first CLM · Built by a real PKI engineer</span>
-            <div style={{marginLeft:'auto'}}><SiteTrustBadge dark/></div>
+            <div style={{marginLeft:'auto',display:'flex',gap:12,flexWrap:'wrap',alignItems:'center'}}><VerifyReportBadge dark/><SiteTrustBadge dark/></div>
           </div>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr 1fr':'repeat(auto-fill,minmax(140px,1fr))',gap:24,marginBottom:32}}>
             {[{title:'Product',links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]]},{title:'Support',links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CAA Checker',()=>nav('/caa-check')]]},{title:'Intelligence',links:[['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum',()=>nav('/cab-forum')],['PKI Hub',()=>nav('/pki-hub')]]},{title:'Security',links:[['Verify a Report',()=>nav('/verify')],['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']]},{title:'Protocol',links:[['RFC 8555','#security'],['DNS-01','#security'],['AES-256-GCM','#security']]},{title:'Company',links:[['About',()=>nav('/about')],['Contact',()=>nav('/contact')]]}].map(col=>(
