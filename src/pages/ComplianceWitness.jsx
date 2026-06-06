@@ -474,8 +474,8 @@ export default function ComplianceWitness({ user }) {
     const controls = pkg.controls || {}
     const genDate  = new Date(pkg.generated_at).toLocaleString('en-GB', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
     const esc = s => String(s ?? '').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))
-    const fmtT = iso => { try { return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) } catch { return iso } }
-    const fmtD = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' }) } catch { return iso } }
+    const fmtT = iso => { try { return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) } catch { return iso } }
+    const fmtD = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) } catch { return iso } }
 
     // Verification seal — unique per report: carries this report's integrity-hash snippet
     const hashSnip = (pkg.package_hash || '').substring(0, 8).toUpperCase()
@@ -508,242 +508,304 @@ export default function ComplianceWitness({ user }) {
       </svg>`
 
     const FRAMEWORKS_R = {
-      SOC2: { name:'SOC 2 Type II',      plain:'A widely-used trust audit standard in North America. Proves a company manages customer data securely.' },
-      ISO:  { name:'ISO 27001:2022',     plain:'The international standard for information security management.' },
-      CABF: { name:'CA/B Forum SC-081v3',plain:'Industry rules set by browsers (Google, Apple, Microsoft, Mozilla) governing how SSL certificates must be issued and how long they may live.' },
-      NIS2: { name:'NIS2 (EU Directive)',plain:'EU cybersecurity law requiring companies to keep encryption (including website certificates) working at all times.' },
-      PCI:  { name:'PCI DSS v4',         plain:'Security rules for any business that handles card payments.' },
+      SOC2: { name:'SOC 2 Type II' },
+      ISO:  { name:'ISO 27001:2022' },
+      CABF: { name:'CA/B Forum SC-081v3' },
+      NIS2: { name:'NIS2 (EU Directive)' },
+      PCI:  { name:'PCI DSS v4' },
     }
 
-    // Plain-English description per event type
-    const EVENT_PLAIN = {
-      issued:               { label:'Certificate Issued',          plain:'A new SSL certificate was obtained from the certificate authority and recorded in the ledger.' },
-      renewed:              { label:'Certificate Renewed',         plain:'The certificate was replaced with a fresh one before the old one expired — the website stayed secure with no interruption.' },
-      installed:            { label:'Installed on Server',         plain:'The certificate was placed on the web server, activating the secure padlock (HTTPS) for visitors.' },
-      binding_verified:     { label:'Independent Verification',    plain:'An automated check confirmed the live website is really serving the correct, expected certificate — not a stale or wrong one.' },
-      dcv_validated:        { label:'Domain Ownership Proven',     plain:'Ownership of the domain was proven to the certificate authority before issuance, as industry rules require.' },
-      key_rotated:          { label:'Encryption Key Rotated',      plain:'The private encryption key was replaced with a brand-new one — good security hygiene.' },
-      auto_renew_triggered: { label:'Automatic Renewal Started',   plain:'The system automatically began renewing the certificate ahead of its expiry date, with no human action needed.' },
-      revoked:              { label:'Certificate Revoked',         plain:'The certificate was deliberately invalidated (for example after replacement or decommissioning).' },
-      agent_heartbeat:      { label:'Monitoring Heartbeat',        plain:'The monitoring agent on the server confirmed it is alive and watching.' },
-      expiry_warning:       { label:'Expiry Warning Raised',       plain:'The system flagged that a certificate was approaching its expiry date.' },
-      gap_flagged:          { label:'Gap Detected',                plain:'The system found a weakness in the certificate setup and recorded it for remediation.' },
+    const EVENT_LABEL = {
+      issued:               { label:'Certificate issued',         result:'✓ Issued',   cls:'pg' },
+      renewed:              { label:'Certificate renewed',        result:'✓ Renewed',  cls:'pg' },
+      installed:            { label:'Installed on server',        result:'✓ Active',   cls:'pg' },
+      binding_verified:     { label:'Independent verification',   result:'✓ Pass',     cls:'pg' },
+      dcv_validated:        { label:'Domain ownership proven (DCV)', result:'✓ Pass',  cls:'pg' },
+      key_rotated:          { label:'Encryption key rotated',     result:'✓ Done',     cls:'pg' },
+      auto_renew_triggered: { label:'Automatic renewal started',  result:'✓ Started',  cls:'pg' },
+      revoked:              { label:'Certificate revoked',        result:'Revoked',    cls:'px' },
+      agent_heartbeat:      { label:'Monitoring heartbeat',       result:'✓ Alive',    cls:'pg' },
+      expiry_warning:       { label:'Expiry warning raised',      result:'⚠ Warning',  cls:'pa' },
+      gap_flagged:          { label:'Gap detected',               result:'⚠ Flagged',  cls:'pa' },
     }
+    const SEV_PLAIN = { critical:'Critical — fix immediately', high:'High — fix soon', medium:'Medium — plan to fix', low:'Low — minor' }
+    const sevCls = s => s === 'critical' ? 'pr' : s === 'high' ? 'pa' : 'px'
 
-    const SEV_PLAIN = { critical:'Fix immediately', high:'Fix soon', medium:'Plan to fix', low:'Minor — good to fix' }
-
-    // ── Executive summary stats ──
+    // ── Aggregate stats ──
     const renewCount  = events.filter(e => e.event_type === 'renewed' || e.event_type === 'auto_renew_triggered').length
     const verifyCount = events.filter(e => e.event_type === 'binding_verified').length
     const totalGaps   = dossiers.reduce((s,d)=>s+(d.gaps?.length||0),0)
     const critGaps    = dossiers.reduce((s,d)=>s+(d.gaps?.filter(g=>g.severity==='critical').length||0),0)
-    const allCtrls    = [...new Set(dossiers.flatMap(d=>[...(d.soc2_controls_met||[]),...(d.iso27001_controls_met||[]),...(d.cabf_controls_met||[]),...(d.nis2_controls_met||[])]))]
+    const allCtrls    = [...new Set(dossiers.flatMap(d=>[...(d.soc2_controls_met||[]),...(d.iso27001_controls_met||[]),...(d.cabf_controls_met||[]),...(d.nis2_controls_met||[]),...(d.pci_controls_met||[])]))]
     const earliest    = dossiers.map(d=>d.first_witnessed_at).filter(Boolean).sort()[0]
     const avgAudit    = dossiers.length ? Math.round(dossiers.reduce((s,d)=>s+(d.audit_score||0),0)/dossiers.length) : 0
+    const withCont    = dossiers.filter(d => d.continuity_pct !== null && d.continuity_pct !== undefined)
+    const avgCont     = withCont.length ? Math.round((withCont.reduce((s,d)=>s+Number(d.continuity_pct||0),0)/withCont.length)*10)/10 : null
+    const incidents   = dossiers.reduce((s,d)=>s+(d.expiry_incidents||0),0)
+    const reportId    = `CW-${new Date(pkg.generated_at).toISOString().slice(0,10).replace(/-/g,'')}-${hashSnip}`
     const verdict     = critGaps > 0
-      ? 'Attention required: one or more critical gaps must be fixed before this evidence fully satisfies an audit.'
+      ? { cls:'verdict-red',   badge:'✕ ATTENTION REQUIRED', text:'One or more critical gaps must be fixed before this evidence fully satisfies an audit. See §6.' }
       : totalGaps > 0
-        ? 'Overall healthy: certificates are managed continuously; a small number of non-critical improvements are recommended below.'
-        : 'Fully healthy: certificates are continuously managed, renewed automatically, and independently verified, with no open gaps.'
+        ? { cls:'verdict-amber', badge:'⚠ OVERALL HEALTHY',  text:'Certificates managed continuously; non-critical improvements are disclosed in §6.' }
+        : { cls:'verdict-green', badge:'✓ FULLY HEALTHY',    text:'Certificates continuously managed, renewed automatically, independently verified. No coverage gaps in observed period.' }
 
-    // ── Per-domain sections ──
-    const dossierSections = dossiers.map(d => {
-      const gaps = d.gaps || []
-      const dCrit = gaps.filter(g=>g.severity==='critical').length
-      const statusLine = dCrit > 0
-        ? `<span class="pill pill-red">Needs attention</span>`
-        : gaps.length > 0
-          ? `<span class="pill pill-amber">Healthy, minor improvements suggested</span>`
-          : `<span class="pill pill-green">Fully healthy</span>`
-
-      const fwRows = [
-        ['SOC2', d.soc2_controls_met||[]], ['ISO', d.iso27001_controls_met||[]],
-        ['CABF', d.cabf_controls_met||[]], ['NIS2', d.nis2_controls_met||[]],
-      ].map(([fw, ctrls]) => `
-        <tr>
-          <td class="fw">
-            <strong>${FRAMEWORKS_R[fw].name}</strong>
-            <div class="fw-plain">${FRAMEWORKS_R[fw].plain}</div>
-          </td>
-          <td class="fw-status">${ctrls.length === 0
-            ? '<span class="pill pill-grey">No evidence yet</span>'
-            : `<span class="pill pill-green">✓ ${ctrls.length} requirement${ctrls.length!==1?'s':''} evidenced</span>`}</td>
-          <td>${ctrls.length === 0 ? '<em class="muted">—</em>' : ctrls.map(c => `<div class="ctrl"><span class="ctrl-id">${esc(c)}</span> ${esc(controls[c]||'')}</div>`).join('')}</td>
-        </tr>`).join('')
-
-      const gapRows = gaps.map(g => `
-        <div class="gap gap-${esc(g.severity)}">
-          <div class="gap-head">
-            <strong>${esc(g.control)}</strong>
-            <span class="sev sev-${esc(g.severity)}">${SEV_PLAIN[g.severity]||esc(g.severity)}</span>
-          </div>
-          <div class="gap-msg"><strong>What this means:</strong> ${esc(g.message)}</div>
-          <div class="gap-fix"><strong>How to fix:</strong> ${esc(g.action)}</div>
-          <div class="gap-fw">Relevant standard: ${esc(g.framework)}</div>
-        </div>`).join('')
-
-      return `
-        <div class="dossier">
-          <h2>${esc(d.domain)} ${statusLine}</h2>
-          <p class="dossier-intro">
-            This domain has been continuously monitored since <strong>${fmtD(d.first_witnessed_at)}</strong>.
-            Its evidence completeness score is <strong>${d.audit_score||0}/100</strong> and its operational
-            readiness score is <strong>${d.readiness_score||0}/100</strong> (scores of 80+ are considered strong).
-          </p>
-          ${(() => {
-            const rows = []
-            if (d.continuity_pct !== null && d.continuity_pct !== undefined)
-              rows.push(`<tr><td class="rl-k">Coverage continuity</td><td class="rl-v"><strong>${d.continuity_pct}%</strong> of observed period covered by a valid certificate · ${d.expiry_incidents||0} expiry incident${(d.expiry_incidents||0)!==1?'s':''}</td></tr>`)
-            if (d.avg_renewal_margin_days !== null && d.avg_renewal_margin_days !== undefined)
-              rows.push(`<tr><td class="rl-k">Renewal punctuality</td><td class="rl-v">Renewals completed on average <strong>${d.avg_renewal_margin_days} days before expiry</strong> (worst case ${d.worst_renewal_margin_days} days) across ${d.renewal_count||0} renewal${(d.renewal_count||0)!==1?'s':''} — the control operates with safety margin, not at the deadline</td></tr>`)
-            if (d.crypto_summary)
-              rows.push(`<tr><td class="rl-k">Cryptographic strength</td><td class="rl-v"><strong>${esc(d.crypto_summary.key_algorithm)}-${d.crypto_summary.key_size_bits}</strong> key with ${esc(d.crypto_summary.signature)}${d.crypto_summary.tls_grade ? `, TLS grade <strong>${esc(d.crypto_summary.tls_grade)}</strong>` : ''} · issued by ${esc(d.crypto_summary.issuer)}${d.crypto_summary.source === 'issuance_profile' ? ' (per CA issuance profile)' : ''}</td></tr>`)
-            if (d.pqc_summary)
-              rows.push(`<tr><td class="rl-k">Post-quantum readiness</td><td class="rl-v">${esc(d.pqc_summary.note)}</td></tr>`)
-            if (d.ct_check && d.ct_check.status === 'ok')
-              rows.push(`<tr><td class="rl-k">Public CT log check</td><td class="rl-v">${d.ct_check.verdict === 'no_shadow_certs' ? `<strong>No unauthorized certificates found.</strong> All ${d.ct_check.total_ct_entries} recent entries in public Certificate Transparency logs for this domain match certificates known to SSLVault or trusted issuers.` : `<strong>${d.ct_check.unknown_entries} unknown issuance${d.ct_check.unknown_entries!==1?'s':''} found</strong> in public CT logs — review recommended.`}</td></tr>`)
-            if (rows.length === 0) return ''
-            return `<h3>Certificate reliability &amp; cryptography</h3><table class="rl-table"><tbody>${rows.join('')}</tbody></table>`
-          })()}
-          <h3>Which compliance standards does this evidence support?</h3>
-          <table class="ctrl-table">
-            <thead><tr><th style="width:240px">Standard</th><th style="width:170px">Status</th><th>Specific requirements evidenced</th></tr></thead>
-            <tbody>${fwRows}</tbody>
-          </table>
-          ${gaps.length > 0
-            ? `<h3>Open items (${gaps.length})</h3><p class="muted-p">These are improvements the system has identified. They are disclosed here for transparency — a report that only shows green flags is less credible to an auditor.</p>${gapRows}`
-            : '<p class="allclear">✓ No open items — every automated check on this domain currently passes.</p>'}
-        </div>`
+    // ── §1 Certificate inventory rows ──
+    const invRows = dossiers.map(d => {
+      const c = d.crypto_summary || {}
+      const dCrit = (d.gaps||[]).filter(g=>g.severity==='critical').length
+      const st = dCrit > 0 ? '<span class="pill pr">Needs attention</span>'
+        : (d.gaps||[]).length > 0 ? '<span class="pill pa">Minor items open</span>'
+        : '<span class="pill pg">Fully healthy</span>'
+      return `<tr>
+        <td class="mono">${esc(d.domain)}</td>
+        <td>${c.issuer ? esc(c.issuer) : '<em class="muted">—</em>'}</td>
+        <td class="mono">${c.key_algorithm ? `${esc(c.key_algorithm)}-${c.key_size_bits||''}` : '<em class="muted">—</em>'}</td>
+        <td class="mono">${c.signature ? esc(c.signature) : '<em class="muted">—</em>'}</td>
+        <td>${c.tls_grade ? `<span class="pill pg">${esc(c.tls_grade)}</span>` : '<em class="muted">—</em>'}</td>
+        <td>${d.first_witnessed_at ? fmtD(d.first_witnessed_at) : '—'}</td>
+        <td class="num"><strong>${d.audit_score||0}</strong>/100</td>
+        <td class="num"><strong>${d.readiness_score||0}</strong>/100</td>
+        <td>${st}</td>
+      </tr>`
     }).join('')
 
-    // ── Event ledger rows ──
-    const eventRows = events.map(ev => {
-      const ep = EVENT_PLAIN[ev.event_type] || { label: ev.event_type, plain:'' }
-      return `
-      <tr>
-        <td class="ts">${fmtT(ev.event_ts)}</td>
-        <td><strong>${esc(ep.label)}</strong><div class="ev-plain">${esc(ep.plain)}</div></td>
+    // ── §2 Coverage & renewal rows ──
+    const covRows = dossiers.map(d => {
+      const cont = (d.continuity_pct !== null && d.continuity_pct !== undefined)
+        ? `<div class="barbox"><span class="bar" style="width:${Math.max(6, Math.round(Number(d.continuity_pct)*0.9))}px"></span><strong>${d.continuity_pct}%</strong></div>`
+        : '<em class="muted">—</em>'
+      const margin = (d.avg_renewal_margin_days !== null && d.avg_renewal_margin_days !== undefined) ? `${d.avg_renewal_margin_days} d` : '—'
+      const worst  = (d.worst_renewal_margin_days !== null && d.worst_renewal_margin_days !== undefined) ? `${d.worst_renewal_margin_days} d` : '—'
+      return `<tr>
+        <td class="mono">${esc(d.domain)}</td>
+        <td>${cont}</td>
+        <td class="num">${d.expiry_incidents||0}</td>
+        <td class="num">${d.renewal_count||0}</td>
+        <td class="num">${margin}</td>
+        <td class="num">${worst}</td>
+        <td class="ok">✓ Operating</td>
+      </tr>`
+    }).join('')
+
+    // ── §3 Crypto & PQC rows ──
+    const cryptoRows = dossiers.map(d => {
+      const c = d.crypto_summary || {}
+      return `<tr>
+        <td class="mono">${esc(d.domain)}</td>
+        <td>${c.key_algorithm ? esc(c.key_algorithm) : '<em class="muted">—</em>'}</td>
+        <td class="num">${c.key_size_bits || '—'}</td>
+        <td class="mono">${c.signature ? esc(c.signature) : '—'}</td>
+        <td>${c.tls_grade ? `<span class="pill pg">${esc(c.tls_grade)}</span>` : '—'}</td>
+        <td>${d.pqc_summary ? `<span class="pill pa">${esc(d.pqc_summary.note)}</span>` : '<em class="muted">Not assessed</em>'}</td>
+      </tr>`
+    }).join('')
+
+    // ── §4 Compliance matrix ──
+    const FW_FIELDS = [
+      ['SOC2', d => d.soc2_controls_met||[]],
+      ['ISO',  d => d.iso27001_controls_met||[]],
+      ['CABF', d => d.cabf_controls_met||[]],
+      ['NIS2', d => d.nis2_controls_met||[]],
+      ['PCI',  d => d.pci_controls_met||[]],
+    ].filter(([fw, get]) => fw !== 'PCI' || dossiers.some(d => get(d).length > 0))
+    const matrixHead = dossiers.map(d => `<th>${esc(d.domain)}</th>`).join('')
+    const matrixRows = FW_FIELDS.map(([fw, get]) => {
+      const ids = [...new Set(dossiers.flatMap(get))]
+      const cells = dossiers.map(d => {
+        const n = get(d).length
+        return `<td>${n > 0 ? `<span class="pill pg">✓ ${n}</span>` : '<span class="pill px">—</span>'}</td>`
+      }).join('')
+      const chips = ids.length
+        ? ids.map(c => `<span class="ctrl-id" title="${esc(controls[c]||'')}">${esc(c)}</span>`).join('')
+        : '<em class="muted">No evidence yet</em>'
+      return `<tr><td><strong>${FRAMEWORKS_R[fw].name}</strong></td>${cells}<td>${chips}</td></tr>`
+    }).join('')
+
+    // ── §5 Verification & CT rows ──
+    const verRows = dossiers.map(d => {
+      const ver = events.filter(e => e.domain === d.domain && e.event_type === 'binding_verified')
+      const last = ver.map(e => e.event_ts).sort().slice(-1)[0]
+      const ct = d.ct_check
+      const ctCells = (ct && ct.status === 'ok')
+        ? `<td class="num">${ct.total_ct_entries ?? '—'}</td><td>${ct.verdict === 'no_shadow_certs'
+            ? '<span class="pill pg">No unauthorized certs</span>'
+            : `<span class="pill pa">${ct.unknown_entries} unknown issuance${ct.unknown_entries!==1?'s':''} — review</span>`}</td>`
+        : '<td class="num">—</td><td><em class="muted">Not checked</em></td>'
+      return `<tr>
+        <td class="mono">${esc(d.domain)}</td>
+        <td class="num">${ver.length}</td>
+        <td>${last ? fmtT(last) : '<em class="muted">—</em>'}</td>
+        <td>${ver.length ? '<span class="pill pg">✓ Match</span>' : '<em class="muted">—</em>'}</td>
+        ${ctCells}
+      </tr>`
+    }).join('')
+
+    // ── §6 Gap register ──
+    const gapList = dossiers.flatMap(d => (d.gaps||[]).map(g => ({ ...g, domain: d.domain })))
+    const gapRows = gapList.length === 0
+      ? `<tr><td colspan="7" style="text-align:center;color:#1a7d43;font-weight:600;background:#f0faf4">✓ No open items — every automated check currently passes on all domains.</td></tr>`
+      : gapList.map((g, i) => `<tr>
+          <td class="num">${i+1}</td>
+          <td><span class="pill ${sevCls(g.severity)}">${SEV_PLAIN[g.severity]||esc(g.severity)}</span></td>
+          <td class="mono">${esc(g.domain)}</td>
+          <td><strong>${esc(g.control)}</strong></td>
+          <td>${esc(g.message)}</td>
+          <td>${esc(g.action)}</td>
+          <td>${esc(g.framework)}</td>
+        </tr>`).join('')
+
+    // ── Appendix A: event ledger ──
+    const eventRows = events.map((ev, i) => {
+      const ep = EVENT_LABEL[ev.event_type] || { label: ev.event_type, result:'—', cls:'px' }
+      return `<tr>
+        <td class="num">${events.length - i}</td>
+        <td class="mono ts">${fmtT(ev.event_ts)}</td>
+        <td>${esc(ep.label)}</td>
         <td class="mono">${esc(ev.domain)}</td>
+        <td><span class="pill ${ep.cls}">${ep.result}</span></td>
         <td class="hash" title="${esc(ev.event_hash||'')}">${esc((ev.event_hash||'').substring(0,12))}…</td>
       </tr>`}).join('')
+
+    const standardsCovered = FW_FIELDS.map(([fw]) => FRAMEWORKS_R[fw].name).join(' · ')
 
     return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Certificate Compliance Evidence Report — SSLVault</title>
 <style>
-  body { font-family: 'Segoe UI', system-ui, sans-serif; color: #1a232e; max-width: 920px; margin: 0 auto; padding: 40px 32px; line-height: 1.65; }
-  .header { border-bottom: 3px solid #0077b6; padding-bottom: 20px; margin-bottom: 24px; }
-  .header h1 { font-size: 26px; margin: 0 0 6px; color: #0077b6; }
-  .header .sub { font-size: 13px; color: #5a6776; }
-  .verdict { border-radius: 12px; padding: 18px 22px; margin-bottom: 24px; font-size: 14px; border: 1px solid; }
-  .verdict-green { background: #f0faf4; border-color: #bfe5cd; } .verdict-amber { background: #fdf8ec; border-color: #ecd9a8; } .verdict-red { background: #fdf1ef; border-color: #eccac3; }
-  .verdict h2 { margin: 0 0 6px; font-size: 16px; border: none; padding: 0; font-family: inherit; }
-  .summary { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap: 12px; margin-bottom: 28px; }
-  .summary .stat { background: #f4f8fc; border: 1px solid #d8e6f2; border-radius: 10px; padding: 14px 16px; }
-  .summary .stat strong { display: block; font-size: 24px; color: #0077b6; line-height: 1.2; }
-  .summary .stat span { font-size: 11px; color: #5a6776; }
-  .howto { background: #f4f8fc; border: 1px solid #d8e6f2; border-radius: 12px; padding: 18px 22px; margin-bottom: 30px; font-size: 13px; }
-  .howto h2 { margin: 0 0 10px; font-size: 15px; color: #0077b6; border: none; padding: 0; font-family: inherit; }
-  .howto p { margin: 0 0 8px; }
-  h2 { font-size: 19px; color: #0077b6; border-bottom: 1px solid #d8e6f2; padding-bottom: 7px; margin-top: 40px; }
-  h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #5a6776; margin: 22px 0 8px; }
-  .dossier-intro { font-size: 13px; }
-  .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 11px; border-radius: 12px; vertical-align: middle; }
-  .pill-green { background: #e3f5ea; color: #1a7d43; } .pill-amber { background: #faf0d8; color: #8a6510; } .pill-red { background: #fae3df; color: #b03425; } .pill-grey { background: #eef1f4; color: #5a6776; }
-  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  th { text-align: left; padding: 9px 11px; background: #f4f8fc; border-bottom: 2px solid #d8e6f2; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #5a6776; }
-  td { padding: 10px 11px; border-bottom: 1px solid #e8eef4; vertical-align: top; }
-  td.fw strong { color: #0d1117; } .fw-plain { font-size: 11px; color: #5a6776; margin-top: 3px; line-height: 1.5; }
-  .ctrl { margin-bottom: 5px; font-size: 12px; } .ctrl-id { font-family: monospace; font-size: 10px; background: #eef4f9; border: 1px solid #d8e6f2; border-radius: 4px; padding: 1px 6px; margin-right: 5px; color: #0077b6; }
-  .muted { color: #98a4b0; } .muted-p { font-size: 12px; color: #5a6776; margin: 4px 0 12px; }
-  .gap { border-radius: 10px; padding: 13px 17px; margin-bottom: 10px; border: 1px solid; font-size: 12.5px; }
-  .gap-critical { background: #fdf1ef; border-color: #eccac3; } .gap-high { background: #fdf8ec; border-color: #ecd9a8; } .gap-medium, .gap-low { background: #f0f6fb; border-color: #cfe0ee; }
-  .sev { font-size: 10px; font-weight: 800; padding: 2px 10px; border-radius: 10px; margin-left: 8px; }
-  .sev-critical { background: #f6c9c1; color: #8c2517; } .sev-high { background: #f2dfae; color: #6e500c; } .sev-medium, .sev-low { background: #cfe3f3; color: #1d5d8a; }
-  .gap-msg, .gap-fix { margin-top: 5px; } .gap-fw { font-size: 11px; color: #5a6776; margin-top: 5px; }
-  .allclear { color: #1a7d43; font-weight: 600; font-size: 13px; background: #e3f5ea; border: 1px solid #bfe5cd; border-radius: 10px; padding: 11px 16px; }
-  .rl-table td { font-size: 12.5px; } .rl-table .rl-k { font-weight: 700; color: #0077b6; width: 190px; white-space: nowrap; } .rl-table .rl-v { color: #3d4a58; line-height: 1.6; }
-  td.ts { white-space: nowrap; width: 125px; color: #5a6776; font-size: 11.5px; } td.mono { font-family: monospace; font-size: 11px; width: 160px; }
-  .ev-plain { font-size: 11px; color: #5a6776; margin-top: 2px; line-height: 1.5; }
-  td.hash { font-family: monospace; font-size: 10px; color: #98a4b0; width: 110px; }
-  .glossary dt { font-weight: 700; font-size: 12.5px; margin-top: 12px; color: #0d1117; }
-  .glossary dd { margin: 2px 0 0 0; font-size: 12.5px; color: #3d4a58; }
-  .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #d8e6f2; font-size: 11px; color: #6b7886; }
-  .pkg-hash { font-family: monospace; font-size: 10px; word-break: break-all; background: #f4f8fc; border: 1px solid #d8e6f2; padding: 9px 13px; border-radius: 8px; margin-top: 6px; }
-  @media print { body { padding: 14px } .verdict, .summary .stat, .howto { break-inside: avoid } }
+  :root { --blue:#0077b6; --ink:#0d1117; --mut:#5a6776; --bd2:#d8e6f2; --bg:#f4f8fc; }
+  body { font-family:'Segoe UI',system-ui,sans-serif; color:#1a232e; max-width:980px; margin:0 auto; padding:36px 32px; line-height:1.5; font-size:13px; }
+  .header { border-bottom:3px solid var(--blue); padding-bottom:18px; margin-bottom:18px; display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+  .header h1 { font-size:25px; margin:0 0 4px; color:var(--blue); }
+  .header .sub { font-size:12px; color:var(--mut); }
+  .meta { width:100%; border-collapse:collapse; margin-bottom:22px; font-size:12px; }
+  .meta td { border:1px solid var(--bd2); padding:7px 12px; }
+  .meta td.k { background:var(--bg); font-weight:700; color:var(--mut); width:150px; text-transform:uppercase; font-size:10px; letter-spacing:.05em; white-space:nowrap; }
+  .meta td.v { font-weight:600; color:var(--ink); }
+  .verdict { display:flex; align-items:center; flex-wrap:wrap; gap:12px; border-radius:10px; padding:12px 18px; margin-bottom:18px; font-size:13.5px; font-weight:700; border:1px solid; }
+  .verdict-green { background:#f0faf4; border-color:#bfe5cd; color:#1a7d43; }
+  .verdict-amber { background:#fdf8ec; border-color:#ecd9a8; color:#8a6510; }
+  .verdict-red   { background:#fdf1ef; border-color:#eccac3; color:#b03425; }
+  .verdict .code { font-family:monospace; font-size:11px; background:#fff; border:1px solid currentColor; border-radius:6px; padding:2px 9px; }
+  .verdict .vt { font-weight:500; color:#3d4a58; }
+  .summary { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:28px; }
+  .stat { background:var(--bg); border:1px solid var(--bd2); border-radius:10px; padding:12px 14px; }
+  .stat strong { display:block; font-size:22px; color:var(--blue); line-height:1.2; }
+  .stat span { font-size:10.5px; color:var(--mut); }
+  h2 { font-size:16px; color:var(--blue); border-bottom:1px solid var(--bd2); padding-bottom:6px; margin:34px 0 4px; }
+  h2 .sec { font-family:monospace; font-size:11px; color:var(--mut); font-weight:600; margin-right:8px; }
+  .secnote { font-size:11.5px; color:var(--mut); margin:2px 0 12px; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th { text-align:left; padding:8px 10px; background:var(--bg); border:1px solid var(--bd2); font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--mut); }
+  td { padding:8px 10px; border:1px solid #e8eef4; vertical-align:top; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .mono { font-family:monospace; font-size:11px; }
+  .pill { display:inline-block; font-size:10px; font-weight:700; padding:1px 9px; border-radius:10px; white-space:nowrap; }
+  .pg { background:#e3f5ea; color:#1a7d43; } .pa { background:#faf0d8; color:#8a6510; } .pr { background:#fae3df; color:#b03425; } .px { background:#eef1f4; color:var(--mut); }
+  .ok { color:#1a7d43; font-weight:700; }
+  .bar { display:inline-block; height:8px; border-radius:4px; background:linear-gradient(90deg,#0091d6,var(--blue)); vertical-align:middle; }
+  .barbox { display:flex; align-items:center; gap:8px; }
+  .ctrl-id { font-family:monospace; font-size:10px; background:#eef4f9; border:1px solid var(--bd2); border-radius:4px; padding:0 5px; color:var(--blue); margin-right:3px; white-space:nowrap; display:inline-block; margin-bottom:2px; }
+  .muted { color:#98a4b0; }
+  td.ts { white-space:nowrap; color:var(--mut); font-size:11px; }
+  td.hash { font-family:monospace; font-size:10px; color:#98a4b0; width:110px; }
+  .glos td { font-size:11.5px; padding:6px 10px; }
+  .glos td:first-child { font-weight:700; white-space:nowrap; width:210px; }
+  .footer { margin-top:36px; padding-top:14px; border-top:1px solid var(--bd2); font-size:11px; color:#6b7886; display:flex; gap:18px; align-items:flex-start; }
+  .pkg-hash { font-family:monospace; font-size:10px; word-break:break-all; background:var(--bg); border:1px solid var(--bd2); padding:8px 12px; border-radius:8px; margin-top:5px; }
+  @media print { body { padding:14px } .stat, table { break-inside:avoid } }
 </style></head><body>
 
-  <div class="header" style="display:flex;align-items:center;justify-content:space-between;gap:20px">
+  <div class="header">
     <div>
       <h1>Certificate Compliance Evidence Report</h1>
-      <div class="sub">Prepared automatically by SSLVault Compliance Witness · ${genDate} · Account: ${esc(pkg.account_email)}</div>
+      <div class="sub">Prepared automatically by SSLVault Compliance Witness</div>
     </div>
-    <div style="flex-shrink:0">${sealSVG(124)}</div>
+    <div style="flex-shrink:0">${sealSVG(110)}</div>
   </div>
 
-  <!-- EXECUTIVE SUMMARY -->
-  <div class="verdict ${critGaps>0?'verdict-red':totalGaps>0?'verdict-amber':'verdict-green'}">
-    <h2>Executive Summary</h2>
-    <p style="margin:0 0 8px">
-      This report documents how the SSL/TLS certificates protecting <strong>${dossiers.length} domain${dossiers.length!==1?'s':''}</strong>
-      have been managed${earliest ? ` since <strong>${fmtD(earliest)}</strong>` : ''}. SSL/TLS certificates are what make a
-      website show the secure padlock — if one expires, the site shows security errors and visitors are turned away.
-    </p>
-    <p style="margin:0 0 8px">
-      During the observation period, the system recorded <strong>${events.length} lifecycle events</strong>, including
-      <strong>${renewCount} renewal action${renewCount!==1?'s':''}</strong> and <strong>${verifyCount} independent verification${verifyCount!==1?'s':''}</strong>
-      that the live websites were serving the correct certificates. Evidence has been collected for
-      <strong>${allCtrls.length} specific requirements</strong> across five compliance standards.
-    </p>
-    ${(() => {
-      const withCont = dossiers.filter(d => d.continuity_pct !== null && d.continuity_pct !== undefined)
-      if (withCont.length === 0) return ''
-      const avgCont = Math.round((withCont.reduce((s,d)=>s+Number(d.continuity_pct||0),0)/withCont.length)*10)/10
-      const incidents = dossiers.reduce((s,d)=>s+(d.expiry_incidents||0),0)
-      return `<p style="margin:0 0 8px"><strong>Coverage continuity: ${avgCont}%</strong> of the observed period had a valid, non-expired certificate in place, with <strong>${incidents} expiry incident${incidents!==1?'s':''}</strong>. ${incidents===0?'No visitor ever encountered a certificate error caused by expiry.':''}</p>`
-    })()}
-    <p style="margin:0"><strong>Conclusion:</strong> ${verdict}</p>
-  </div>
+  <!-- REPORT METADATA -->
+  <table class="meta"><tbody>
+    <tr><td class="k">Report ID</td><td class="v mono">${reportId}</td><td class="k">Generated</td><td class="v">${genDate}</td></tr>
+    <tr><td class="k">Account</td><td class="v">${esc(pkg.account_email)}</td><td class="k">Observation period</td><td class="v">${earliest ? `${fmtD(earliest)} → ${fmtD(pkg.generated_at)}` : fmtD(pkg.generated_at)}</td></tr>
+    <tr><td class="k">Scope</td><td class="v">${dossiers.length} domain${dossiers.length!==1?'s':''} · ${events.length} ledger events · ${verifyCount} independent verification${verifyCount!==1?'s':''}</td><td class="k">Standards covered</td><td class="v">${standardsCovered}</td></tr>
+    <tr><td class="k">Evidence basis</td><td class="v">Append-only hash-chained ledger</td><td class="k">Integrity code</td><td class="v mono">${hashSnip}… (full SHA-256 in footer)</td></tr>
+  </tbody></table>
 
+  <!-- VERDICT -->
+  <div class="verdict ${verdict.cls}">${verdict.badge} <span class="code">${critGaps} CRITICAL · ${totalGaps} OPEN ITEM${totalGaps!==1?'S':''}</span> <span class="vt">${verdict.text}</span></div>
+
+  <!-- KPI GRID -->
   <div class="summary">
-    <div class="stat"><strong>${dossiers.length}</strong><span>Domains under continuous management</span></div>
+    <div class="stat"><strong>${dossiers.length}</strong><span>Domains under management</span></div>
     <div class="stat"><strong>${events.length}</strong><span>Recorded lifecycle events</span></div>
-    <div class="stat"><strong>${renewCount}</strong><span>Renewal actions (no expiry incidents)</span></div>
-    <div class="stat"><strong>${allCtrls.length}</strong><span>Compliance requirements evidenced</span></div>
+    <div class="stat"><strong>${verifyCount}</strong><span>Independent verifications</span></div>
+    <div class="stat"><strong>${allCtrls.length}</strong><span>Requirements evidenced</span></div>
+    <div class="stat"><strong>${avgCont !== null ? avgCont + '%' : '—'}</strong><span>Coverage continuity</span></div>
+    <div class="stat"><strong>${incidents}</strong><span>Expiry incidents</span></div>
+    <div class="stat"><strong>${avgAudit}<span style="font-size:13px;color:#5a6776">/100</span></strong><span>Avg evidence score</span></div>
     <div class="stat"><strong>${totalGaps}</strong><span>Open items disclosed</span></div>
-    <div class="stat"><strong>${avgAudit}/100</strong><span>Average evidence score</span></div>
   </div>
 
-  <!-- HOW TO READ -->
-  <div class="howto">
-    <h2>How to read this report</h2>
-    <p><strong>If you are an auditor or manager:</strong> the Executive Summary above and the per-domain sections below are written in plain language. Each domain section tells you which compliance standards the evidence supports and discloses any open items. You do not need to read the technical columns.</p>
-    <p><strong>If you are a technical reviewer:</strong> the Event Ledger at the end lists every recorded event with its tamper-evidence hash. The full machine-readable data, including the complete hash chain, is available as a separate JSON export.</p>
-    <p><strong>Why you can trust this data:</strong> every event is written to an append-only ledger the moment it happens. Each entry is mathematically linked ("hash-chained") to the previous one — like numbered, glued pages in a notary's logbook. If anyone altered a past record, the chain would visibly break. The integrity code at the end of this report lets anyone verify the report itself was not edited after generation.</p>
-  </div>
+  <!-- 1. CERTIFICATE INVENTORY -->
+  <h2><span class="sec">§1</span>Certificate Inventory</h2>
+  <div class="secnote">All certificates under continuous management at report generation.</div>
+  <table><thead><tr>
+    <th>Domain</th><th>Issuer (CA)</th><th>Key</th><th>Signature</th><th>TLS grade</th><th>Monitored since</th><th class="num">Evidence</th><th class="num">Readiness</th><th>Status</th>
+  </tr></thead><tbody>${invRows}</tbody></table>
 
-  <!-- PER-DOMAIN DOSSIERS -->
-  ${dossierSections}
+  <!-- 2. COVERAGE & RENEWAL -->
+  <h2><span class="sec">§2</span>Coverage Continuity &amp; Renewal Performance</h2>
+  <div class="secnote">Continuity = % of observed period with a valid, non-expired certificate in place. Margin = days before expiry at which renewal completed.</div>
+  <table><thead><tr>
+    <th>Domain</th><th>Continuity</th><th class="num">Expiry incidents</th><th class="num">Renewals</th><th class="num">Avg margin</th><th class="num">Worst margin</th><th>Control verdict</th>
+  </tr></thead><tbody>${covRows}</tbody></table>
 
-  <!-- EVENT LEDGER -->
-  <h2>Appendix A — Event Ledger (full history)</h2>
-  <p class="muted-p">Every certificate event recorded by the system, newest first. The right-hand column shows the first characters of each entry's tamper-evidence code.</p>
-  <table><thead><tr><th>Date &amp; time</th><th>What happened</th><th>Domain</th><th>Integrity code</th></tr></thead><tbody>${eventRows}</tbody></table>
+  <!-- 3. CRYPTOGRAPHY & PQC -->
+  <h2><span class="sec">§3</span>Cryptography &amp; Post-Quantum Readiness</h2>
+  <table><thead><tr>
+    <th>Domain</th><th>Key algorithm</th><th class="num">Key size</th><th>Signature</th><th>TLS grade</th><th>PQC status</th>
+  </tr></thead><tbody>${cryptoRows}</tbody></table>
 
-  <!-- GLOSSARY -->
-  <h2>Appendix B — Glossary</h2>
-  <dl class="glossary">
-    <dt>SSL/TLS certificate</dt><dd>A small digital file that proves a website's identity and switches on encryption (the padlock in the browser). Certificates expire and must be renewed regularly.</dd>
-    <dt>Renewal</dt><dd>Replacing a certificate with a fresh one before the old one expires. If renewal is missed, the website shows security warnings to every visitor.</dd>
-    <dt>Auto-renewal</dt><dd>Renewal performed by software on a schedule, removing the risk of a person forgetting. Auditors view automation as a stronger control than manual processes.</dd>
-    <dt>Certificate authority (CA)</dt><dd>A trusted organisation (here: RapidSSL/DigiCert) that issues certificates after verifying domain ownership.</dd>
-    <dt>Domain control validation (DCV)</dt><dd>The proof-of-ownership step a certificate authority requires before issuing a certificate.</dd>
-    <dt>Independent verification (CertBind)</dt><dd>An automated outside-in check that the live website really serves the expected certificate — confirming the control works in practice, not just on paper.</dd>
-    <dt>Hash chain</dt><dd>A tamper-evidence technique: each ledger entry contains a fingerprint of the previous entry, so past records cannot be silently altered.</dd>
-    <dt>Evidence score</dt><dd>0–100 measure of how completely this system has documented compliance requirements. 80+ is strong.</dd>
-    <dt>Readiness score</dt><dd>0–100 measure of how well the domain is set up operationally (auto-renewal on, monitoring active, keys protected). 80+ is strong.</dd>
-  </dl>
+  <!-- 4. COMPLIANCE MATRIX -->
+  <h2><span class="sec">§4</span>Compliance Requirements Matrix</h2>
+  <div class="secnote">Specific requirements for which ledger evidence exists, per standard and domain. ✓ n = number of requirements evidenced. Hover a requirement ID for its description.</div>
+  <table><thead><tr>
+    <th style="width:185px">Standard</th>${matrixHead}<th>Requirement IDs evidenced</th>
+  </tr></thead><tbody>${matrixRows}</tbody></table>
 
-  <div class="footer" style="display:flex;gap:20px;align-items:flex-start">
+  <!-- 5. VERIFICATION EVIDENCE -->
+  <h2><span class="sec">§5</span>Independent Verification &amp; CT Log Evidence</h2>
+  <div class="secnote">Outside-in checks (CertBind) that the live site serves the expected certificate, plus public Certificate Transparency log cross-checks for unauthorized issuance.</div>
+  <table><thead><tr>
+    <th>Domain</th><th class="num">Verifications</th><th>Last verification</th><th>Result</th><th class="num">CT entries checked</th><th>CT verdict</th>
+  </tr></thead><tbody>${verRows}</tbody></table>
+
+  <!-- 6. GAP REGISTER -->
+  <h2><span class="sec">§6</span>Open Items (Gap Register)</h2>
+  <div class="secnote">All open items are disclosed — a report showing only green flags is less credible to an auditor.</div>
+  <table><thead><tr>
+    <th class="num">#</th><th>Severity</th><th>Domain</th><th>Control</th><th>Finding</th><th>Remediation</th><th>Standard</th>
+  </tr></thead><tbody>${gapRows}</tbody></table>
+
+  <!-- APPENDIX A: LEDGER -->
+  <h2><span class="sec">A</span>Appendix A — Event Ledger (full history)</h2>
+  <div class="secnote">Every recorded event, newest first. Each entry is hash-chained to the previous one; altering any past record visibly breaks the chain.</div>
+  <table><thead><tr>
+    <th class="num">#</th><th>Timestamp</th><th>Event</th><th>Domain</th><th>Result</th><th>Integrity code</th>
+  </tr></thead><tbody>${eventRows}</tbody></table>
+
+  <!-- APPENDIX B: GLOSSARY -->
+  <h2><span class="sec">B</span>Appendix B — Glossary</h2>
+  <table class="glos"><tbody>
+    <tr><td>SSL/TLS certificate</td><td>Digital file proving a website's identity and enabling encryption (the browser padlock). Expires and must be renewed.</td></tr>
+    <tr><td>Auto-renewal</td><td>Scheduled renewal by software — viewed by auditors as a stronger control than a manual process.</td></tr>
+    <tr><td>Independent verification (CertBind)</td><td>Outside-in check that the live site serves the expected certificate — proof the control works in practice.</td></tr>
+    <tr><td>Hash chain</td><td>Each ledger entry fingerprints the previous one, so past records cannot be silently altered.</td></tr>
+    <tr><td>Evidence / Readiness score</td><td>0–100 measures of documentation completeness and operational setup. 80+ is strong.</td></tr>
+    <tr><td>CT log check</td><td>Cross-check of public Certificate Transparency logs for any certificate issuance not known to SSLVault.</td></tr>
+    <tr><td>DCV</td><td>Domain control validation — the proof-of-ownership step the certificate authority requires before issuing.</td></tr>
+  </tbody></table>
+
+  <div class="footer">
     <div style="flex-shrink:0">${sealSVG(92)}</div>
     <div style="flex:1">
     <strong>Report Integrity Code (SHA-256)</strong> — anyone can use this code to verify the underlying data was not altered after ${genDate}. The seal on this report carries the first 8 characters (<span style="font-family:monospace;font-weight:700;color:#0077b6">${hashSnip}</span>) — if the seal code and the integrity code below don't match, the report has been tampered with:
