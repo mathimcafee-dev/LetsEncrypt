@@ -65,7 +65,7 @@ def run_one(scan):
         proc = subprocess.run(
             ["bash", "./testssl.sh/testssl.sh", "--jsonfile", out, "--severity", "LOW",
              "--fast", "-p", "-U", "-S", "--quiet", "--color", "0", "--warnings", "batch",
-             "--openssl-timeout", "20", "--connect-timeout", "20", domain],
+             "--openssl-timeout", "20", domain],
             timeout=300, check=False, capture_output=True, text=True)
         if not os.path.exists(out):
             tail = (proc.stderr or proc.stdout or "")[-300:]
