@@ -146,7 +146,7 @@ export default function ComplianceCentre({ nav, user }) {
   }, [rows, sortKey, sortAsc])
 
   // Styles
-  var card = { background:'rgba(0,0,0,0.03)', border:'1px solid rgba(0,119,182,0.12)', borderRadius:10, padding:'16px 18px' }
+  var card = { background:'#ffffff', border:'1px solid rgba(0,119,182,0.12)', borderRadius:14, padding:'16px 18px', boxShadow:'0 2px 8px rgba(0,119,182,0.05)' }
   var lbl  = { fontSize:10, fontWeight:700, color:'#aaaaaa', textTransform:'uppercase', letterSpacing:'.1em', display:'block', marginBottom:8 }
   var th   = { padding:'10px 12px', fontSize:10, fontWeight:700, color:'#555555', letterSpacing:'.08em', textTransform:'uppercase', cursor:'pointer', userSelect:'none', whiteSpace:'nowrap' }
 
@@ -168,18 +168,18 @@ export default function ComplianceCentre({ nav, user }) {
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:5 }}>
               <Shield size={20} color="#0077b6"/>
-              <span style={{ fontSize:20, fontWeight:700, color:'#111111' }}>Compliance Centre</span>
-              {hasSla && <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:99, background:'rgba(0,0,0,0.07)', color:'#0077b6', letterSpacing:'.06em' }}>{(sub.plan||'PREMIUM').toUpperCase()}</span>}
+              <span style={{ fontSize:24, fontWeight:900, color:'#111111', fontFamily:"'DM Sans','Inter',sans-serif", letterSpacing:'-0.01em' }}>Compliance Centre</span>
+              {hasSla && <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:99, background:'rgba(0,119,182,0.08)', border:'1px solid rgba(0,119,182,0.25)', color:'#0077b6', letterSpacing:'.08em', fontFamily:"'JetBrains Mono',monospace" }}>{(sub.plan||'PREMIUM').toUpperCase()}</span>}
             </div>
             <div style={{ fontSize:12, color:'#999999' }}>47-Day mandate readiness + SLA compliance + certificate health</div>
           </div>
           <div style={{ display:'flex', gap:8 }}>
             {hasSla && (
-              <button onClick={generateReport} disabled={genLoad} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', background:'rgba(0,119,182,0.09)', border:'1px solid rgba(0,119,182,0.2)', borderRadius:8, color:'#111111', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:F }}>
+              <button onClick={generateReport} disabled={genLoad} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', background:'#0077b6', border:'none', borderRadius:8, color:'#fff', fontSize:12, fontWeight:800, cursor:'pointer', fontFamily:"'DM Sans','Inter',sans-serif" }}>
                 <FileText size={13}/>{genLoad ? 'Generating...' : 'Generate report'}
               </button>
             )}
-            <button onClick={load} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', background:'transparent', border:'1px solid rgba(240,237,232,0.12)', borderRadius:8, color:'#555555', fontSize:12, cursor:'pointer', fontFamily:F }}>
+            <button onClick={load} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 14px', background:'#fff', border:'1.5px solid rgba(0,119,182,0.12)', borderRadius:8, color:'#0077b6', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:"'DM Sans','Inter',sans-serif" }}>
               <RefreshCw size={12}/>Refresh
             </button>
           </div>
@@ -250,13 +250,13 @@ export default function ComplianceCentre({ nav, user }) {
 
           {/* Table header */}
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
-            <span style={{ fontSize:12, fontWeight:600, color:'#111111' }}>Certificate Coverage</span>
+            <span style={{ fontSize:13, fontWeight:800, color:'#111111', fontFamily:"'DM Sans','Inter',sans-serif" }}>Certificate Coverage</span>
             <span style={{ fontSize:11, color:'#999999' }}>{rows.length} domain{rows.length !== 1 ? 's' : ''}</span>
           </div>
 
           <table style={{ width:'100%', minWidth:900, borderCollapse:'collapse' }}>
             <thead>
-              <tr style={{ background:'rgba(192,57,43,0.06)' }}>
+              <tr style={{ background:'rgba(0,119,182,0.05)' }}>
                 <th style={{ ...th, width:'22%' }} onClick={function(){ toggleSort('domain') }}>
                   <span style={{ display:'flex', alignItems:'center', gap:3 }}>Domain{sortKey==='domain'&&(sortAsc?<ChevronUp size={9} color="#0077b6"/>:<ChevronDown size={9} color="#0077b6"/>)}</span>
                 </th>
@@ -289,7 +289,7 @@ export default function ComplianceCentre({ nav, user }) {
                 return [
                   <tr key={c.id} onClick={function(){ setExpanded(isExpanded ? null : c.id) }}
                     style={{ borderTop:'1px solid rgba(0,119,182,0.07)', cursor:'pointer', transition:'background .1s',
-                      background: isExpanded ? 'rgba(192,57,43,0.06)' : 'transparent' }}
+                      background: isExpanded ? 'rgba(0,119,182,0.05)' : 'transparent' }}
                     onMouseEnter={function(e){ if(!isExpanded) e.currentTarget.style.background='rgba(0,0,0,0.02)' }}
                     onMouseLeave={function(e){ if(!isExpanded) e.currentTarget.style.background='transparent' }}>
                     <td style={{ padding:'10px 12px', fontSize:13, color:'#111111', fontFamily:MONO }}>{c.domain}</td>
@@ -308,7 +308,7 @@ export default function ComplianceCentre({ nav, user }) {
                     <td style={{ padding:'10px 12px', textAlign:'center' }}><Tick ok={rs.checks.key_secured}/></td>
                   </tr>,
                   isExpanded && (
-                    <tr key={c.id + '-expanded'} style={{ background:'rgba(192,57,43,0.04)' }}>
+                    <tr key={c.id + '-expanded'} style={{ background:'rgba(0,119,182,0.03)' }}>
                       <td colSpan={12} style={{ padding:'12px 16px', borderTop:'1px solid rgba(0,119,182,0.08)' }}>
                         <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:8 }}>
                           {[

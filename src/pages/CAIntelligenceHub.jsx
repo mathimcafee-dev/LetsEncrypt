@@ -822,15 +822,15 @@ export default function CAIntelligenceHub({ nav }) {
       `}</style>
 
       {/* Header */}
-      <div style={{ background:'linear-gradient(135deg, #0077b6 0%, #005d91 100%)', padding:'28px 32px 24px' }}>
+      <div style={{ background:'linear-gradient(160deg, #0077b6 0%, #006aa3 60%, #005d90 100%)', padding:'36px 32px 26px' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
-          <div style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.6)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:6 }}>
-            SSLVault · CA Intelligence
+          <div style={{ display:'inline-block', fontSize:10, fontWeight:800, color:'rgba(255,255,255,0.85)', textTransform:'uppercase', letterSpacing:'0.12em', marginBottom:12, fontFamily:"'JetBrains Mono',monospace", background:'rgba(255,255,255,0.10)', border:'1px solid rgba(255,255,255,0.18)', borderRadius:20, padding:'5px 14px' }}>
+            SSLVAULT · CA INTELLIGENCE
           </div>
-          <h1 style={{ fontSize:26, fontWeight:700, color:'#ffffff', margin:'0 0 4px', letterSpacing:'-0.3px' }}>
+          <h1 style={{ fontSize:32, fontWeight:900, color:'#ffffff', margin:'0 0 6px', letterSpacing:'-0.01em', fontFamily:"'DM Sans','Inter',sans-serif" }}>
             PKI Intelligence
           </h1>
-          <p style={{ fontSize:13, color:'rgba(255,255,255,0.7)', margin:'0 0 20px' }}>
+          <p style={{ fontSize:14, color:'rgba(255,255,255,0.85)', margin:'0 0 22px' }}>
             Unified visibility across {caCount} of 3 CAs · {live.total} certificate{live.total!==1?'s':''} tracked
           </p>
 
@@ -839,8 +839,8 @@ export default function CAIntelligenceHub({ nav }) {
             {STAT_CARDS.map(s => (
               <div key={s.label} style={{ background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.25)',
                 borderRadius:10, padding:'12px 20px', minWidth:110, backdropFilter:'blur(8px)' }}>
-                <div style={{ fontSize:24, fontWeight:800, color:s.color, lineHeight:1.1,
-                  fontFamily:"'JetBrains Mono',monospace" }}>{s.value}</div>
+                <div style={{ fontSize:24, fontWeight:900, color:'#fff', lineHeight:1.1,
+                  fontFamily:"'DM Sans','Inter',sans-serif" }}>{s.value}</div>
                 <div style={{ fontSize:11, color:'rgba(255,255,255,0.7)', marginTop:4, fontWeight:500 }}>{s.label}</div>
               </div>
             ))}
@@ -849,10 +849,10 @@ export default function CAIntelligenceHub({ nav }) {
           {/* Tag row */}
           <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginTop:14 }}>
             {['GoGetSSL · RapidSSL · DigiCert','CCADB indexed','47-day ready','Auto-renew','CA/B Forum 2026'].map(tag => (
-              <span key={tag} style={{ fontSize:10, fontWeight:600, padding:'3px 10px', borderRadius:20,
-                background:'rgba(255,255,255,0.15)', color:'rgba(255,255,255,0.9)',
-                border:'1px solid rgba(255,255,255,0.25)' }}>
-                {tag}
+              <span key={tag} style={{ fontSize:10, fontWeight:700, padding:'4px 11px', borderRadius:20,
+                background:'rgba(255,255,255,0.12)', color:'rgba(255,255,255,0.9)',
+                border:'1px solid rgba(255,255,255,0.22)', fontFamily:"'JetBrains Mono',monospace" }}>
+                ✓ {tag}
               </span>
             ))}
           </div>
