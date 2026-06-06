@@ -24,16 +24,16 @@ function fmtDate(iso) {
 }
 
 const EVENT_META = {
-  issued:               { label:'Certificate Issued',     color:'#0077b6', icon: ShieldCheck },
-  renewed:              { label:'Certificate Renewed',    color:'#00a550', icon: RefreshCw },
-  installed:            { label:'Installed on Server',    color:'#00a550', icon: Server },
-  binding_verified:     { label:'Binding Verified',       color:'#0077b6', icon: ShieldCheck },
-  dcv_validated:        { label:'DCV Validated',          color:'#0077b6', icon: CheckCircle },
-  key_rotated:          { label:'Key Rotated',            color:'#9a6400', icon: Key },
-  auto_renew_triggered: { label:'Auto-Renewal Triggered', color:'#00a550', icon: Zap },
-  revoked:              { label:'Certificate Revoked',    color:'#c0392b', icon: XCircle },
-  agent_heartbeat:      { label:'Agent Heartbeat',        color:'#7a8694', icon: Activity },
-  expiry_warning:       { label:'Expiry Warning',         color:'#9a6400', icon: Clock },
+  issued:               { label:'Certificate Issued',        color:'#0077b6', icon: ShieldCheck, plain:'A new SSL certificate was obtained from the certificate authority and recorded.' },
+  renewed:              { label:'Certificate Renewed',       color:'#00a550', icon: RefreshCw,   plain:'The certificate was replaced before expiry — the website stayed secure with no interruption.' },
+  installed:            { label:'Installed on Server',       color:'#00a550', icon: Server,      plain:'The certificate was placed on the web server, activating HTTPS for visitors.' },
+  binding_verified:     { label:'Independent Verification',  color:'#0077b6', icon: ShieldCheck, plain:'An automated check confirmed the live website is really serving the correct certificate.' },
+  dcv_validated:        { label:'Domain Ownership Proven',   color:'#0077b6', icon: CheckCircle, plain:'Ownership of the domain was proven to the certificate authority before issuance.' },
+  key_rotated:          { label:'Encryption Key Rotated',    color:'#9a6400', icon: Key,         plain:'The private encryption key was replaced with a brand-new one — good security hygiene.' },
+  auto_renew_triggered: { label:'Automatic Renewal Started', color:'#00a550', icon: Zap,         plain:'The system automatically began renewing the certificate ahead of expiry — no human action needed.' },
+  revoked:              { label:'Certificate Revoked',       color:'#c0392b', icon: XCircle,     plain:'The certificate was deliberately invalidated (e.g. after replacement or decommissioning).' },
+  agent_heartbeat:      { label:'Monitoring Heartbeat',      color:'#7a8694', icon: Activity,    plain:'The monitoring agent confirmed it is alive and watching the server.' },
+  expiry_warning:       { label:'Expiry Warning Raised',     color:'#9a6400', icon: Clock,       plain:'The system flagged that a certificate was approaching its expiry date.' },
 }
 
 const FRAMEWORKS = {
@@ -133,6 +133,48 @@ export default function WitnessViewer() {
       </div>
 
       <div style={{ maxWidth:960, margin:'0 auto', padding:'28px 24px 80px' }}>
+
+        {/* Executive summary — plain language for auditors */}
+        {(() => {
+          const renewCount  = events.filter(e => e.event_type === 'renewed' || e.event_type === 'auto_renew_triggered').length
+          const verifyCount = events.filter(e => e.event_type === 'binding_verified').length
+          const critGaps    = dossiers.reduce((s,d)=>s+((d.gaps||[]).filter(g=>g.severity==='critical').length),0)
+          const earliest    = dossiers.map(d=>d.first_witnessed_at).filter(Boolean).sort()[0]
+          const vCol  = critGaps > 0 ? '#c0392b' : totalGaps > 0 ? '#9a6400' : '#00a550'
+          const vBg   = critGaps > 0 ? 'rgba(192,57,43,0.05)' : totalGaps > 0 ? 'rgba(154,100,0,0.05)' : 'rgba(0,165,80,0.05)'
+          const verdict = critGaps > 0
+            ? 'Attention required: one or more critical gaps must be fixed before this evidence fully satisfies an audit.'
+            : totalGaps > 0
+              ? 'Overall healthy: certificates are managed continuously; a small number of non-critical improvements are disclosed below.'
+              : 'Fully healthy: certificates are continuously managed, renewed automatically, and independently verified, with no open gaps.'
+          return (
+            <div style={{ background:vBg, border:`1px solid ${vCol}33`, borderRadius:14, padding:'20px 24px', marginBottom:20 }}>
+              <div style={{ fontSize:13, fontWeight:800, color:vCol, textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:10 }}>Executive Summary</div>
+              <p style={{ fontSize:13, color:'#3d4a58', lineHeight:1.8, margin:'0 0 10px' }}>
+                This dossier documents how the SSL/TLS certificates protecting <strong>{dossiers.length} domain{dossiers.length!==1?'s':''}</strong> have
+                been managed{earliest ? <> since <strong>{fmtDate(earliest)}</strong></> : null}. SSL/TLS certificates are what make a website
+                show the secure padlock — if one expires, visitors see security errors and are turned away.
+              </p>
+              <p style={{ fontSize:13, color:'#3d4a58', lineHeight:1.8, margin:'0 0 10px' }}>
+                The system recorded <strong>{events.length} lifecycle events</strong>, including <strong>{renewCount} renewal action{renewCount!==1?'s':''}</strong> and{' '}
+                <strong>{verifyCount} independent verification{verifyCount!==1?'s':''}</strong> that the live websites were serving the correct certificates.
+                Evidence covers <strong>{allControls.length} specific requirements</strong> across SOC 2, ISO 27001, CA/B Forum, NIS2 and PCI DSS.
+              </p>
+              <p style={{ fontSize:13, color:'#0d1117', lineHeight:1.8, margin:0 }}><strong>Conclusion:</strong> {verdict}</p>
+            </div>
+          )
+        })()}
+
+        {/* How to read this */}
+        <div style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:14, padding:'18px 24px', marginBottom:20, boxShadow:'0 2px 8px rgba(0,119,182,0.05)' }}>
+          <div style={{ fontSize:11, fontWeight:800, color:BLUE, textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:8 }}>How to read this page</div>
+          <p style={{ fontSize:12, color:'#3d4a58', lineHeight:1.8, margin:'0 0 6px' }}>
+            <strong>Auditors / managers:</strong> the summary above and the per-domain sections below are written in plain language — green means healthy, amber means improvements suggested, red means action needed. Open items are disclosed deliberately: a report with only green flags is less credible.
+          </p>
+          <p style={{ fontSize:12, color:'#3d4a58', lineHeight:1.8, margin:0 }}>
+            <strong>Technical reviewers:</strong> the Event Ledger at the bottom lists every recorded event. Each entry is mathematically linked ("hash-chained") to the previous one, like numbered glued pages in a notary's logbook — altering any past record would visibly break the chain.
+          </p>
+        </div>
 
         {/* Summary strip */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:12, marginBottom:24 }}>
@@ -274,13 +316,16 @@ export default function WitnessViewer() {
                         <span style={{ fontSize:11, color:BLUE, fontFamily:MONO }}>{ev.domain}</span>
                         <span style={{ fontSize:10, color:'#7a8694', marginLeft:'auto' }}>{fmtTs(ev.event_ts)}</span>
                       </div>
+                      {meta.plain && (
+                        <div style={{ fontSize:11, color:'#5a6776', marginTop:3, lineHeight:1.6 }}>{meta.plain}</div>
+                      )}
                       {(ev.controls_met||[]).length > 0 && (
                         <div style={{ fontSize:10, color:'#00a550', marginTop:3 }}>
-                          Satisfies: {(ev.controls_met||[]).join(' · ')}
+                          Compliance requirements satisfied: {(ev.controls_met||[]).length} · {(ev.controls_met||[]).join(' · ')}
                         </div>
                       )}
-                      <div style={{ fontSize:9, color:'#b0bac4', fontFamily:MONO, marginTop:3, wordBreak:'break-all' }}>
-                        hash: {(ev.event_hash||'').substring(0,32)}…
+                      <div style={{ fontSize:9, color:'#b0bac4', fontFamily:MONO, marginTop:3 }} title={ev.event_hash||''}>
+                        integrity code: {(ev.event_hash||'').substring(0,16)}…
                       </div>
                     </div>
                   </div>
@@ -293,7 +338,8 @@ export default function WitnessViewer() {
         {/* Footer */}
         <div style={{ marginTop:24, textAlign:'center', fontSize:11, color:'#7a8694', lineHeight:1.8 }}>
           Generated by <strong style={{ color:BLUE }}>SSLVault Compliance Witness</strong> · easysecurity.in<br/>
-          Every event in this ledger is SHA-256 hash-chained to the previous event. Any alteration of historical records would break the chain and be detectable.
+          Every event above is mathematically linked to the previous one (SHA-256 hash chain) — like numbered, glued pages in a notary's logbook.<br/>
+          Any alteration of a historical record would visibly break the chain, making this ledger tamper-evident.
         </div>
       </div>
     </div>
