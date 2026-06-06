@@ -2955,49 +2955,54 @@ function LoggedInDashboard({ user, nav, onIssue }) {
           }).length
           return (
             <>
-              {/* ── CERT CARDS ── */}
-              <div style={{ display:'grid', gridTemplateColumns:`repeat(${Math.min(activeCerts.length+1,4)},1fr)`, gap:10, marginBottom:14 }}>
-                {activeCerts.map(cert => {
-                  const d = daysLeft(cert.expires_at)
-                  const notLive = !cert.is_live_on_server
-                  const isWarn  = d !== null && d < 30 && d >= 0
-                  const isExp   = d !== null && d < 0
-                  const accentColor = notLive ? '#0077b6' : isExp ? '#0077b6' : isWarn ? '#9a6400' : '#00a550'
-                  const isSel = cert.id === selected
-                  return (
-                    <div key={cert.id} onClick={() => setSelected(isSel ? null : cert.id)}
-                      style={{ background:'#fff', border:`1px solid ${isSel?'#111111':'rgba(0,119,182,0.12)'}`, borderRadius:12, overflow:'hidden', cursor:'pointer', transition:'all .15s', boxShadow:'0 1px 4px rgba(0,119,182,0.05)' }}
-                      onMouseEnter={e=>{ e.currentTarget.style.borderColor='#111111'; e.currentTarget.style.boxShadow='0 3px 10px rgba(0,55,104,0.1)' }}
-                      onMouseLeave={e=>{ e.currentTarget.style.borderColor=isSel?'#111111':'rgba(0,119,182,0.12)'; e.currentTarget.style.boxShadow='0 1px 4px rgba(0,119,182,0.05)' }}>
-                      <div style={{ background:'#111111', padding:'9px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                        <span style={{ fontSize:12, fontWeight:600, color:'#fff', fontFamily:"'JetBrains Mono',monospace", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</span>
-                        <span style={{ fontSize:8, fontWeight:600, color:notLive?'#f5a623':isExp?'#ff6b6b':isWarn?'#fbbf24':'#00a550', background:notLive?'rgba(245,166,35,0.15)':isExp?'rgba(255,107,107,0.15)':isWarn?'rgba(251,191,36,0.15)':'rgba(0,165,80,0.15)', border:`1px solid ${notLive?'rgba(245,166,35,0.35)':isExp?'rgba(255,107,107,0.35)':isWarn?'rgba(251,191,36,0.35)':'rgba(0,165,80,0.35)'}`, borderRadius:20, padding:'2px 7px', fontFamily:"'JetBrains Mono',monospace", flexShrink:0 }}>
-                          {notLive?'INSTALL':isExp?'EXPIRED':isWarn?'EXPIRING':'LIVE'}
-                        </span>
-                      </div>
-                      <div style={{ padding:'12px 14px' }}>
-                        <div style={{ fontSize:10, color:'#7a8694', marginBottom:8, fontFamily:"'JetBrains Mono',monospace" }}>{cert.cert_type||'RapidSSL Standard'} · {cert.install_method==='cpanel'?'cPanel':cert.install_method==='agent'?'Agent':'Direct'}</div>
-                        <div style={{ fontSize:26, fontWeight:700, color:'#111111', lineHeight:1, marginBottom:3, fontFamily:"'JetBrains Mono',monospace" }}>{d==null?'--':Math.max(0,d)}</div>
-                        <div style={{ fontSize:10, color:'#7a8694', marginBottom:9, fontFamily:"'JetBrains Mono',monospace" }}>days · {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '--'}</div>
-                        <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
-                          {cert.auto_renew_enabled!==false && <span style={{ fontSize:8, padding:'2px 7px', borderRadius:20, background:'#e3f5ea', border:'1px solid #bfe5cd', color:'#1a7d43', fontFamily:"'JetBrains Mono',monospace", fontWeight:600 }}>Auto-renew</span>}
-                          <span style={{ fontSize:8, padding:'2px 7px', borderRadius:20, background:notLive?'#fae3df':isExp?'#fae3df':isWarn?'#fef9ec':'#e3f5ea', border:`1px solid ${notLive?'#eec3ba':isExp?'#eec3ba':isWarn?'#ecd9a8':'#bfe5cd'}`, color:notLive?'#b03425':isExp?'#b03425':isWarn?'#9a6400':'#1a7d43', fontFamily:"'JetBrains Mono',monospace", fontWeight:600 }}>
-                            {notLive?'Install pending':isExp?'Expired':isWarn?'Expiring':'Live'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-                {/* Issue new slot */}
+              {/* ── CERT TABLE (CertCentral style) ── */}
+              <div style={{ background:'#fff', border:'1px solid rgba(0,119,182,0.12)', borderRadius:12, overflow:'hidden', marginBottom:14 }}>
+                <div style={{ overflowX:'auto' }}>
+                <table style={{ width:'100%', borderCollapse:'collapse', minWidth:640 }}>
+                  <thead>
+                    <tr>
+                      {['Domain','Status','Days left','Expires','Auto-renew',''].map(h=>(
+                        <th key={h} style={{ textAlign:'left', fontSize:11, fontWeight:600, color:'#5a6776', padding:'12px 16px', borderBottom:'1px solid #e8eef4', background:'#fafbfd', whiteSpace:'nowrap' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activeCerts.map(cert => {
+                      const d = daysLeft(cert.expires_at)
+                      const notLive = !cert.is_live_on_server
+                      const isWarn  = d !== null && d < 30 && d >= 0
+                      const isExp   = d !== null && d < 0
+                      const isSel = cert.id === selected
+                      const st = notLive ? {t:'Install pending', c:'#3d4a58', bg:'#eef1f5'} : isExp ? {t:'Expired', c:'#b03425', bg:'#fae3df'} : isWarn ? {t:'Expiring soon', c:'#9a6400', bg:'#faf0d8'} : {t:'Live', c:'#1a7d43', bg:'#e3f5ea'}
+                      return (
+                        <tr key={cert.id} onClick={() => setSelected(isSel ? null : cert.id)}
+                          style={{ cursor:'pointer', background: isSel ? 'rgba(0,119,182,0.05)' : 'transparent', transition:'background .12s' }}
+                          onMouseEnter={e=>{ if(!isSel) e.currentTarget.style.background='#f7f9fc' }}
+                          onMouseLeave={e=>{ e.currentTarget.style.background=isSel?'rgba(0,119,182,0.05)':'transparent' }}>
+                          <td style={{ padding:'14px 16px', borderBottom:'1px solid #eef2f7' }}>
+                            <div style={{ fontSize:13.5, fontWeight:600, color:'#0077b6', fontFamily:"'JetBrains Mono',monospace" }}>{cert.domain}</div>
+                            <div style={{ fontSize:10.5, color:'#7a8694', marginTop:2 }}>{cert.issuer || 'RapidSSL'} · RSA-2048{cert.install_method ? ' · ' + cert.install_method : ''}</div>
+                          </td>
+                          <td style={{ padding:'14px 16px', borderBottom:'1px solid #eef2f7' }}>
+                            <span style={{ fontSize:11, fontWeight:600, color:st.c, background:st.bg, borderRadius:14, padding:'4px 12px', whiteSpace:'nowrap' }}>{st.t}</span>
+                          </td>
+                          <td style={{ padding:'14px 16px', borderBottom:'1px solid #eef2f7', fontSize:13.5, fontWeight:700, color: isExp?'#b03425':isWarn?'#9a6400':'#111111' }}>{d==null?'—':Math.max(0,d)}</td>
+                          <td style={{ padding:'14px 16px', borderBottom:'1px solid #eef2f7', fontSize:12.5, color:'#3d4a58', whiteSpace:'nowrap' }}>{cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
+                          <td style={{ padding:'14px 16px', borderBottom:'1px solid #eef2f7', fontSize:12.5, fontWeight:600, color: cert.auto_renew_enabled!==false ? '#1a7d43' : '#7a8694', whiteSpace:'nowrap' }}>{cert.auto_renew_enabled!==false ? '✓ Enabled' : '—'}</td>
+                          <td style={{ padding:'14px 16px', borderBottom:'1px solid #eef2f7', textAlign:'right' }}>
+                            <span style={{ fontSize:12, fontWeight:600, color:'#0077b6', whiteSpace:'nowrap' }}>{isSel ? 'Close' : 'Quick view'}</span>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+                </div>
                 <div onClick={()=>nav&&nav('/issue-cert')}
-                  style={{ background:'#fff', border:'2px dashed #c8d5e8', borderRadius:12, cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, minHeight:130, transition:'all .15s' }}
-                  onMouseEnter={e=>{ e.currentTarget.style.borderColor='#111111'; e.currentTarget.style.background='#f0f4fa' }}
-                  onMouseLeave={e=>{ e.currentTarget.style.borderColor='#c8d5e8'; e.currentTarget.style.background='#fff' }}>
-                  <div style={{ width:32, height:32, borderRadius:8, background:'rgba(0,119,182,0.09)', border:'1px solid #b8d0f0', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <Plus size={16} color="#0077b6"/>
-                  </div>
-                  <span style={{ fontSize:11, color:'#7a8694' }}>Issue new certificate</span>
+                  style={{ padding:'13px 16px', fontSize:12.5, fontWeight:600, color:'#0077b6', cursor:'pointer', transition:'background .12s' }}
+                  onMouseEnter={e=>e.currentTarget.style.background='#f7f9fc'}
+                  onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                  + Request a certificate
                 </div>
               </div>
 
