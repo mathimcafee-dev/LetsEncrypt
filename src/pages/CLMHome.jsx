@@ -27,6 +27,7 @@ import DomainManager from './DomainManager'
 import CertVault from './CertVault'
 import SLADashboard from './SLADashboard'
 import ComplianceCentre from './ComplianceCentre'
+import ComplianceWitness from './ComplianceWitness'
 import CertBind from './CertBind'
 import KeyIntelligence from './KeyIntelligence'
 import Pricing from './Pricing'
@@ -105,6 +106,7 @@ export default function CLMHome({ user, nav, initialSection }) {
     ]},
     { group:'Monitor', items:[
       {id:'compliance-centre', label:'Compliance',       icon:Shield, badge:'NEW'},
+      {id:'compliance-witness',  label:'Witness Ledger',    icon:ShieldCheck, badge:'NEW'},
     ]},
     { group:'Secure', items:[
       {id:'key-intelligence',  label:'Key Vault',        icon:Shield},
@@ -127,7 +129,7 @@ export default function CLMHome({ user, nav, initialSection }) {
     'domain-manager':'Domain Manager', 'my-servers':'Domain Manager',
     'infrastructure':'Domain Manager', 'servers':'Domain Manager', 'agent-health':'Domain Manager',
     shield:'PKI Intelligence',
-    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage', 'compliance-centre':'Compliance',
+    'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage', 'compliance-centre':'Compliance', 'compliance-witness':'Compliance Witness',
     'admin-calendar':'Admin Calendar',
     'cert-timeline':'Cert Timeline',
     kb:'Docs & help', settings:'Settings', pricing:'Pricing',
@@ -159,6 +161,7 @@ export default function CLMHome({ user, nav, initialSection }) {
     if(sec==='cert-changelog')   return <CertChangelog user={user}/>
     if(sec==='sla-dashboard')    return <SLADashboard nav={sideNav}/>
     if(sec==='compliance-centre') return <ComplianceCentre nav={sideNav} user={user}/>
+    if(sec==='compliance-witness')  return <ComplianceWitness user={user}/>
     if(sec==='admin-calendar')   return <AdminRenewalCalendar user={user}/>
     return null
   }
