@@ -364,104 +364,110 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       <div style={{ maxWidth:embedded?'100%':1100, margin:'0 auto', padding:embedded?'16px 20px 40px':'32px 32px 72px', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr clamp(280px,30vw,340px)', gap:24, alignItems:'start', fontFamily:F }}>
 
         <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
-          <div style={{ marginBottom:18 }}>
-            <h1 style={{ margin:0, fontSize:24, fontWeight:900, fontFamily:"'DM Sans','Inter',sans-serif", color:'#0d1117', letterSpacing:'-0.01em' }}>Request a certificate</h1>
-            <div style={{ fontSize:12.5, color:'#5a6776', marginTop:4 }}>RapidSSL DV on the DigiCert trust chain · issued in ~5 minutes · auto-renews forever</div>
+          <div style={{ marginBottom:16 }}>
+            <h1 style={{ margin:0, fontSize:25, fontWeight:900, fontFamily:"'DM Sans','Inter',sans-serif", color:'#0d1117', letterSpacing:'-0.01em' }}>Request a certificate</h1>
+            <div style={{ fontSize:12.5, color:'#5a6776', marginTop:5 }}>RapidSSL DV on the DigiCert trust chain · issued in ~5 minutes · renews itself forever</div>
           </div>
           <StepBar current={1}/>
 
-          {/* Cert type card */}
-          <div style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', marginBottom:18, boxShadow:'0 2px 10px rgba(0,119,182,0.06)' }}>
-            <div style={{ padding:'14px 20px', borderBottom:'1px solid #e8eef4', background:'#fff' }}>
-              <span style={{ fontSize:13,fontWeight:800,color:'#0d1117',fontFamily:"'DM Sans','Inter',sans-serif",letterSpacing:'-0.01em' }}>Certificate Type</span>
-            </div>
-            <div style={{ padding:'18px 20px' }}>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
-                {PRODUCTS.map(p=>(
-                  <div key={p.code} onClick={()=>setProduct(p.code)}
-                    style={{ padding:'16px 14px', borderRadius:12, cursor:'pointer', transition:'all .18s',
-                      background:product===p.code?BLUE_BG:'#fff',
-                      border:product===p.code?`2px solid ${BLUE}`:`1.5px solid rgba(0,119,182,0.12)`,
-                      boxShadow:product===p.code?`0 0 0 3px rgba(0,119,182,0.08), 0 2px 8px rgba(0,119,182,0.1)`:undefined,
-                      position:'relative' }}>
-                    {product===p.code&&<div style={{ position:'absolute',top:10,right:10,width:18,height:18,borderRadius:'50%',background:BLUE,display:'flex',alignItems:'center',justifyContent:'center' }}><Check size={10} color="#fff"/></div>}
-                    <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:6 }}>
-                      <ShieldCheck size={16} color={product===p.code?BLUE:'#94a3b8'} strokeWidth={2}/>
-                      <span style={{ fontSize:13,fontWeight:700,color:'#0d1117' }}>{p.name}</span>
+          {/* ── Single flowing panel: 01 Certificate / 02 Domain / 03 Contact ── */}
+          <div style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:16, boxShadow:'0 2px 14px rgba(0,119,182,0.07)', overflow:'hidden', marginBottom:14 }}>
+
+            {/* 01 — CERTIFICATE */}
+            <div style={{ padding:'24px 26px 20px' }}>
+              <div style={{ display:'flex', alignItems:'baseline', gap:10, marginBottom:14 }}>
+                <span style={{ fontFamily:MONO, fontSize:10, fontWeight:800, color:BLUE, letterSpacing:'0.1em' }}>01</span>
+                <span style={{ fontFamily:"'DM Sans','Inter',sans-serif", fontSize:15, fontWeight:800, color:'#0d1117', letterSpacing:'-0.01em' }}>Certificate</span>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:10 }}>
+                {PRODUCTS.map(p=>{
+                  const on = product===p.code
+                  return (
+                    <div key={p.code} onClick={()=>setProduct(p.code)}
+                      style={{ padding:'15px 16px', borderRadius:12, cursor:'pointer', transition:'all .15s', position:'relative',
+                        background: on ? 'rgba(0,119,182,0.04)' : '#fff',
+                        border: on ? `1.5px solid ${BLUE}` : '1.5px solid rgba(0,119,182,0.14)',
+                        boxShadow: on ? '0 0 0 3px rgba(0,119,182,0.09)' : 'none' }}
+                      onMouseEnter={e=>{ if(!on) e.currentTarget.style.borderColor='rgba(0,119,182,0.4)' }}
+                      onMouseLeave={e=>{ if(!on) e.currentTarget.style.borderColor='rgba(0,119,182,0.14)' }}>
+                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:7 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                          <div style={{ width:16, height:16, borderRadius:'50%', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
+                            border: on ? 'none' : '1.5px solid rgba(0,119,182,0.3)', background: on ? BLUE : '#fff' }}>
+                            {on && <Check size={10} color="#fff"/>}
+                          </div>
+                          <span style={{ fontSize:13.5, fontWeight:800, color:'#0d1117', fontFamily:"'DM Sans','Inter',sans-serif" }}>{p.name}</span>
+                        </div>
+                        <span style={{ fontSize:8.5, fontWeight:800, color:BLUE, letterSpacing:'0.07em', fontFamily:MONO, background:'rgba(0,119,182,0.07)', border:'1px solid rgba(0,119,182,0.15)', borderRadius:10, padding:'2px 8px' }}>{p.badge}</span>
+                      </div>
+                      <div style={{ fontSize:11, color:'#7a8694', lineHeight:1.55, paddingLeft:24 }}>{p.sub}</div>
                     </div>
-                    <div style={{ display:'inline-flex',alignItems:'center',gap:4,background:product===p.code?'rgba(0,119,182,0.12)':'rgba(0,119,182,0.06)',border:`1px solid ${product===p.code?'rgba(0,119,182,0.25)':'rgba(0,119,182,0.12)'}`,borderRadius:5,padding:'1px 7px',marginBottom:6 }}>
-                      <span style={{ fontSize:9,fontWeight:800,color:BLUE,letterSpacing:'0.05em' }}>{p.badge}</span>
-                    </div>
-                    <div style={{ fontSize:11,color:'#7a8694',lineHeight:1.5 }}>{p.sub}</div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
-
-              {/* Domain */}
-              <div style={{ marginBottom:16 }}>
-                <label style={{ fontSize:11,fontWeight:700,color:'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em',display:'block',marginBottom:7 }}>
-                  Domain Name <span style={{ color:'#b03425' }}>*</span>
-                  {PRODUCTS.find(p=>p.code===product)?.wildcard&&<span style={{ color:'#7a8694',fontWeight:400,textTransform:'none',letterSpacing:0,marginLeft:6 }}>· enter root domain</span>}
-                </label>
-                {profileLoading&&<div style={{ fontSize:10,color:'#7a8694',display:'flex',alignItems:'center',gap:5,marginBottom:6 }}><div style={{ width:8,height:8,borderRadius:'50%',border:'1.5px solid rgba(0,119,182,0.25)',borderTopColor:BLUE,animation:'spin .7s linear infinite' }}/> Loading profile…</div>}
-                <div style={{ position:'relative' }}>
-                  <Globe size={15} style={{ position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',color:'#7a8694',pointerEvents:'none' }}/>
-                  <input value={domain} onChange={e=>setD(e.target.value)} placeholder="yourdomain.com"
-                    style={{ width:'100%',boxSizing:'border-box',background:'#fff',border:`1.5px solid rgba(0,119,182,0.18)`,borderRadius:10,color:'#0d1117',fontSize:16,fontFamily:MONO,fontWeight:700,padding:'14px 16px 14px 40px',outline:'none',transition:'all .15s',letterSpacing:'-0.2px' }}
-                    onFocus={e=>{e.target.style.borderColor=BLUE;e.target.style.boxShadow='0 0 0 3px rgba(0,119,182,0.1)';e.target.style.background='#fff'}}
-                    onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.15)';e.target.style.boxShadow='none';e.target.style.background='#fff'}}/>
-                </div>
-              </div>
-
-              {/* Validity */}
-              <div>
-                <label style={{ fontSize:11,fontWeight:700,color:'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em',display:'block',marginBottom:7 }}>Validity Period</label>
-                <div style={{ padding:'14px 16px',borderRadius:10,border:`1.5px solid ${BLUE}`,background:BLUE_BG,display:'flex',justifyContent:'space-between',alignItems:'center' }}>
-                  <div>
-                    <span style={{ fontSize:14,fontWeight:700,color:'#0d1117' }}>1 year</span>
-                    <div style={{ fontSize:11,color:'#7a8694',marginTop:2 }}>12 months · auto-renews before expiry</div>
-                  </div>
-                  <span style={{ display:'flex',alignItems:'center',gap:5,fontSize:12,fontWeight:700,color:BLUE }}><Check size={13}/> Selected</span>
-                </div>
+              <div style={{ display:'flex', alignItems:'center', gap:7, marginTop:14, fontSize:12, color:'#3d4a58', flexWrap:'wrap' }}>
+                <Clock size={12} color="#7a8694"/>
+                <span>Validity <b style={{ color:'#0d1117' }}>1 year</b> · renews automatically before expiry</span>
+                <span style={{ marginLeft:'auto', fontSize:9, fontWeight:800, color:'#1a7d43', background:'#e3f5ea', borderRadius:12, padding:'3px 10px', fontFamily:MONO, letterSpacing:'0.05em' }}>AUTO-RENEW ON</span>
               </div>
             </div>
-          </div>
+            <div style={{ height:1, background:'#eef2f7' }}/>
 
-          {/* Contact card */}
-          <div style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', marginBottom:18, boxShadow:'0 2px 10px rgba(0,119,182,0.06)' }}>
-            <div style={{ padding:'14px 20px', borderBottom:'1px solid #e8eef4', background:'#fff', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-              <span style={{ fontSize:13,fontWeight:800,color:'#0d1117',fontFamily:"'DM Sans','Inter',sans-serif",letterSpacing:'-0.01em' }}>Contact Details</span>
-              <span style={{ fontSize:11,color:'#7a8694' }}>Required by certificate authority</span>
+            {/* 02 — DOMAIN */}
+            <div style={{ padding:'22px 26px' }}>
+              <div style={{ display:'flex', alignItems:'baseline', gap:10, marginBottom:12 }}>
+                <span style={{ fontFamily:MONO, fontSize:10, fontWeight:800, color:BLUE, letterSpacing:'0.1em' }}>02</span>
+                <span style={{ fontFamily:"'DM Sans','Inter',sans-serif", fontSize:15, fontWeight:800, color:'#0d1117', letterSpacing:'-0.01em' }}>Domain</span>
+                {PRODUCTS.find(p=>p.code===product)?.wildcard && <span style={{ fontSize:11, color:'#7a8694' }}>· enter the root domain — the wildcard covers every subdomain</span>}
+              </div>
+              {profileLoading && <div style={{ fontSize:10, color:'#7a8694', display:'flex', alignItems:'center', gap:5, marginBottom:8 }}><div style={{ width:8, height:8, borderRadius:'50%', border:'1.5px solid rgba(0,119,182,0.25)', borderTopColor:BLUE, animation:'spin .7s linear infinite' }}/> Loading profile…</div>}
+              <div style={{ position:'relative' }}>
+                <Globe size={16} style={{ position:'absolute', left:16, top:'50%', transform:'translateY(-50%)', color: domain ? BLUE : '#7a8694', pointerEvents:'none', transition:'color .15s' }}/>
+                <input value={domain} onChange={e=>setD(e.target.value)} placeholder="yourdomain.com"
+                  style={{ width:'100%', boxSizing:'border-box', background:'#fff', border:'1.5px solid rgba(0,119,182,0.18)', borderRadius:12, color:'#0d1117', fontSize:18, fontFamily:MONO, fontWeight:700, padding:'16px 18px 16px 44px', outline:'none', transition:'all .15s', letterSpacing:'-0.2px' }}
+                  onFocus={e=>{e.target.style.borderColor=BLUE;e.target.style.boxShadow='0 0 0 4px rgba(0,119,182,0.1)'}}
+                  onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.18)';e.target.style.boxShadow='none'}}/>
+              </div>
             </div>
-            <div style={{ padding:'18px 20px', display:'flex', flexDirection:'column', gap:14 }}>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+            <div style={{ height:1, background:'#eef2f7' }}/>
+
+            {/* 03 — CONTACT */}
+            <div style={{ padding:'22px 26px 26px' }}>
+              <div style={{ display:'flex', alignItems:'baseline', gap:10, marginBottom:14 }}>
+                <span style={{ fontFamily:MONO, fontSize:10, fontWeight:800, color:BLUE, letterSpacing:'0.1em' }}>03</span>
+                <span style={{ fontFamily:"'DM Sans','Inter',sans-serif", fontSize:15, fontWeight:800, color:'#0d1117', letterSpacing:'-0.01em' }}>Contact</span>
+                <span style={{ marginLeft:'auto', fontSize:11, color:'#7a8694' }}>Required by the certificate authority</span>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:14, marginBottom:14 }}>
                 {[{label:'First name',val:fn,set:setFn,ph:'John'},{label:'Last name',val:ln,set:setLn,ph:'Smith'}].map(f=>(
                   <div key={f.label}>
-                    <label style={{ fontSize:11,fontWeight:700,color:'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em',display:'block',marginBottom:6 }}>{f.label} <span style={{ color:'#b03425' }}>*</span></label>
+                    <label style={{ fontSize:10, fontWeight:700, color:'#7a8694', textTransform:'uppercase', letterSpacing:'0.07em', display:'block', marginBottom:6, fontFamily:MONO }}>{f.label} <span style={{ color:'#b03425' }}>*</span></label>
                     <input value={f.val} onChange={e=>f.set(e.target.value)} placeholder={f.ph}
-                      style={{ width:'100%',boxSizing:'border-box',background:'#f8fafd',border:'1.5px solid rgba(0,119,182,0.15)',borderRadius:9,color:'#0d1117',fontSize:13,fontFamily:F,padding:'11px 14px',outline:'none',transition:'all .15s' }}
+                      style={{ width:'100%', boxSizing:'border-box', background:'#fff', border:'1.5px solid rgba(0,119,182,0.16)', borderRadius:10, color:'#0d1117', fontSize:13, fontFamily:F, padding:'12px 14px', outline:'none', transition:'all .15s' }}
                       onFocus={e=>{e.target.style.borderColor=BLUE;e.target.style.boxShadow='0 0 0 3px rgba(0,119,182,0.1)'}}
-                      onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.15)';e.target.style.boxShadow='none'}}/>
+                      onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.16)';e.target.style.boxShadow='none'}}/>
                   </div>
                 ))}
               </div>
-              {[{label:'Email address',val:em,set:setEm,ph:'you@example.com',type:'email',note:'Certificate delivery'},{label:'Phone number',val:ph,set:setPh,ph:'+31 6 00 000000',type:'tel'}].map(f=>(
-                <div key={f.label}>
-                  <label style={{ fontSize:11,fontWeight:700,color:'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em',display:'block',marginBottom:6 }}>
-                    {f.label} <span style={{ color:'#b03425' }}>*</span>
-                    {f.note&&<span style={{ color:'#7a8694',fontWeight:400,textTransform:'none',letterSpacing:0,marginLeft:6 }}>· {f.note}</span>}
-                  </label>
-                  <input value={f.val} onChange={e=>f.set(e.target.value)} placeholder={f.ph} type={f.type||'text'}
-                    style={{ width:'100%',boxSizing:'border-box',background:'#f8fafd',border:'1.5px solid rgba(0,119,182,0.15)',borderRadius:9,color:'#0d1117',fontSize:13,fontFamily:F,padding:'11px 14px',outline:'none',transition:'all .15s' }}
-                    onFocus={e=>{e.target.style.borderColor=BLUE;e.target.style.boxShadow='0 0 0 3px rgba(0,119,182,0.1)'}}
-                    onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.15)';e.target.style.boxShadow='none'}}/>
-                </div>
-              ))}
+              <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:14 }}>
+                {[{label:'Email address',val:em,set:setEm,ph:'you@example.com',type:'email',note:'Certificate delivery'},{label:'Phone number',val:ph,set:setPh,ph:'+31 6 00 000000',type:'tel'}].map(f=>(
+                  <div key={f.label}>
+                    <label style={{ fontSize:10, fontWeight:700, color:'#7a8694', textTransform:'uppercase', letterSpacing:'0.07em', display:'block', marginBottom:6, fontFamily:MONO }}>
+                      {f.label} <span style={{ color:'#b03425' }}>*</span>
+                      {f.note && <span style={{ color:'#7a8694', fontWeight:400, textTransform:'none', letterSpacing:0, marginLeft:6, fontFamily:F }}>· {f.note}</span>}
+                    </label>
+                    <input value={f.val} onChange={e=>f.set(e.target.value)} placeholder={f.ph} type={f.type||'text'}
+                      style={{ width:'100%', boxSizing:'border-box', background:'#fff', border:'1.5px solid rgba(0,119,182,0.16)', borderRadius:10, color:'#0d1117', fontSize:13, fontFamily:F, padding:'12px 14px', outline:'none', transition:'all .15s' }}
+                      onFocus={e=>{e.target.style.borderColor=BLUE;e.target.style.boxShadow='0 0 0 3px rgba(0,119,182,0.1)'}}
+                      onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.16)';e.target.style.boxShadow='none'}}/>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {err&&(
-            <div style={{ background:'rgba(192,57,43,0.06)',border:'1px solid rgba(192,57,43,0.22)',borderRadius:10,padding:'12px 16px',fontSize:12,color:'#b03425',display:'flex',alignItems:'center',gap:8,marginBottom:8,fontWeight:500 }}>
+            <div style={{ background:'#fae3df', border:'1px solid #eec3ba', borderRadius:10, padding:'12px 16px', fontSize:12, color:'#b03425', display:'flex', alignItems:'center', gap:8, marginBottom:8, fontWeight:500 }}>
               <AlertTriangle size={13} style={{ flexShrink:0 }}/> {err}
             </div>
           )}
