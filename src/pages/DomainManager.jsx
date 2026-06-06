@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow, differenceInMinutes, differenceInDays } from 'date-fns'
 import '../styles/design-v2.css'
+// DM Sans loaded via index.html or inline style tag in component
 import AddDomainWizard from '../components/AddDomainWizard'
 
 const SB_URL = import.meta.env.VITE_SUPABASE_URL || 'https://frthcwkntciaakqsppss.supabase.co'
@@ -56,11 +57,11 @@ function certHealth(cert) {
 // ── Status dot ─────────────────────────────────────────────────────────
 function StatusDot({ st, size = 8 }) {
   return (
-    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+    <span style={{ position:'relative', display:'inline-flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
       {st.pulse && (
-        <span style={{ position: 'absolute', width: size + 8, height: size + 8, borderRadius: '50%', background: st.dot + '30', animation: 'dotpulse 2s ease infinite' }} />
+        <span style={{ position:'absolute', width:size+10, height:size+10, borderRadius:'50%', background:st.dot+'28', animation:'dotpulse 2.4s ease infinite' }}/>
       )}
-      <span style={{ width: size, height: size, borderRadius: '50%', background: st.dot, position: 'relative' }} />
+      <span style={{ width:size, height:size, borderRadius:'50%', background:st.dot, position:'relative', boxShadow: st.pulse ? `0 0 0 2px ${st.dot}30` : 'none' }}/>
     </span>
   )
 }
@@ -175,125 +176,145 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
     : (st?.label === 'Online') ? 'rgba(0,0,0,0.08)'
     : 'var(--v2-border)'
 
+  const F2 = "'DM Sans','Inter',system-ui,sans-serif"
+  const MONO2 = "'JetBrains Mono','Fira Mono',monospace"
+
   return (
-    <div style={{ border: `0.5px solid ${borderColor}`, borderRadius: 10, overflow: 'hidden', marginBottom: 8, transition: 'border-color .15s' }}>
+    <div style={{ background:'#ffffff', border:`1px solid ${borderColor}`, borderRadius:14, overflow:'hidden', marginBottom:10, transition:'all .2s', boxShadow:'0 2px 8px rgba(0,119,182,0.06)', fontFamily:F2 }}
+      onMouseEnter={e=>{if(!open)e.currentTarget.style.boxShadow='0 4px 16px rgba(0,119,182,0.12)'}}
+      onMouseLeave={e=>{if(!open)e.currentTarget.style.boxShadow='0 2px 8px rgba(0,119,182,0.06)'}}>
 
       {/* ── Card header ── */}
       <div onClick={() => setOpen(v => !v)}
-        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', background: 'var(--v2-surface)', cursor: 'pointer' }}>
+        style={{ display:'flex', alignItems:'center', gap:14, padding:'16px 20px', cursor:'pointer', background: open ? 'rgba(0,119,182,0.02)' : '#ffffff', transition:'background .15s' }}>
 
         {/* Domain icon */}
-        <div style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--v2-surface-3)', border: '1px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <Globe size={15} color="var(--v2-text-3)" />
+        <div style={{ width:40, height:40, borderRadius:10, background:isExpired?'rgba(192,57,43,0.08)':isExpiring?'rgba(154,100,0,0.08)':'rgba(0,119,182,0.08)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+          <Globe size={17} color={isExpired?'#c0392b':isExpiring?'#9a6400':'#0077b6'} strokeWidth={1.8}/>
         </div>
 
         {/* Domain name + meta */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#111111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ fontSize:14, fontWeight:700, color:'#0d1117', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', letterSpacing:'-0.2px', fontFamily:MONO2 }}>
             {domain}
           </div>
-          <div style={{ fontSize: 11, color: '#555555', marginTop: 2, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            {cert && <span>{cert.issuer || 'RapidSSL'} · {cert.cert_type || 'DV'}</span>}
-            {cert?.install_method && <span style={{ color: '#111111', fontFamily: 'monospace' }}>{cert.install_method}</span>}
-            {cert?.auto_renew_enabled && <span style={{ color: '#00a550' }}>auto-renew</span>}
+          <div style={{ fontSize:11, color:'#7a8694', marginTop:3, display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
+            {cert && <span style={{ background:'rgba(0,119,182,0.07)', padding:'1px 7px', borderRadius:4, color:'#3d4a58', fontWeight:500 }}>{cert.issuer || 'RapidSSL'}</span>}
+            {cert?.install_method && <span style={{ background:'rgba(0,0,0,0.05)', padding:'1px 7px', borderRadius:4, color:'#3d4a58', fontFamily:MONO2, fontSize:10 }}>{cert.install_method}</span>}
+            {cert?.auto_renew_enabled && <span style={{ color:'#00a550', fontWeight:600, display:'flex', alignItems:'center', gap:3 }}><span style={{ width:5, height:5, borderRadius:'50%', background:'#00a550', display:'inline-block' }}></span>auto-renew</span>}
           </div>
         </div>
 
-        {/* Agent status pill (if agent linked) */}
+        {/* Agent status */}
         {st && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-            <StatusDot st={st} size={7} />
-            <span style={{ fontSize: 10, color: st.color, fontWeight: 500 }}>{st.label}</span>
+          <div style={{ display:'flex', alignItems:'center', gap:6, padding:'4px 10px', borderRadius:20, background:st.pulse?'rgba(0,165,80,0.08)':'rgba(0,0,0,0.05)', border:`1px solid ${st.pulse?'rgba(0,165,80,0.2)':'rgba(0,0,0,0.08)'}`, flexShrink:0 }}>
+            <StatusDot st={st} size={6}/>
+            <span style={{ fontSize:10, color:st.color, fontWeight:600, letterSpacing:'0.02em' }}>{st.label}</span>
           </div>
         )}
 
         {/* Cert health badge */}
-        <div style={{ padding: '3px 10px', borderRadius: 8, fontSize: 11, fontWeight: 600, color: health.color, background: health.bg, border: `0.5px solid ${health.border}`, flexShrink: 0 }}>
+        <div style={{ padding:'4px 12px', borderRadius:20, fontSize:11, fontWeight:700, color:health.color, background:health.bg, border:`1px solid ${health.border}`, flexShrink:0, letterSpacing:'0.02em' }}>
           {health.label}
         </div>
 
-        {open ? <ChevronUp size={14} color="var(--v2-text-3)" /> : <ChevronDown size={14} color="var(--v2-text-3)" />}
+        <div style={{ width:28, height:28, borderRadius:7, background:'rgba(0,119,182,0.06)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'background .15s' }}>
+          {open ? <ChevronUp size={13} color="#0077b6"/> : <ChevronDown size={13} color="#7a8694"/>}
+        </div>
       </div>
 
       {/* ── Expanded body ── */}
       {open && (
-        <div style={{ borderTop: `0.5px solid ${borderColor}`, background: 'var(--v2-surface)', animation: 'slideDown .18s ease' }}>
+        <div style={{ borderTop:`1px solid rgba(0,119,182,0.08)`, background:'#fafcff', animation:'slideDown .18s ease' }}>
 
           {/* Tab bar */}
-          <div style={{ display: 'flex', gap: 1, padding: '10px 16px 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+          <div style={{ display:'flex', gap:0, padding:'0 20px', borderBottom:'1px solid rgba(0,119,182,0.08)', background:'#ffffff' }}>
             {[
-              { id: 'overview', label: 'Overview',   icon: Globe },
-              { id: 'cert',     label: 'Certificate', icon: Shield },
-              { id: 'server',   label: 'Server',      icon: Server },
-              { id: 'jobs',     label: 'Jobs',        icon: Activity },
+              { id:'overview', label:'Overview',    icon:Globe },
+              { id:'cert',     label:'Certificate', icon:Shield },
+              { id:'server',   label:'Server',      icon:Server },
+              { id:'jobs',     label:'Jobs',        icon:Activity },
             ].map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => setTab(id)}
-                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', fontSize: 11, fontWeight: tab === id ? 500 : 400, cursor: 'pointer', fontFamily: 'inherit', background: 'none', border: 'none', borderBottom: tab === id ? '2px solid #2a6b5c' : '2px solid transparent', color: tab === id ? '#111111' : 'var(--v2-text-3)', transition: 'all .15s', marginBottom: '-0.5px' }}>
-                <Icon size={11} />{label}
+                style={{ display:'flex', alignItems:'center', gap:5, padding:'11px 14px', fontSize:12, fontWeight:tab===id?700:500, cursor:'pointer', fontFamily:F2, background:'none', border:'none', borderBottom:tab===id?'2px solid #0077b6':'2px solid transparent', color:tab===id?'#0077b6':'#7a8694', transition:'all .15s', marginBottom:'-1px', letterSpacing:'0.01em' }}>
+                <Icon size={12}/>{label}
               </button>
             ))}
           </div>
 
-          <div style={{ padding: '16px 16px' }}>
+          <div style={{ padding:'20px' }}>
 
             {/* ── OVERVIEW TAB ── */}
             {tab === 'overview' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 10 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(210px,1fr))', gap:12 }}>
 
                 {/* Cert summary */}
-                <div style={{ padding: '12px 14px', background: 'var(--v2-surface-3)', borderRadius: 8, border: `0.5px solid ${health.border}` }}>
-                  <div style={{ fontSize: 10, fontWeight: 600, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Certificate</div>
+                <div style={{ padding:'16px', background:'#ffffff', borderRadius:10, border:`1px solid ${health.border || 'rgba(0,119,182,0.12)'}`, boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
+                    <Shield size={12} color="#0077b6"/>
+                    <span style={{ fontSize:10, fontWeight:700, color:'#0077b6', textTransform:'uppercase', letterSpacing:'0.5px' }}>Certificate</span>
+                  </div>
                   {cert ? (
                     <>
-                      <div style={{ fontSize: 12, fontWeight: 500, color: '#111111', marginBottom: 4 }}>{cert.domain}</div>
-                      <div style={{ fontSize: 11, color: '#555555', marginBottom: 3 }}>Issued by {cert.issuer || 'RapidSSL'}</div>
-                      <div style={{ fontSize: 11, color: health.color, fontWeight: 500 }}>
-                        {isExpired ? 'Expired' : daysLeft_ !== null ? `Expires in ${daysLeft_} days` : 'Active'}
+                      <div style={{ fontSize:13, fontWeight:600, color:'#0d1117', marginBottom:4, fontFamily:MONO2, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</div>
+                      <div style={{ fontSize:11, color:'#7a8694', marginBottom:5 }}>Issued by {cert.issuer || 'RapidSSL'}</div>
+                      <div style={{ fontSize:12, fontWeight:600, color:health.color, background:health.bg, padding:'3px 8px', borderRadius:6, display:'inline-block' }}>
+                        {isExpired ? 'Expired' : daysLeft_ !== null ? `${daysLeft_}d remaining` : 'Active'}
                       </div>
                       {cert.auto_renew_enabled && (
-                        <div style={{ fontSize: 10, color: '#00a550', marginTop: 3 }}>Auto-renew enabled</div>
+                        <div style={{ fontSize:10, color:'#00a550', marginTop:6, display:'flex', alignItems:'center', gap:4 }}>
+                          <span style={{ width:5, height:5, borderRadius:'50%', background:'#00a550', display:'inline-block' }}></span>Auto-renew on
+                        </div>
                       )}
                     </>
                   ) : (
-                    <div style={{ fontSize: 11, color: '#555555' }}>No certificate issued yet</div>
+                    <div style={{ fontSize:12, color:'#7a8694' }}>No certificate issued yet</div>
                   )}
                 </div>
 
-                {/* Server / install method */}
-                <div style={{ padding: '12px 14px', background: 'var(--v2-surface-3)', borderRadius: 8, border: '1px solid var(--v2-border)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 600, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>Server</div>
+                {/* Server */}
+                <div style={{ padding:'16px', background:'#ffffff', borderRadius:10, border:'1px solid rgba(0,119,182,0.12)', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
+                    <Server size={12} color="#0077b6"/>
+                    <span style={{ fontSize:10, fontWeight:700, color:'#0077b6', textTransform:'uppercase', letterSpacing:'0.5px' }}>Server</span>
+                  </div>
                   {agent ? (
                     <>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                        <StatusDot st={st} size={7} />
-                        <span style={{ fontSize: 12, fontWeight: 500, color: '#111111' }}>{agent.nickname || agent.hostname}</span>
+                      <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:5 }}>
+                        <StatusDot st={st} size={7}/>
+                        <span style={{ fontSize:13, fontWeight:600, color:'#0d1117', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{agent.nickname || agent.hostname}</span>
                       </div>
-                      <div style={{ fontSize: 11, color: '#555555', fontFamily: 'monospace' }}>{agent.ip_address}</div>
-                      <div style={{ fontSize: 11, color: '#555555', marginTop: 2 }}>{agent.os} · {agent.web_server}</div>
-                      <div style={{ fontSize: 10, color: '#555555', marginTop: 3 }}>Seen {fmtRel(agent.last_seen_at)}</div>
+                      <div style={{ fontSize:11, color:'#7a8694', fontFamily:MONO2 }}>{agent.ip_address}</div>
+                      <div style={{ fontSize:11, color:'#7a8694', marginTop:2 }}>{agent.os} · {agent.web_server}</div>
+                      <div style={{ fontSize:10, color:'#7a8694', marginTop:4 }}>Last seen {fmtRel(agent.last_seen_at)}</div>
                     </>
                   ) : cert?.install_method === 'cpanel' ? (
                     <>
-                      <div style={{ fontSize: 12, fontWeight: 500, color: '#111111', marginBottom: 4 }}>cPanel</div>
-                      <div style={{ fontSize: 11, color: '#00a550' }}>Auto-installed via cPanel API</div>
+                      <div style={{ fontSize:13, fontWeight:600, color:'#0d1117', marginBottom:5 }}>cPanel</div>
+                      <div style={{ fontSize:11, color:'#00a550', display:'flex', alignItems:'center', gap:4 }}>
+                        <CheckCircle size={11} color="#00a550"/>Auto-installed via cPanel API
+                      </div>
                     </>
                   ) : (
-                    <div style={{ fontSize: 11, color: '#555555' }}>No server linked yet</div>
+                    <div style={{ fontSize:12, color:'#7a8694' }}>No server linked yet</div>
                   )}
                 </div>
 
                 {/* DNS */}
-                <div style={{ padding: '12px 14px', background: 'var(--v2-surface-3)', borderRadius: 8, border: '1px solid var(--v2-border)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 600, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 8 }}>DNS</div>
+                <div style={{ padding:'16px', background:'#ffffff', borderRadius:10, border:'1px solid rgba(0,119,182,0.12)', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
+                    <Wifi size={12} color="#0077b6"/>
+                    <span style={{ fontSize:10, fontWeight:700, color:'#0077b6', textTransform:'uppercase', letterSpacing:'0.5px' }}>DNS</span>
+                  </div>
                   {dnsCredentials.length > 0 ? (
                     dnsCredentials.map(d => (
-                      <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                        <CheckCircle size={11} color="#4ade80" />
-                        <span style={{ fontSize: 11, color: '#111111' }}>{d.provider || d.label}</span>
+                      <div key={d.id} style={{ display:'flex', alignItems:'center', gap:6, marginBottom:5 }}>
+                        <CheckCircle size={11} color="#00a550"/>
+                        <span style={{ fontSize:12, color:'#0d1117', fontWeight:500 }}>{d.provider || d.label}</span>
                       </div>
                     ))
                   ) : (
-                    <div style={{ fontSize: 11, color: '#555555' }}>No DNS provider connected</div>
+                    <div style={{ fontSize:12, color:'#7a8694' }}>No DNS provider connected</div>
                   )}
                 </div>
 
@@ -605,47 +626,58 @@ export default function DomainManager({ user, nav }) {
   const expiringSoon = certs.filter(c => { const d = daysLeft(c.expires_at); return d !== null && d >= 0 && d <= 30 }).length
   const liveOnServer = certs.filter(c => c.is_live_on_server).length
 
+  const F = "'DM Sans','Inter',system-ui,sans-serif"
+  const MONO = "'JetBrains Mono','Fira Mono',monospace"
+
   return (
-    <div className="v2-page">
-      <div className="v2-container" style={{ maxWidth: 960 }}>
+    <div style={{ minHeight:'100vh', background:'#f0f4fa', fontFamily:F }}>
+      <div style={{ maxWidth:980, margin:'0 auto', padding:'32px 24px 80px' }}>
 
         {showInstall && <InstallModal onClose={() => setShowInstall(false)} />}
         {showWizard && <AddDomainWizard user={user} onClose={() => { setShowWizard(false); load() }} nav={nav} />}
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20, paddingTop: 8, gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:28, gap:12, flexWrap:'wrap' }}>
           <div>
-            <h1 className="v2-h1" style={{ fontSize: 22 }}>Domain Manager</h1>
-            <p style={{ fontSize: 13, color: '#555555', marginTop: 4 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:5 }}>
+              <div style={{ width:38, height:38, borderRadius:10, background:'linear-gradient(135deg,#0077b6,#0091d6)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(0,119,182,0.3)' }}>
+                <Globe size={18} color="#ffffff" strokeWidth={1.8}/>
+              </div>
+              <h1 style={{ fontSize:24, fontWeight:700, color:'#0d1117', letterSpacing:'-0.4px', margin:0 }}>Domain Manager</h1>
+            </div>
+            <p style={{ fontSize:13, color:'#7a8694', marginTop:0, marginLeft:48 }}>
               Every domain — its certificate, server, agent and jobs in one place
             </p>
           </div>
-          <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
-            <button style={{display:'inline-flex',alignItems:'center',gap:5,padding:'5px 11px',borderRadius:6,border:'1px solid rgba(0,0,0,0.15)',background:'#ffffff',color:'#444444',fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'inherit',transition:'all .15s'}} onClick={refresh} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <RefreshCw size={11} style={refreshing ? { animation: 'spin .8s linear infinite' } : {}} />
+          <div style={{ display:'flex', gap:8, flexShrink:0, flexWrap:'wrap', alignItems:'center' }}>
+            <button onClick={refresh}
+              style={{ display:'flex', alignItems:'center', gap:5, padding:'8px 14px', borderRadius:8, border:'1px solid rgba(0,119,182,0.2)', background:'#ffffff', color:'#3d4a58', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:F, transition:'all .15s', boxShadow:'0 1px 3px rgba(0,0,0,0.06)' }}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(0,119,182,0.4)';e.currentTarget.style.background='rgba(0,119,182,0.04)'}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(0,119,182,0.2)';e.currentTarget.style.background='#ffffff'}}>
+              <RefreshCw size={12} style={refreshing ? { animation:'spin .8s linear infinite' } : {}} />
               Refresh
             </button>
             <button onClick={() => setShowWizard(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#0077b6', color: '#111111', border: 'none', padding: '7px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'background .15s' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#0091d6'}
-              onMouseLeave={e => e.currentTarget.style.background = '#0077b6'}>
-              <Plus size={12} /> Add domain
+              style={{ display:'flex', alignItems:'center', gap:6, background:'#0077b6', color:'#ffffff', border:'none', padding:'9px 18px', borderRadius:8, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:F, transition:'all .15s', boxShadow:'0 4px 12px rgba(0,119,182,0.3)' }}
+              onMouseEnter={e=>{e.currentTarget.style.background='#0068a0';e.currentTarget.style.transform='translateY(-1px)'}}
+              onMouseLeave={e=>{e.currentTarget.style.background='#0077b6';e.currentTarget.style.transform='translateY(0)'}}>
+              <Plus size={13}/> Add domain
             </button>
           </div>
         </div>
 
         {/* Stats strip */}
         {!loading && (certs.length > 0 || agents.length > 0) && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))', gap: 8, marginBottom: 20 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:24 }}>
             {[
-              { label: 'Active domains',   val: domains.length,    color: '#111111' },
-              { label: 'Agents online',    val: online,            color: online > 0 ? '#00a550' : '#b0a8a0' },
-              { label: 'Live on server',   val: liveOnServer,      color: liveOnServer > 0 ? '#00a550' : '#b0a8a0' },
-              { label: 'Expiring ≤30d',    val: expiringSoon,      color: expiringSoon > 0 ? '#111111' : '#00a550' },
-            ].map(({ label, val, color }) => (
-              <div key={label} className="v2-card" style={{ padding: '11px 14px' }}>
-                <div style={{ fontSize: 22, fontWeight: 500, color, fontFamily: 'monospace' }}>{val}</div>
-                <div style={{ fontSize: 11, color: '#555555', marginTop: 3 }}>{label}</div>
+              { label:'Active domains', val:domains.length,   color:'#0077b6',  bg:'rgba(0,119,182,0.06)',  border:'rgba(0,119,182,0.15)' },
+              { label:'Agents online',  val:online,           color:online>0?'#00a550':'#7a8694', bg:online>0?'rgba(0,165,80,0.06)':'rgba(0,0,0,0.03)', border:online>0?'rgba(0,165,80,0.15)':'rgba(0,0,0,0.08)' },
+              { label:'Live on server', val:liveOnServer,     color:liveOnServer>0?'#00a550':'#7a8694', bg:liveOnServer>0?'rgba(0,165,80,0.06)':'rgba(0,0,0,0.03)', border:liveOnServer>0?'rgba(0,165,80,0.15)':'rgba(0,0,0,0.08)' },
+              { label:'Expiring ≤30d',  val:expiringSoon,     color:expiringSoon>0?'#c0392b':'#00a550', bg:expiringSoon>0?'rgba(192,57,43,0.06)':'rgba(0,165,80,0.06)', border:expiringSoon>0?'rgba(192,57,43,0.15)':'rgba(0,165,80,0.15)' },
+            ].map(({ label, val, color, bg, border }) => (
+              <div key={label} style={{ padding:'16px 20px', borderRadius:12, background:bg, border:`1px solid ${border}`, boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
+                <div style={{ fontSize:32, fontWeight:800, color, fontFamily:MONO, lineHeight:1, letterSpacing:'-1px', marginBottom:5 }}>{val}</div>
+                <div style={{ fontSize:11, color:'#7a8694', fontWeight:500, letterSpacing:'0.02em' }}>{label}</div>
               </div>
             ))}
           </div>
@@ -653,17 +685,19 @@ export default function DomainManager({ user, nav }) {
 
         {/* Search */}
         {!loading && domains.length > 3 && (
-          <div style={{ position: 'relative', marginBottom: 14 }}>
-            <Search size={13} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#555555' }} />
+          <div style={{ position:'relative', marginBottom:16 }}>
+            <Search size={14} style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', color:'#7a8694' }}/>
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search domains…"
-              style={{ width: '100%', background: 'var(--v2-surface)', border: '1px solid var(--v2-border)', borderRadius: 8, padding: '9px 12px 9px 34px', fontSize: 13, color: '#111111', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}
+              style={{ width:'100%', background:'#ffffff', border:'1px solid rgba(0,119,182,0.15)', borderRadius:10, padding:'11px 14px 11px 38px', fontSize:13, color:'#0d1117', fontFamily:F, outline:'none', boxSizing:'border-box', boxShadow:'0 1px 4px rgba(0,0,0,0.04)', transition:'border-color .15s' }}
+              onFocus={e=>e.currentTarget.style.borderColor='rgba(0,119,182,0.4)'}
+              onBlur={e=>e.currentTarget.style.borderColor='rgba(0,119,182,0.15)'}
             />
             {search && (
-              <button onClick={() => setSearch('')} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#555555', display: 'flex', alignItems: 'center' }}>
-                <X size={12} />
+              <button onClick={() => setSearch('')} style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#7a8694', display:'flex', alignItems:'center' }}>
+                <X size={13}/>
               </button>
             )}
           </div>
@@ -671,21 +705,23 @@ export default function DomainManager({ user, nav }) {
 
         {/* Domain list */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: '#555555' }}>
-            <RefreshCw size={22} style={{ animation: 'spin .8s linear infinite', margin: '0 auto 10px', display: 'block' }} />
-            Loading domains…
+          <div style={{ textAlign:'center', padding:'64px 0', color:'#7a8694', fontFamily:F }}>
+            <RefreshCw size={24} style={{ animation:'spin .8s linear infinite', margin:'0 auto 12px', display:'block', color:'#0077b6' }}/>
+            <div style={{ fontSize:13, fontWeight:500 }}>Loading domains…</div>
           </div>
         ) : domains.length === 0 ? (
-          <div className="v2-card" style={{ padding: 'clamp(16px,16vw,48px) 24px', textAlign: 'center' }}>
-            <Globe size={36} color="var(--v2-text-3)" strokeWidth={1.5} style={{ margin: '0 auto 14px', display: 'block' }} />
-            <div style={{ fontSize: 15, fontWeight: 500, color: '#111111', marginBottom: 6 }}>No domains yet</div>
-            <div style={{ fontSize: 12, color: '#555555', maxWidth: 360, margin: '0 auto 22px', lineHeight: 1.7 }}>
-              Issue your first certificate from the Dashboard. Once issued, your domain will appear here with full control.
+          <div style={{ background:'#ffffff', border:'1px solid rgba(0,119,182,0.12)', borderRadius:16, padding:'56px 24px', textAlign:'center', boxShadow:'0 2px 12px rgba(0,119,182,0.06)' }}>
+            <div style={{ width:64, height:64, borderRadius:16, background:'rgba(0,119,182,0.08)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 18px' }}>
+              <Globe size={28} color="#0077b6" strokeWidth={1.5}/>
+            </div>
+            <div style={{ fontSize:17, fontWeight:700, color:'#0d1117', marginBottom:8, letterSpacing:'-0.2px' }}>No domains yet</div>
+            <div style={{ fontSize:13, color:'#7a8694', maxWidth:340, margin:'0 auto 24px', lineHeight:1.75 }}>
+              Issue your first certificate from the Dashboard. Once issued, your domain appears here with full control.
             </div>
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '32px 0', color: '#555555', fontSize: 13 }}>
-            No domains match "{search}"
+          <div style={{ textAlign:'center', padding:'40px 0', color:'#7a8694', fontSize:13, fontFamily:F }}>
+            No domains match &quot;{search}&quot;
           </div>
         ) : (
           <>
@@ -704,17 +740,17 @@ export default function DomainManager({ user, nav }) {
 
             {/* Add another server nudge */}
             <div onClick={() => setShowInstall(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 16px', border: '0.5px dashed var(--v2-border)', borderRadius: 10, background: 'var(--v2-surface-3)', cursor: 'pointer', marginTop: 4, transition: 'border-color .15s' }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = '#111111'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = ''}>
-              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--v2-surface)', border: '1px solid var(--v2-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Server size={16} color="var(--v2-text-3)" />
+              style={{ display:'flex', alignItems:'center', gap:16, padding:'16px 20px', border:'1.5px dashed rgba(0,119,182,0.2)', borderRadius:12, background:'rgba(0,119,182,0.02)', cursor:'pointer', marginTop:8, transition:'all .18s' }}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(0,119,182,0.45)';e.currentTarget.style.background='rgba(0,119,182,0.05)'}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(0,119,182,0.2)';e.currentTarget.style.background='rgba(0,119,182,0.02)'}}>
+              <div style={{ width:40, height:40, borderRadius:10, background:'rgba(0,119,182,0.08)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <Server size={18} color="#0077b6"/>
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: '#333333' }}>Got another server?</div>
-                <div style={{ fontSize: 11, color: '#555555', marginTop: 1 }}>Install the SSLVault agent in 60 seconds — auto-renewal works immediately.</div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:13, fontWeight:600, color:'#0d1117', letterSpacing:'-0.1px' }}>Got another server?</div>
+                <div style={{ fontSize:12, color:'#7a8694', marginTop:2 }}>Install the SSLVault agent in 60 seconds — auto-renewal works immediately.</div>
               </div>
-              <span style={{ fontSize: 12, color: '#111111', fontWeight: 500, flexShrink: 0 }}>Install agent →</span>
+              <span style={{ fontSize:12, color:'#0077b6', fontWeight:700, flexShrink:0, display:'flex', alignItems:'center', gap:4 }}>Install agent <span style={{fontSize:14}}>→</span></span>
             </div>
           </>
         )}
@@ -728,9 +764,11 @@ export default function DomainManager({ user, nav }) {
 
       </div>
       <style>{`
-        @keyframes spin     { from{transform:rotate(0)}   to{transform:rotate(360deg)} }
-        @keyframes slideDown{ from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes dotpulse { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:0;transform:scale(2)} }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+        @keyframes spin      { from{transform:rotate(0)}   to{transform:rotate(360deg)} }
+        @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes dotpulse  { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:0;transform:scale(2.2)} }
+        @keyframes fadeIn    { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
       `}</style>
     </div>
   )
