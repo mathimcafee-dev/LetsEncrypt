@@ -361,10 +361,10 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
       )}
 
       {/* Body */}
-      <div style={{ maxWidth:embedded?'100%':1100, margin:'0 auto', padding:embedded?'20px 20px 40px':'32px 32px 72px', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr clamp(280px,30vw,360px)', gap:28, alignItems:'start', fontFamily:F }}>
+      <div style={{ maxWidth:embedded?'100%':1100, margin:'0 auto', padding:embedded?'16px 20px 40px':'32px 32px 72px', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr clamp(280px,30vw,340px)', gap:24, alignItems:'start', fontFamily:F }}>
 
         <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
-          {!embedded&&<StepBar current={1}/>}
+          <StepBar current={1}/>
 
           {/* Cert type card */}
           <div style={{ background:'#fff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', marginBottom:18, boxShadow:'0 2px 10px rgba(0,119,182,0.06)' }}>
@@ -375,16 +375,20 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:20 }}>
                 {PRODUCTS.map(p=>(
                   <div key={p.code} onClick={()=>setProduct(p.code)}
-                    style={{ padding:'16px', borderRadius:11, cursor:'pointer', transition:'all .18s',
+                    style={{ padding:'16px 14px', borderRadius:12, cursor:'pointer', transition:'all .18s',
                       background:product===p.code?BLUE_BG:'#f8fafd',
-                      border:product===p.code?`1.5px solid ${BLUE}`:`1.5px solid rgba(0,119,182,0.12)`,
-                      boxShadow:product===p.code?`0 0 0 3px rgba(0,119,182,0.1)`:undefined }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:9, marginBottom:6 }}>
-                      <div style={{ width:16,height:16,borderRadius:'50%',border:product===p.code?`5px solid ${BLUE}`:'2px solid rgba(0,119,182,0.25)',transition:'all .15s',flexShrink:0 }}/>
+                      border:product===p.code?`2px solid ${BLUE}`:`1.5px solid rgba(0,119,182,0.12)`,
+                      boxShadow:product===p.code?`0 0 0 3px rgba(0,119,182,0.08), 0 2px 8px rgba(0,119,182,0.1)`:undefined,
+                      position:'relative' }}>
+                    {product===p.code&&<div style={{ position:'absolute',top:10,right:10,width:18,height:18,borderRadius:'50%',background:BLUE,display:'flex',alignItems:'center',justifyContent:'center' }}><Check size={10} color="#fff"/></div>}
+                    <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:6 }}>
+                      <ShieldCheck size={16} color={product===p.code?BLUE:'#94a3b8'} strokeWidth={2}/>
                       <span style={{ fontSize:13,fontWeight:700,color:'#0d1117' }}>{p.name}</span>
-                      <span style={{ fontSize:9,fontWeight:800,background:product===p.code?'rgba(0,119,182,0.12)':BLUE_BG,color:BLUE,borderRadius:4,padding:'2px 6px',letterSpacing:'0.03em',border:`1px solid rgba(0,119,182,0.2)` }}>{p.badge}</span>
                     </div>
-                    <div style={{ fontSize:11,color:'#7a8694',paddingLeft:25,lineHeight:1.5 }}>{p.sub}</div>
+                    <div style={{ display:'inline-flex',alignItems:'center',gap:4,background:product===p.code?'rgba(0,119,182,0.12)':'rgba(0,119,182,0.06)',border:`1px solid ${product===p.code?'rgba(0,119,182,0.25)':'rgba(0,119,182,0.12)'}`,borderRadius:5,padding:'1px 7px',marginBottom:6 }}>
+                      <span style={{ fontSize:9,fontWeight:800,color:BLUE,letterSpacing:'0.05em' }}>{p.badge}</span>
+                    </div>
+                    <div style={{ fontSize:11,color:'#7a8694',lineHeight:1.5 }}>{p.sub}</div>
                   </div>
                 ))}
               </div>
@@ -397,11 +401,11 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
                 </label>
                 {profileLoading&&<div style={{ fontSize:10,color:'#7a8694',display:'flex',alignItems:'center',gap:5,marginBottom:6 }}><div style={{ width:8,height:8,borderRadius:'50%',border:'1.5px solid rgba(0,119,182,0.25)',borderTopColor:BLUE,animation:'spin .7s linear infinite' }}/> Loading profile…</div>}
                 <div style={{ position:'relative' }}>
-                  <Globe size={14} style={{ position:'absolute',left:13,top:'50%',transform:'translateY(-50%)',color:'#7a8694',pointerEvents:'none' }}/>
+                  <Globe size={15} style={{ position:'absolute',left:14,top:'50%',transform:'translateY(-50%)',color:'#7a8694',pointerEvents:'none' }}/>
                   <input value={domain} onChange={e=>setD(e.target.value)} placeholder="yourdomain.com"
-                    style={{ width:'100%',boxSizing:'border-box',background:'#f8fafd',border:`1.5px solid rgba(0,119,182,0.15)`,borderRadius:9,color:'#0d1117',fontSize:15,fontFamily:MONO,fontWeight:600,padding:'12px 14px 12px 38px',outline:'none',transition:'all .15s' }}
-                    onFocus={e=>{e.target.style.borderColor=BLUE;e.target.style.boxShadow='0 0 0 3px rgba(0,119,182,0.1)'}}
-                    onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.15)';e.target.style.boxShadow='none'}}/>
+                    style={{ width:'100%',boxSizing:'border-box',background:'#f8fafd',border:`1.5px solid rgba(0,119,182,0.15)`,borderRadius:10,color:'#0d1117',fontSize:16,fontFamily:MONO,fontWeight:700,padding:'14px 16px 14px 40px',outline:'none',transition:'all .15s',letterSpacing:'-0.2px' }}
+                    onFocus={e=>{e.target.style.borderColor=BLUE;e.target.style.boxShadow='0 0 0 3px rgba(0,119,182,0.1)';e.target.style.background='#fff'}}
+                    onBlur={e=>{e.target.style.borderColor='rgba(0,119,182,0.15)';e.target.style.boxShadow='none';e.target.style.background='#f8fafd'}}/>
                 </div>
               </div>
 
@@ -496,166 +500,105 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
 
   // ── DV ──────────────────────────────────────────────────────────────────────
   if (step === 'dv' && ord) return (
-    <div style={{ minHeight: '100vh', background: 'transparent' }}>
-      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.05)',
-        padding: '0 32px', height: 52, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Shield size={16} color="#0077b6"/>
-        <span style={{ fontSize:13, fontWeight: 600, color: '#111111' }}>Validate Domain Ownership</span>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, alignItems: 'center' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background:'#f0f4fa',
-            boxShadow: '0 0 0 3px rgba(245,158,11,0.2)', animation: 'pulse 2s infinite' }}/>
-          <span style={{ fontSize:11, color: '#111111', fontWeight: 500 }}>Awaiting DNS validation</span>
-        </div>
-      </div>
+    <div style={{ minHeight:'100vh', background:embedded?'transparent':'#f0f4fa', fontFamily:F }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}`}</style>
 
-      <div style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.04)',
-        padding: '0 32px', display: 'flex', alignItems: 'center', gap: 4, height: 40 }}>
-        {['Configure', 'Validate DNS', 'Done'].map((s, i) => (
-          <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <div style={{ width: 18, height: 18, borderRadius: '50%',
-              background: i === 0 ? '#111111' : i === 1 ? '#111111' : 'rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 9, fontWeight: 700, color: '#111111' }}>
-              {i === 0 ? <Check size={10}/> : i + 1}
-            </div>
-            <span style={{ fontSize:11, fontWeight: i === 1 ? 600 : 400,
-              color: i === 0 ? '#111111' : i === 1 ? 'rgba(240,237,232,0.12)' : '#111111' }}>{s}</span>
-            {i < 2 && <div style={{ width: 24, height: 1, background: i === 0 ? '#111111' : 'rgba(0,0,0,0.05)', margin: '0 4px' }}/>}
-          </div>
-        ))}
-      </div>
+      <div style={{ maxWidth:720, margin:'0 auto', padding:'28px 24px 60px' }}>
+        <StepBar current={2}/>
 
-      <div style={{ maxWidth: 720, margin: '0 auto', padding:'min(40px,5vw) min(32px,4vw)' }}>
-        <div style={{ marginBottom: 28, textAlign: 'center' }}>
-          <div style={{ fontSize:22, fontWeight: 800, color: '#111111', letterSpacing: '-0.4px', marginBottom: 8 }}>
-            Add this TXT record to prove ownership
+        {/* Status badge + title */}
+        <div style={{ marginBottom:28 }}>
+          <div style={{ display:'inline-flex',alignItems:'center',gap:7,background:'rgba(245,158,11,0.08)',border:'1px solid rgba(245,158,11,0.22)',borderRadius:20,padding:'5px 14px',marginBottom:16 }}>
+            <div style={{ width:7,height:7,borderRadius:'50%',background:'#f59e0b',animation:'pulse 2s infinite' }}/>
+            <span style={{ fontSize:11,fontWeight:700,color:'#9a6400',letterSpacing:'0.04em' }}>AWAITING DNS VALIDATION</span>
           </div>
-          <div style={{ fontSize:13, color: '#b5aea8', lineHeight: 1.6 }}>
-            Add a <strong style={{ color: '#555555' }}>TXT record</strong> to your DNS for{' '}
-            <strong style={{ color: '#111111', fontFamily: 'monospace' }}>{ord.domain || clean(domain)}</strong>
-          </div>
+          <h2 style={{ fontSize:24,fontWeight:800,color:'#0d1117',letterSpacing:'-0.4px',margin:'0 0 8px',fontFamily:F }}>Add a TXT record to prove ownership</h2>
+          <p style={{ fontSize:13,color:'#7a8694',margin:0,lineHeight:1.6 }}>
+            Add a <strong style={{ color:'#0d1117' }}>TXT record</strong> to your DNS for{' '}
+            <strong style={{ color:BLUE,fontFamily:MONO }}>{ord.domain||clean(domain)}</strong>
+          </p>
         </div>
 
         {/* DNS record card */}
-        <div style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.06)',
-          borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
-          <div style={{ background: 'transparent', padding: '10px 16px',
-            display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-            {['#0077b6','#ffbd2e','#27c93f'].map(c => (
-              <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, display: 'block' }}/>
-            ))}
-            <span style={{ fontSize:11, color: '#b5aea8', fontFamily: 'monospace', marginLeft: 8 }}>DNS record · TXT</span>
-            <span style={{ marginLeft: 'auto', fontFamily: 'monospace', fontSize:10, color: '#111111' }}>
-              GGS #{ord.ggs_order_id || '—'}
-            </span>
+        <div style={{ background:'#ffffff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', marginBottom:20, boxShadow:'0 2px 12px rgba(0,119,182,0.08)' }}>
+          <div style={{ background:BLUE_BG, padding:'11px 18px', display:'flex', alignItems:'center', gap:7, borderBottom:`1px solid ${BORDER}` }}>
+            <div style={{ display:'flex', gap:5 }}>
+              {['#c0392b','#f59e0b','#00a550'].map(c=><span key={c} style={{ width:9,height:9,borderRadius:'50%',background:c,display:'block' }}/>)}
+            </div>
+            <span style={{ fontSize:11,fontWeight:600,color:'#3d4a58',fontFamily:MONO,marginLeft:5 }}>DNS record · TXT</span>
+            <span style={{ marginLeft:'auto',fontFamily:MONO,fontSize:10,fontWeight:700,color:BLUE }}>GGS #{ord.ggs_order_id||'—'}</span>
           </div>
-          <div style={{ padding: '4px 0' }}>
+          <div>
             {[
-              { k: 'Name',  v: ord.dcv_txt_name  || ord.dcv_cname_name,  copy: true, loading: !(ord.dcv_txt_name  || ord.dcv_cname_name) },
-              { k: 'Type',  v: 'TXT', accent: true },
-              { k: 'Value', v: ord.dcv_txt_value || ord.dcv_cname_value, copy: true, loading: !(ord.dcv_txt_value || ord.dcv_cname_value) },
-              { k: 'TTL',   v: '300 seconds' },
-            ].map(({ k, v, copy, accent, loading }) => (
-              <div key={k} style={{ display: 'grid', gridTemplateColumns: '70px 1fr auto',
-                alignItems: 'center', padding: '10px 18px',
-                borderBottom: '1px solid rgba(0,0,0,0.03)' }}>
-                <span style={{ fontSize:10, fontWeight: 700, color: '#111111',
-                  textTransform: 'uppercase', letterSpacing: '0.4px' }}>{k}</span>
-                <span style={{ fontSize:12, fontFamily: 'monospace',
-                  color: loading ? '#111111' : accent ? '#0077b6' : '#888888',
-                  wordBreak: 'break-all', lineHeight: 1.5 }}>
+              {k:'Name',  v:ord.dcv_txt_name||ord.dcv_cname_name,   copy:true, loading:!(ord.dcv_txt_name||ord.dcv_cname_name)},
+              {k:'Type',  v:'TXT', accent:true},
+              {k:'Value', v:ord.dcv_txt_value||ord.dcv_cname_value, copy:true, loading:!(ord.dcv_txt_value||ord.dcv_cname_value)},
+              {k:'TTL',   v:'300 seconds'},
+            ].map(({k,v,copy,accent,loading})=>(
+              <div key={k} style={{ display:'grid', gridTemplateColumns:'68px 1fr auto', alignItems:'center', padding:'12px 18px', borderBottom:`1px solid ${BORDER}` }}>
+                <span style={{ fontSize:10,fontWeight:800,color:'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em' }}>{k}</span>
+                <span style={{ fontSize:12,fontFamily:MONO,color:loading?'#7a8694':accent?BLUE:'#0d1117',wordBreak:'break-all',lineHeight:1.5,fontWeight:accent?700:400 }}>
                   {loading
-                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        <RefreshCw size={11} className="spin"/>
-                        {ggsStatus === 'processing' ? 'GGS processing order…' : polling ? 'Fetching from RapidSSL…' : 'Waiting…'}
+                    ? <span style={{ display:'inline-flex',alignItems:'center',gap:6,color:'#7a8694' }}>
+                        <div style={{ width:11,height:11,borderRadius:'50%',border:'1.5px solid rgba(0,119,182,0.2)',borderTopColor:BLUE,animation:'spin .7s linear infinite' }}/>
+                        {ggsStatus==='processing'?'GGS processing…':polling?'Fetching from RapidSSL…':'Waiting…'}
                       </span>
                     : v}
                 </span>
-                {copy && v && !loading && <CopyBtn text={v}/>}
+                {copy&&v&&!loading&&<CopyBtn text={v}/>}
               </div>
             ))}
           </div>
 
-          {!(ord?.dcv_txt_value || ord?.dcv_cname_value) && (
-            <div style={{ padding: '10px 18px', borderTop: '1px solid rgba(0,0,0,0.05)',
-              background: 'rgba(59,130,246,0.06)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <RefreshCw size={11} className="spin" style={{ color: '#93c5fd', flexShrink: 0 }}/>
-              <span style={{ fontSize:11, color: '#93c5fd', lineHeight: 1.5 }}>
-                RapidSSL is provisioning your DNS validation record. This typically takes 1–5 minutes. Checking automatically every 5 seconds — no action needed.
+          {!(ord?.dcv_txt_value||ord?.dcv_cname_value)&&(
+            <div style={{ padding:'12px 18px',background:BLUE_BG,display:'flex',alignItems:'center',gap:8 }}>
+              <div style={{ width:11,height:11,borderRadius:'50%',border:'1.5px solid rgba(0,119,182,0.2)',borderTopColor:BLUE,animation:'spin .7s linear infinite',flexShrink:0 }}/>
+              <span style={{ fontSize:11,color:'#3d4a58',lineHeight:1.6 }}>RapidSSL is provisioning your DNS record. Checking automatically every 5 seconds — no action needed.</span>
+            </div>
+          )}
+          {res?.dns_auto&&(
+            <div style={{ padding:'12px 18px',background:res.dns_auto.ok?'rgba(0,165,80,0.05)':'rgba(192,57,43,0.05)',display:'flex',alignItems:'flex-start',gap:8 }}>
+              {res.dns_auto.ok?<Check size={13} style={{ color:'#00a550',flexShrink:0,marginTop:1 }}/>:<AlertTriangle size={13} style={{ color:'#c0392b',flexShrink:0,marginTop:1 }}/>}
+              <span style={{ fontSize:11,color:res.dns_auto.ok?'#00a550':'#c0392b',lineHeight:1.6 }}>
+                {res.dns_auto.ok?`Record added via ${res.dns_auto.provider}. Checking every 5 seconds…`:res.dns_auto.message}
               </span>
             </div>
           )}
-          {res?.dns_auto && (
-            <div style={{ padding: '10px 18px', borderTop: '1px solid rgba(0,0,0,0.05)',
-              background: res.dns_auto.ok ? 'rgba(52,211,153,0.06)' : 'rgba(220,38,38,0.06)',
-              display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-              {res.dns_auto.ok
-                ? <Check size={12} style={{ color: '#0077b6', flexShrink: 0, marginTop: 1 }}/>
-                : <AlertTriangle size={12} style={{ color: '#0077b6', flexShrink: 0, marginTop: 1 }}/>}
-              <span style={{ fontSize:11, color: res.dns_auto.ok ? '#0077b6' : '#0077b6', lineHeight: 1.5 }}>
-                {res.dns_auto.ok
-                  ? `Record added via ${res.dns_auto.provider}. Checking automatically every 5 seconds…`
-                  : res.dns_auto.message}
-              </span>
-            </div>
-          )}
-          {res && res.ggs_status && res.ggs_status !== 'active' && !res.dns_auto && (
-            <div style={{ padding: '10px 18px', borderTop: '1px solid rgba(0,0,0,0.05)',
-              background: 'rgba(245,158,11,0.06)', display: 'flex', gap: 8 }}>
-              <AlertTriangle size={12} style={{ color: '#111111', flexShrink: 0, marginTop: 1 }}/>
-              <span style={{ fontSize:11, color: '#9a6400' }}>
-                Not validated yet ({res.ggs_status}) — DNS may still be propagating. Try again in a minute.
-              </span>
+          {res&&res.ggs_status&&res.ggs_status!=='active'&&!res.dns_auto&&(
+            <div style={{ padding:'12px 18px',background:'rgba(154,100,0,0.05)',display:'flex',gap:8 }}>
+              <AlertTriangle size={13} style={{ color:'#9a6400',flexShrink:0,marginTop:1 }}/>
+              <span style={{ fontSize:11,color:'#9a6400' }}>Not validated yet ({res.ggs_status}) — DNS still propagating. Try again in a minute.</span>
             </div>
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
+        <div style={{ display:'flex', gap:10, marginBottom:24, flexWrap:'wrap', alignItems:'center' }}>
           {ord?.dns_auto_added
-            ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(52,211,153,0.1)',
-                border: '1px solid rgba(52,211,153,0.3)', borderRadius: 7, padding: '10px 18px',
-                fontSize:13, color: '#00a550', fontWeight: 500 }}>
-                <RefreshCw size={13} className="spin" style={{color:'#00a550'}}/> DNS record added via {ord.dns_provider || 'provider'} · checking every 5s…
+            ? <div style={{ display:'flex',alignItems:'center',gap:8,background:'rgba(0,165,80,0.08)',border:'1px solid rgba(0,165,80,0.2)',borderRadius:9,padding:'11px 18px',fontSize:13,color:'#00a550',fontWeight:600 }}>
+                <div style={{ width:11,height:11,borderRadius:'50%',border:'1.5px solid rgba(0,165,80,0.3)',borderTopColor:'#00a550',animation:'spin .7s linear infinite' }}/>
+                Record added via {ord.dns_provider||'provider'} · checking every 5s…
               </div>
-            ) : (
-              <button onClick={addDns} disabled={dns || !(ord.dcv_txt_value || ord.dcv_cname_value)}
-                style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#0077b6',
-                  color: '#111111', border: 'none', borderRadius: 7, padding: '10px 18px',
-                  fontSize:13, fontWeight: 600, cursor: dns || !(ord.dcv_txt_value || ord.dcv_cname_value) ? 'not-allowed' : 'pointer',
-                  opacity: !(ord.dcv_txt_value || ord.dcv_cname_value) ? 0.4 : 1, fontFamily: 'inherit' }}>
-                {dns ? <><RefreshCw size={13} className="spin"/> Adding…</> : <><Zap size={13}/> Auto-Add DNS Record</>}
+            : <button onClick={addDns} disabled={dns||!(ord.dcv_txt_value||ord.dcv_cname_value)}
+                style={{ display:'flex',alignItems:'center',gap:7,background:BLUE,color:'#fff',border:'none',borderRadius:9,padding:'12px 20px',fontSize:13,fontWeight:700,cursor:dns||!(ord.dcv_txt_value||ord.dcv_cname_value)?'not-allowed':'pointer',opacity:!(ord.dcv_txt_value||ord.dcv_cname_value)?0.4:1,fontFamily:F,boxShadow:'0 4px 14px rgba(0,119,182,0.3)' }}>
+                {dns?<><div style={{ width:12,height:12,borderRadius:'50%',border:'2px solid rgba(255,255,255,0.3)',borderTopColor:'#fff',animation:'spin .7s linear infinite' }}/> Adding…</>:<><Zap size={13}/> Auto-Add DNS Record</>}
               </button>
-            )
           }
           <button onClick={check} disabled={chk}
-            style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(0,0,0,0.05)',
-              color: '#555555', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 7,
-              padding: '10px 18px', fontSize:13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
-            {chk ? <><RefreshCw size={13} className="spin"/> Checking…</> : <><RefreshCw size={13}/> Check Status</>}
+            style={{ display:'flex',alignItems:'center',gap:7,background:'#fff',color:'#3d4a58',border:`1.5px solid ${BORDER}`,borderRadius:9,padding:'12px 18px',fontSize:13,fontWeight:600,cursor:'pointer',fontFamily:F,boxShadow:'0 1px 4px rgba(0,119,182,0.06)' }}>
+            {chk?<><div style={{ width:11,height:11,borderRadius:'50%',border:'1.5px solid rgba(0,119,182,0.2)',borderTopColor:BLUE,animation:'spin .7s linear infinite' }}/> Checking…</>:<><RefreshCw size={13}/> Check Status</>}
           </button>
-          <button onClick={reset}
-            style={{ background: 'none', border: 'none', color: '#111111', fontSize:12,
-              cursor: 'pointer', fontFamily: 'inherit', marginLeft: 'auto' }}>
-            ← Start over
-          </button>
+          <button onClick={reset} style={{ background:'none',border:'none',color:'#7a8694',fontSize:12,cursor:'pointer',fontFamily:F,marginLeft:'auto',fontWeight:500 }}>← Start over</button>
         </div>
 
-        <div style={{ background: 'rgba(0,119,182,0.07)', border: '1px solid rgba(0,0,0,0.08)',
-          borderRadius: 8, padding: '12px 16px', display: 'flex', gap: 10 }}>
-          <Zap size={14} style={{ color: '#0077b6', flexShrink: 0, marginTop: 1 }}/>
-          <div style={{ fontSize:12, color: '#b5aea8', lineHeight: 1.6 }}>
-            <strong style={{ color: '#555555' }}>Fully automatic:</strong> If your DNS provider is connected under{' '}
-            <strong style={{ color: '#555555' }}>More → DNS Providers</strong>, click{' '}
-            <strong style={{ color: '#555555' }}>Auto-Add DNS Record</strong> and SSLVault handles validation end-to-end.
+        <div style={{ background:BLUE_BG,border:`1px solid ${BORDER}`,borderRadius:12,padding:'14px 18px',display:'flex',gap:10 }}>
+          <Zap size={15} style={{ color:BLUE,flexShrink:0,marginTop:1 }}/>
+          <div style={{ fontSize:12,color:'#3d4a58',lineHeight:1.7 }}>
+            <strong style={{ color:'#0d1117' }}>Fully automatic:</strong> If your DNS provider is connected under{' '}
+            <strong style={{ color:BLUE }}>More → DNS Providers</strong>, click{' '}
+            <strong style={{ color:BLUE }}>Auto-Add DNS Record</strong> and SSLVault handles everything.
           </div>
         </div>
       </div>
-      <style>{`
-        .spin{animation:spin .8s linear infinite}
-        @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-      `}</style>
     </div>
   )
 
