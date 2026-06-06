@@ -153,10 +153,10 @@ export default function CLMHome({ user, nav, initialSection }) {
     const on = sec===id
     return (
       <button onClick={()=>go(id)} style={{
-        display:'flex', alignItems:'center', gap:10,
-        margin:'0 8px 2px', padding:'8px 10px',
+        display:'flex', alignItems:'center', gap:11,
+        margin:'0 8px 2px', padding:'9px 12px',
         width:'calc(100% - 16px)', textAlign:'left', fontFamily:F,
-        fontSize:12.5, fontWeight:on?700:500,
+        fontSize:13, fontWeight:on?800:500, letterSpacing:'-0.01em', lineHeight:1.2,
         color: on ? '#fff' : 'rgba(255,255,255,0.62)',
         background: on ? GRAD : 'transparent',
         boxShadow: on ? '0 4px 14px rgba(0,119,182,0.35)' : 'none',
@@ -165,9 +165,9 @@ export default function CLMHome({ user, nav, initialSection }) {
       }}
         onMouseEnter={e=>{if(!on){e.currentTarget.style.background='rgba(255,255,255,0.06)';e.currentTarget.style.color='#fff'}}}
         onMouseLeave={e=>{if(!on){e.currentTarget.style.background='transparent';e.currentTarget.style.color='rgba(255,255,255,0.62)'}}}>
-        <Icon size={15} strokeWidth={on?2.2:1.8} style={{flexShrink:0, opacity:0.92}}/>
+        <Icon size={16} strokeWidth={on?2.2:1.9} style={{flexShrink:0, opacity:0.92}}/>
         <span style={{flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{label}</span>
-        {badge&&!on&&<span style={{fontSize:8,fontWeight:800,padding:'1px 5px',borderRadius:4,
+        {badge&&!on&&<span style={{fontSize:8.5,fontWeight:800,padding:'2px 6px',borderRadius:5,
           background:'rgba(0,165,80,0.18)',color:'#39d98a',letterSpacing:'0.05em',flexShrink:0}}>{badge}</span>}
       </button>
     )
@@ -182,8 +182,8 @@ export default function CLMHome({ user, nav, initialSection }) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <div>
-            <div style={{fontSize:13.5,fontWeight:800,color:'#fff',letterSpacing:'-0.2px',lineHeight:1.15,fontFamily:DM}}>SSLVault</div>
-            <div style={{fontSize:9.5,color:'rgba(255,255,255,0.45)',marginTop:1,fontFamily:MONO,letterSpacing:'0.04em'}}>CLM PLATFORM</div>
+            <div style={{fontSize:14,fontWeight:800,color:'#fff',letterSpacing:'-0.01em',lineHeight:1.15,fontFamily:DM}}>SSLVault</div>
+            <div style={{fontSize:8.5,color:'rgba(255,255,255,0.42)',marginTop:2,fontFamily:MONO,letterSpacing:'0.14em'}}>CLM PLATFORM</div>
           </div>
         </div>
       </div>
@@ -192,8 +192,8 @@ export default function CLMHome({ user, nav, initialSection }) {
       <div style={{flex:1,overflowY:'auto',padding:'4px 0 8px'}}>
         {NAV.map(({group,items})=>(
           <div key={group}>
-            <div style={{padding:'14px 16px 6px'}}>
-              <span style={{fontSize:9.5,fontWeight:700,letterSpacing:'0.09em',textTransform:'uppercase',color:'rgba(255,255,255,0.38)',fontFamily:MONO}}>{group}</span>
+            <div style={{padding:'18px 20px 7px'}}>
+              <span style={{fontSize:9,fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,255,255,0.35)',fontFamily:MONO}}>{group}</span>
             </div>
             {items.map(it=><NavItem key={it.id} {...it}/>)}
           </div>
@@ -214,10 +214,10 @@ export default function CLMHome({ user, nav, initialSection }) {
             {initials}
           </div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:11.5,fontWeight:600,color:'#fff',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+            <div style={{fontSize:12,fontWeight:700,color:'#fff',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:DM,letterSpacing:'-0.01em'}}>
               {email.split('@')[0]}
             </div>
-            <div style={{fontSize:9.5,color:'rgba(255,255,255,0.4)',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+            <div style={{fontSize:9.5,color:'rgba(255,255,255,0.42)',marginTop:2,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:MONO}}>
               {email.split('@')[1]||''}
             </div>
           </div>
@@ -313,7 +313,7 @@ export default function CLMHome({ user, nav, initialSection }) {
 
         {/* Sidebar */}
         <nav ref={sideRef} style={{
-          width:232, background:INK, borderRight:'1px solid rgba(0,0,0,0.18)',
+          width:236, background:'#0d1117', borderRight:'1px solid rgba(0,0,0,0.25)',
           flexShrink:0, overflowY:'auto',
           ...(isMobile
             ? {position:'fixed',left:0,top:52,bottom:0,zIndex:40,
