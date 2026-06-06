@@ -525,9 +525,9 @@ export default function Home({ nav }) {
 
               {/* Stats + trust seal */}
               <div style={{display:'flex',alignItems:'center',gap:isMobile?18:26,borderTop:'1px solid rgba(255,255,255,0.1)',paddingTop:24}}>
-                <div style={{flexShrink:0,filter:'drop-shadow(0 4px 14px rgba(0,0,0,0.3))'}}>
+                <a href="/verify" title="Verify a compliance report" style={{flexShrink:0,filter:'drop-shadow(0 4px 14px rgba(0,0,0,0.3))',cursor:'pointer',textDecoration:'none'}}>
                   <TrustSeal size={isMobile?86:104} idSuffix="hero"/>
-                </div>
+                </a>
                 <div style={{display:'flex',gap:0,flex:1}}>
                   {[{val:certCount?`${count.toLocaleString()}+`:'—',label:'Certs managed'},{val:'99.9%',label:'Renewal rate'},{val:'100%',label:'Tamper-evident ledger'}].map((m,i)=>(
                     <div key={m.label} style={{flex:1,paddingLeft:i>0?20:0,borderLeft:i>0?'1px solid rgba(255,255,255,0.1)':'none',marginLeft:i>0?20:0}}>
@@ -1109,7 +1109,7 @@ export default function Home({ nav }) {
             <div style={{marginLeft:'auto'}}><SiteTrustBadge dark/></div>
           </div>
           <div style={{display:'grid',gridTemplateColumns:isMobile?'1fr 1fr':'repeat(auto-fill,minmax(140px,1fr))',gap:24,marginBottom:32}}>
-            {[{title:'Product',links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]]},{title:'Support',links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CAA Checker',()=>nav('/caa-check')]]},{title:'Intelligence',links:[['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum',()=>nav('/cab-forum')],['PKI Hub',()=>nav('/pki-hub')]]},{title:'Security',links:[['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']]},{title:'Protocol',links:[['RFC 8555','#security'],['DNS-01','#security'],['AES-256-GCM','#security']]},{title:'Company',links:[['About',()=>nav('/about')],['Contact',()=>nav('/contact')]]}].map(col=>(
+            {[{title:'Product',links:[['Pricing',()=>nav('/pricing')],['Get started',()=>nav('/auth')],['Dashboard',()=>nav('/dashboard')]]},{title:'Support',links:[['Install Guide',()=>nav('/install')],['Knowledge Base',()=>nav('/knowledge-base')],['CAA Checker',()=>nav('/caa-check')]]},{title:'Intelligence',links:[['CA Trust Store',()=>nav('/ca-trust-explorer')],['CAB Forum',()=>nav('/cab-forum')],['PKI Hub',()=>nav('/pki-hub')]]},{title:'Security',links:[['Verify a Report',()=>nav('/verify')],['CertVault','#security'],['47-Day Readiness','#security'],['CT Monitoring','#security'],['Health Scoring','#security']]},{title:'Protocol',links:[['RFC 8555','#security'],['DNS-01','#security'],['AES-256-GCM','#security']]},{title:'Company',links:[['About',()=>nav('/about')],['Contact',()=>nav('/contact')]]}].map(col=>(
               <div key={col.title}>
                 <div style={{fontSize:10,fontWeight:600,color:'rgba(255,255,255,0.45)',textTransform:'uppercase',letterSpacing:'0.07em',fontFamily:MONO,marginBottom:12}}>{col.title}</div>
                 {col.links.map(([l,h])=>(

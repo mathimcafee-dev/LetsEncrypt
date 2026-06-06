@@ -212,6 +212,7 @@ export default function WitnessViewer() {
               <div style={{ flexShrink:0, textAlign:'center' }}>
                 <TrustSeal size={118} code={sealCode}/>
                 <div style={{ fontSize:9.5, color:'#7a8694', marginTop:6, maxWidth:130, lineHeight:1.5, margin:'6px auto 0' }}>Seal code matches this dossier's latest ledger entry</div>
+                <a href="/verify" style={{ display:'inline-block', fontSize:10, fontWeight:700, color:'#0077b6', textDecoration:'none', marginTop:6 }}>Verify a report code →</a>
               </div>
             </div>
           )

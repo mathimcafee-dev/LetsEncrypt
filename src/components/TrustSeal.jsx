@@ -49,7 +49,7 @@ export function SiteTrustBadge({ dark = false }) {
   const title  = dark ? '#fff' : '#0d1117'
   const sub    = dark ? 'rgba(255,255,255,0.5)' : '#5a6776'
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: '10px 18px 10px 12px', boxShadow: dark ? 'none' : '0 2px 10px rgba(0,119,182,0.08)' }}>
+    <a href="/verify" title="Verify a compliance report" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 12, background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: '10px 18px 10px 12px', boxShadow: dark ? 'none' : '0 2px 10px rgba(0,119,182,0.08)', cursor: 'pointer' }}>
       {/* Shield + lock */}
       <svg width="38" height="38" viewBox="0 0 48 48" aria-hidden="true">
         <defs>
@@ -71,7 +71,10 @@ export function SiteTrustBadge({ dark = false }) {
         <div style={{ fontSize: 10, color: sub, marginTop: 2, fontFamily: "'DM Sans','Segoe UI',sans-serif", letterSpacing: '0.02em' }}>
           256-bit TLS encryption · Tamper-evident audit ledger
         </div>
+        <div style={{ fontSize: 10, color: '#0091d6', marginTop: 2, fontWeight: 700, fontFamily: "'DM Sans','Segoe UI',sans-serif", letterSpacing: '0.02em' }}>
+          Verify a compliance report →
+        </div>
       </div>
-    </div>
+    </a>
   )
 }
