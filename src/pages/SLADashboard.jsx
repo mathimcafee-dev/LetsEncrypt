@@ -54,13 +54,13 @@ export default function SLADashboard({ nav }) {
   }
 
   var S = {
-    page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: '#f0f4fa', overflowY: 'auto', padding: '28px 24px', fontFamily: "'Segoe UI',system-ui,sans-serif" },
+    page: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: '#f0f4fa', overflowY: 'auto', padding: '28px 24px', fontFamily: "'Inter',system-ui,sans-serif" },
     card: { background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, padding: '14px 16px', marginBottom: 12 },
     lbl:  { fontSize: 10, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '.1em', display: 'block', marginBottom: 6 },
     ttl:  { fontSize: 13, fontWeight: 600, color: '#111111', marginBottom: 3 },
     sub:  { fontSize: 12, color: '#555555', lineHeight: 1.6 },
-    btn:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: 'rgba(0,0,0,0.07)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 8, color: '#111111', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
-    btnP: { background: '#0077b6', border: '1px solid #2a6b5c', borderRadius: 8, padding: '10px 24px', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Segoe UI',system-ui,sans-serif" },
+    btn:  { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: 'rgba(0,0,0,0.07)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 8, color: '#111111', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: "'Inter',system-ui,sans-serif" },
+    btnP: { background: '#0077b6', border: '1px solid #2a6b5c', borderRadius: 8, padding: '10px 24px', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: "'Inter',system-ui,sans-serif" },
   }
 
   if (loading) return (

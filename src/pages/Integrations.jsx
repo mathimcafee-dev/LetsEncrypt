@@ -1649,7 +1649,7 @@ export default function Integrations({ nav }) {
   )
 
   return (
-    <div style={{ background:'var(--v2-surface-3)', minHeight:'100vh', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
+    <div style={{ background:'var(--v2-surface-3)', minHeight:'100vh', fontFamily:"'Inter',system-ui,sans-serif" }}>
       <div style={{ maxWidth:1100, margin:'0 auto', padding:isMobile?'14px 12px':'32px 28px 80px' }}>
 
         {/* Modals */}

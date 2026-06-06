@@ -18,10 +18,10 @@ const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 
 // ── Tab accent colours ────────────────────────────────────────────────
 const TAB_COLORS = {
-  vault:   { color: '#0077b6', bg: 'rgba(0,119,182,0.09)',    border: 'rgba(0,119,182,0.25)'   },
-  bind:    { color: '#00a550', bg: 'rgba(0,165,80,0.12)',  border: 'rgba(0,165,80,0.25)'  },
-  archive: { color: '#9a6400', bg: 'rgba(154,100,0,0.12)',  border: 'rgba(251,191,36,0.35)'  },
-  audit:   { color: '#0077b6', bg: 'rgba(0,119,182,0.07)',    border: 'rgba(0,119,182,0.2)'    },
+  vault:   { color: '#0077b6', bg: 'rgba(0,119,182,0.09)', border: 'rgba(0,119,182,0.25)' },
+  bind:    { color: '#0077b6', bg: 'rgba(0,119,182,0.09)', border: 'rgba(0,119,182,0.25)' },
+  archive: { color: '#0077b6', bg: 'rgba(0,119,182,0.09)', border: 'rgba(0,119,182,0.25)' },
+  audit:   { color: '#0077b6', bg: 'rgba(0,119,182,0.09)', border: 'rgba(0,119,182,0.25)' },
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────
@@ -191,7 +191,7 @@ function RevealModal({ keyEntry, userEmail, onClose }) {
             <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#888888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>Password</label>
             <input ref={inputRef} type="password" value={password} onChange={e => setPassword(e.target.value)} disabled={locked}
               placeholder="Your SSLVault password"
-              style={{ width: '100%', padding: '10px 14px', fontSize: 13, borderRadius: 7, background: '#f0f4fa', border: `1px solid ${authError ? '#c0392b' : 'rgba(0,0,0,0.12)'}`, color: '#111111', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+              style={{ width: '100%', padding: '10px 14px', fontSize: 13, borderRadius: 7, background: '#f0f4fa', border: `1px solid ${authError ? '#b03425' : 'rgba(0,0,0,0.12)'}`, color: '#111111', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
             {authError && <div style={{ fontSize: 11, color: '#0077b6', marginTop: 5 }}>{authError}</div>}
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>

@@ -65,7 +65,7 @@ const S = {
     borderRadius: 16, boxShadow: '0 8px 32px rgba(0,119,182,0.12)',
     overflow: 'hidden',
   },
-  err:    { fontSize: 12, color: '#c0392b', marginTop: 6, fontWeight: 500 },
+  err:    { fontSize: 12, color: '#b03425', marginTop: 6, fontWeight: 500 },
   mono:   { fontFamily: MONO },
   sep:    { height: 1, background: 'rgba(0,119,182,0.08)', margin: '18px 0' },
   codeBox: {
@@ -165,10 +165,10 @@ function StepDomain({ data, onChange, onNext }) {
         <label style={S.label}>Domain name</label>
         <input type="text" value={data.domain} onChange={e => { onChange({ domain: e.target.value }); setErr('') }}
           placeholder="yourdomain.com" autoComplete="off"
-          style={{ ...S.input, ...(err ? { borderColor: '#c0392b', background: 'rgba(192,57,43,0.04)' } : {}) }}
+          style={{ ...S.input, ...(err ? { borderColor: '#b03425', background: 'rgba(192,57,43,0.04)' } : {}) }}
           onKeyDown={e => e.key === 'Enter' && submit()}
           onFocus={e => { e.target.style.borderColor = '#0077b6'; e.target.style.boxShadow = '0 0 0 3px rgba(0,119,182,0.1)' }}
-          onBlur={e => { e.target.style.borderColor = err ? '#c0392b' : 'rgba(0,119,182,0.15)'; e.target.style.boxShadow = 'none' }}/>
+          onBlur={e => { e.target.style.borderColor = err ? '#b03425' : 'rgba(0,119,182,0.15)'; e.target.style.boxShadow = 'none' }}/>
         {err && <div style={S.err}>{err}</div>}
       </div>
       <div>
@@ -518,7 +518,7 @@ export default function AddDomainWizard({ user, onClose, nav }) {
             </div>
             <button onClick={onClose}
               style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid rgba(0,119,182,0.15)', background: '#f8fafd', cursor: 'pointer', color: '#7a8694', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all .15s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(192,57,43,0.06)'; e.currentTarget.style.borderColor = 'rgba(192,57,43,0.25)'; e.currentTarget.style.color = '#c0392b' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(192,57,43,0.06)'; e.currentTarget.style.borderColor = 'rgba(192,57,43,0.25)'; e.currentTarget.style.color = '#b03425' }}
               onMouseLeave={e => { e.currentTarget.style.background = '#f8fafd'; e.currentTarget.style.borderColor = 'rgba(0,119,182,0.15)'; e.currentTarget.style.color = '#7a8694' }}>
               <X size={13}/>
             </button>

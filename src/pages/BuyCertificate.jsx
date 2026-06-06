@@ -396,7 +396,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               {/* Domain */}
               <div style={{ marginBottom:16 }}>
                 <label style={{ fontSize:11,fontWeight:700,color:'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em',display:'block',marginBottom:7 }}>
-                  Domain Name <span style={{ color:'#c0392b' }}>*</span>
+                  Domain Name <span style={{ color:'#b03425' }}>*</span>
                   {PRODUCTS.find(p=>p.code===product)?.wildcard&&<span style={{ color:'#7a8694',fontWeight:400,textTransform:'none',letterSpacing:0,marginLeft:6 }}>· enter root domain</span>}
                 </label>
                 {profileLoading&&<div style={{ fontSize:10,color:'#7a8694',display:'flex',alignItems:'center',gap:5,marginBottom:6 }}><div style={{ width:8,height:8,borderRadius:'50%',border:'1.5px solid rgba(0,119,182,0.25)',borderTopColor:BLUE,animation:'spin .7s linear infinite' }}/> Loading profile…</div>}
@@ -433,7 +433,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
                 {[{label:'First name',val:fn,set:setFn,ph:'John'},{label:'Last name',val:ln,set:setLn,ph:'Smith'}].map(f=>(
                   <div key={f.label}>
-                    <label style={{ fontSize:11,fontWeight:700,color:'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em',display:'block',marginBottom:6 }}>{f.label} <span style={{ color:'#c0392b' }}>*</span></label>
+                    <label style={{ fontSize:11,fontWeight:700,color:'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em',display:'block',marginBottom:6 }}>{f.label} <span style={{ color:'#b03425' }}>*</span></label>
                     <input value={f.val} onChange={e=>f.set(e.target.value)} placeholder={f.ph}
                       style={{ width:'100%',boxSizing:'border-box',background:'#f8fafd',border:'1.5px solid rgba(0,119,182,0.15)',borderRadius:9,color:'#0d1117',fontSize:13,fontFamily:F,padding:'11px 14px',outline:'none',transition:'all .15s' }}
                       onFocus={e=>{e.target.style.borderColor=BLUE;e.target.style.boxShadow='0 0 0 3px rgba(0,119,182,0.1)'}}
@@ -444,7 +444,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
               {[{label:'Email address',val:em,set:setEm,ph:'you@example.com',type:'email',note:'Certificate delivery'},{label:'Phone number',val:ph,set:setPh,ph:'+31 6 00 000000',type:'tel'}].map(f=>(
                 <div key={f.label}>
                   <label style={{ fontSize:11,fontWeight:700,color:'#7a8694',textTransform:'uppercase',letterSpacing:'0.06em',display:'block',marginBottom:6 }}>
-                    {f.label} <span style={{ color:'#c0392b' }}>*</span>
+                    {f.label} <span style={{ color:'#b03425' }}>*</span>
                     {f.note&&<span style={{ color:'#7a8694',fontWeight:400,textTransform:'none',letterSpacing:0,marginLeft:6 }}>· {f.note}</span>}
                   </label>
                   <input value={f.val} onChange={e=>f.set(e.target.value)} placeholder={f.ph} type={f.type||'text'}
@@ -457,7 +457,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           </div>
 
           {err&&(
-            <div style={{ background:'rgba(192,57,43,0.06)',border:'1px solid rgba(192,57,43,0.22)',borderRadius:10,padding:'12px 16px',fontSize:12,color:'#c0392b',display:'flex',alignItems:'center',gap:8,marginBottom:8,fontWeight:500 }}>
+            <div style={{ background:'rgba(192,57,43,0.06)',border:'1px solid rgba(192,57,43,0.22)',borderRadius:10,padding:'12px 16px',fontSize:12,color:'#b03425',display:'flex',alignItems:'center',gap:8,marginBottom:8,fontWeight:500 }}>
               <AlertTriangle size={13} style={{ flexShrink:0 }}/> {err}
             </div>
           )}
@@ -523,7 +523,7 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
         <div style={{ background:'#ffffff', border:`1px solid ${BORDER}`, borderRadius:14, overflow:'hidden', marginBottom:20, boxShadow:'0 2px 12px rgba(0,119,182,0.08)' }}>
           <div style={{ background:BLUE_BG, padding:'11px 18px', display:'flex', alignItems:'center', gap:7, borderBottom:`1px solid ${BORDER}` }}>
             <div style={{ display:'flex', gap:5 }}>
-              {['#c0392b','#f59e0b','#00a550'].map(c=><span key={c} style={{ width:9,height:9,borderRadius:'50%',background:c,display:'block' }}/>)}
+              {['#b03425','#f59e0b','#00a550'].map(c=><span key={c} style={{ width:9,height:9,borderRadius:'50%',background:c,display:'block' }}/>)}
             </div>
             <span style={{ fontSize:11,fontWeight:600,color:'#3d4a58',fontFamily:MONO,marginLeft:5 }}>DNS record · TXT</span>
             <span style={{ marginLeft:'auto',fontFamily:MONO,fontSize:10,fontWeight:700,color:BLUE }}>GGS #{ord.ggs_order_id||'—'}</span>
@@ -558,8 +558,8 @@ export default function BuyCertificate({ nav, onDashboard, onIssueAnother, embed
           )}
           {res?.dns_auto&&(
             <div style={{ padding:'12px 18px',background:res.dns_auto.ok?'rgba(0,165,80,0.05)':'rgba(192,57,43,0.05)',display:'flex',alignItems:'flex-start',gap:8 }}>
-              {res.dns_auto.ok?<Check size={13} style={{ color:'#00a550',flexShrink:0,marginTop:1 }}/>:<AlertTriangle size={13} style={{ color:'#c0392b',flexShrink:0,marginTop:1 }}/>}
-              <span style={{ fontSize:11,color:res.dns_auto.ok?'#00a550':'#c0392b',lineHeight:1.6 }}>
+              {res.dns_auto.ok?<Check size={13} style={{ color:'#00a550',flexShrink:0,marginTop:1 }}/>:<AlertTriangle size={13} style={{ color:'#b03425',flexShrink:0,marginTop:1 }}/>}
+              <span style={{ fontSize:11,color:res.dns_auto.ok?'#00a550':'#b03425',lineHeight:1.6 }}>
                 {res.dns_auto.ok?`Record added via ${res.dns_auto.provider}. Checking every 5 seconds…`:res.dns_auto.message}
               </span>
             </div>

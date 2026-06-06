@@ -6,7 +6,7 @@ import { Shield, CheckCircle, XCircle, FileText, Download, RefreshCw, ChevronUp,
 import '../styles/design-v2.css'
 
 const SB_URL = 'https://frthcwkntciaakqsppss.supabase.co'
-const F = "'Segoe UI',system-ui,sans-serif"
+const F = "'Inter',system-ui,sans-serif"
 const MONO = "'JetBrains Mono',monospace"
 
 // Mandate thresholds

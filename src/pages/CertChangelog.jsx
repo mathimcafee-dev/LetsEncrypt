@@ -34,7 +34,7 @@ const EVENT_CONFIG = {
   key_rotated:     { icon: RotateCcw,   color: '#0077b6', bg: 'rgba(0,0,0,0.08)', label: 'Key rotated' },
   downloaded:      { icon: Download,    color: '#0077b6', bg: 'rgba(0,119,182,0.09)', label: 'Certificate downloaded' },
   private_key_copied: { icon: Shield,   color: '#0077b6', bg: 'rgba(0,0,0,0.08)', label: 'Private key copied' },
-  default:         { icon: Shield,      color: '#b5aea8', bg: 'rgba(0,0,0,0.04)', label: 'Event' },
+  default:         { icon: Shield,      color: '#7a8694', bg: 'rgba(0,0,0,0.04)', label: 'Event' },
 }
 
 function useIsMobile(bp=768){const[m,setM]=useState(typeof window!=='undefined'?window.innerWidth<=bp:false);useEffect(()=>{const h=()=>setM(window.innerWidth<=bp);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[bp]);return m}

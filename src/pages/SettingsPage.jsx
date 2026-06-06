@@ -7,7 +7,7 @@ import {
   Mail, Plus, X, Send, AlertTriangle, Clock, ChevronDown, ChevronUp, Key, Copy
 } from 'lucide-react'
 
-const FONT = "var(--v2-font, 'Segoe UI', system-ui, sans-serif)"
+const FONT = "'Inter',system-ui,sans-serif"
 
 // All configurable alert types
 const ALERT_TYPE_DEFS = [

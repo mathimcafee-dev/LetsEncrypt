@@ -34,8 +34,8 @@ function dLeft(iso) {
 }
 function expiryColor(d) {
   if (d === null) return '#aaaaaa'
-  if (d <= 0)  return '#c0392b'
-  if (d <= 7)  return '#c0392b'
+  if (d <= 0)  return '#b03425'
+  if (d <= 7)  return '#b03425'
   if (d <= 30) return '#9a6400'
   return '#00a550'
 }
@@ -48,7 +48,7 @@ function Spinner() {
 
 function ExpiryPill({ days }) {
   if (days === null) return <span style={{ fontSize:10, color:'#888888' }}>—</span>
-  const color = days < 0 ? '#c0392b' : days <= 7 ? '#c0392b' : days <= 30 ? '#9a6400' : days <= 90 ? '#555555' : '#00a550'
+  const color = days < 0 ? '#b03425' : days <= 7 ? '#b03425' : days <= 30 ? '#9a6400' : days <= 90 ? '#555555' : '#00a550'
   const bg    = days < 0 ? 'rgba(192,57,43,0.1)' : days <= 30 ? 'rgba(154,100,0,0.08)' : 'transparent'
   return (
     <span style={{ fontSize:10, fontWeight:600, color, background:bg, border:`0.5px solid ${color}44`, borderRadius:20, padding:'1px 7px' }}>
@@ -157,7 +157,7 @@ function OverviewTab({ user, tok, onSwitchCA }) {
   const KPI = [
     { label:'Total certs',  val:total,     sub:`${active} active`,            color:'#111111', border:'rgba(0,119,182,0.12)' },
     { label:'Expired',      val:0,          sub:'—',                           color:'#888888', border:'rgba(0,119,182,0.12)' },
-    { label:'≤ 7 days',     val:expiring7,  sub:expiring7>0?'Critical':'None', color:expiring7>0?'#c0392b':'#888888', border:expiring7>0?'rgba(192,57,43,0.25)':'rgba(0,119,182,0.12)', bg:expiring7>0?'rgba(192,57,43,0.04)':undefined },
+    { label:'≤ 7 days',     val:expiring7,  sub:expiring7>0?'Critical':'None', color:expiring7>0?'#b03425':'#888888', border:expiring7>0?'rgba(192,57,43,0.25)':'rgba(0,119,182,0.12)', bg:expiring7>0?'rgba(192,57,43,0.04)':undefined },
     { label:'≤ 30 days',    val:expiring30, sub:expiring30>0?'Expiring soon':'All good', color:expiring30>0?'#9a6400':'#888888', border:expiring30>0?'rgba(154,100,0,0.25)':'rgba(0,119,182,0.12)', bg:expiring30>0?'rgba(154,100,0,0.04)':undefined },
     { label:'Healthy >90d', val:healthy,    sub:'No action needed',            color:healthy>0?'#00a550':'#888888', border:healthy>0?'rgba(0,165,80,0.25)':'rgba(0,119,182,0.12)', bg:healthy>0?'rgba(0,165,80,0.04)':undefined },
   ]
@@ -233,8 +233,8 @@ function OverviewTab({ user, tok, onSwitchCA }) {
           </div>
           <div style={{ padding:'12px 16px' }}>
             {[
-              { label:'Expired',    val:0,          color:'#c0392b' },
-              { label:'≤ 7 days',   val:expiring7,  color:'#c0392b' },
+              { label:'Expired',    val:0,          color:'#b03425' },
+              { label:'≤ 7 days',   val:expiring7,  color:'#b03425' },
               { label:'≤ 30 days',  val:expiring30, color:'#9a6400' },
               { label:'≤ 90 days',  val:0,          color:'#888888' },
               { label:'Healthy',    val:healthy,    color:'#00a550' },
@@ -372,7 +372,7 @@ function RapidSSLTab({ tok, nav }) {
         <StatCard label="Expiring ≤ 30d" val={loading?'…':expiring} sub="needs action"
           color={expiring>0?'#9a6400':'#888888'} bg={expiring>0?'rgba(154,100,0,0.05)':undefined}/>
         <StatCard label="Expired" val={loading?'…':expired} sub={expired>0?'act now':'all clear'}
-          color={expired>0?'#c0392b':'#888888'} bg={expired>0?'rgba(192,57,43,0.05)':undefined}/>
+          color={expired>0?'#b03425':'#888888'} bg={expired>0?'rgba(192,57,43,0.05)':undefined}/>
       </div>
 
       <div style={{ marginBottom:8 }}>
@@ -403,7 +403,7 @@ function RapidSSLTab({ tok, nav }) {
               <div>
                 <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
                   background:d===null?'#f5f5f5':d<=0?'rgba(192,57,43,0.1)':d<=30?'rgba(154,100,0,0.1)':'rgba(0,165,80,0.1)',
-                  color:d===null?'#aaaaaa':d<=0?'#c0392b':d<=30?'#9a6400':'#00a550',
+                  color:d===null?'#aaaaaa':d<=0?'#b03425':d<=30?'#9a6400':'#00a550',
                   border:`1px solid ${d===null?'#e8e8e8':d<=0?'rgba(192,57,43,0.25)':d<=30?'rgba(154,100,0,0.25)':'rgba(0,165,80,0.25)'}` }}>
                   {d===null?'—':d<=0?'Expired':`${d}d`}
                 </span>
@@ -511,7 +511,7 @@ function DigiCertTab({ tok, nav }) {
             {showKey?<EyeOff size={13}/>:<Eye size={13}/>}
           </button>
         </div>
-        {error && <div style={{ background:'rgba(192,57,43,0.08)', borderRadius:7, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#c0392b' }}>{error}</div>}
+        {error && <div style={{ background:'rgba(192,57,43,0.08)', borderRadius:7, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#b03425' }}>{error}</div>}
         <button onClick={connect} disabled={saving}
           style={{ padding:'9px 20px', borderRadius:8, background:'#0077b6', border:'none', color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit', display:'flex', alignItems:'center', gap:7 }}>
           {saving?<><Spinner/> Connecting…</>:'Connect DigiCert'}
@@ -538,7 +538,7 @@ function DigiCertTab({ tok, nav }) {
             {loadingPf?<><Spinner/> Syncing…</>:<><RefreshCw size={11}/> Sync</>}
           </button>
           <button onClick={disconnect}
-            style={{ padding:'4px 10px', borderRadius:6, border:'1px solid rgba(192,57,43,0.3)', background:'transparent', color:'#c0392b', fontSize:11, cursor:'pointer' }}>
+            style={{ padding:'4px 10px', borderRadius:6, border:'1px solid rgba(192,57,43,0.3)', background:'transparent', color:'#b03425', fontSize:11, cursor:'pointer' }}>
             Disconnect
           </button>
         </div>
@@ -606,7 +606,7 @@ function DigiCertTab({ tok, nav }) {
                 <div>
                   <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
                     background:c.status==='active'?'rgba(0,165,80,0.1)':'rgba(192,57,43,0.1)',
-                    color:c.status==='active'?'#00a550':'#c0392b',
+                    color:c.status==='active'?'#00a550':'#b03425',
                     border:`0.5px solid ${c.status==='active'?'rgba(0,165,80,0.3)':'rgba(192,57,43,0.3)'}` }}>
                     {c.status==='active'?'Active':c.status||'—'}
                   </span>
@@ -692,7 +692,7 @@ function SectigoTab({ tok }) {
             </div>
           </div>
         ))}
-        {error && <div style={{ background:'rgba(192,57,43,0.08)', borderRadius:7, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#c0392b' }}>{error}</div>}
+        {error && <div style={{ background:'rgba(192,57,43,0.08)', borderRadius:7, padding:'8px 12px', marginBottom:12, fontSize:12, color:'#b03425' }}>{error}</div>}
         <button onClick={connect} disabled={saving}
           style={{ padding:'9px 20px', borderRadius:8, background:'#0077b6', border:'none', color:'#fff', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit', display:'flex', alignItems:'center', gap:7 }}>
           {saving?<><Spinner/> Connecting…</>:'Connect Sectigo'}
@@ -710,7 +710,7 @@ function SectigoTab({ tok }) {
           <div style={{ fontSize:11, color:'#555555', marginTop:2 }}>{creds.customer_uri}</div>
         </div>
         <button onClick={disconnect}
-          style={{ padding:'4px 10px', borderRadius:6, border:'1px solid rgba(192,57,43,0.3)', background:'transparent', color:'#c0392b', fontSize:11, cursor:'pointer' }}>
+          style={{ padding:'4px 10px', borderRadius:6, border:'1px solid rgba(192,57,43,0.3)', background:'transparent', color:'#b03425', fontSize:11, cursor:'pointer' }}>
           Disconnect
         </button>
       </div>

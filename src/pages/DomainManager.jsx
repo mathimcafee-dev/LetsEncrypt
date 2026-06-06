@@ -118,7 +118,7 @@ function InstallModal({ onClose }) {
             <div key={id} style={{ marginBottom: 14 }}>
               <div style={{ fontSize: 11, fontWeight: 500, color: '#333333', marginBottom: 6 }}>{label}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f0f4fa', borderRadius: 8, padding: '11px 14px', border: '1px solid rgba(0,0,0,0.07)' }}>
-                <code style={{ fontSize: 12.5, color: id === 'install' && error ? '#c0392b' : '#111111', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', flex: 1, overflow: 'auto', whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}>{cmd}</code>
+                <code style={{ fontSize: 12.5, color: id === 'install' && error ? '#b03425' : '#111111', fontFamily: '"JetBrains Mono","Menlo","Consolas",monospace', flex: 1, overflow: 'auto', whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}>{cmd}</code>
                 {!loading && !error && <CopyBtn text={cmd} size={10} />}
               </div>
             </div>
@@ -190,7 +190,7 @@ function DomainCard({ domain, cert, agent, dnsCredentials, cpanelCredentials, on
 
         {/* Domain icon */}
         <div style={{ width:40, height:40, borderRadius:10, background:isExpired?'rgba(192,57,43,0.08)':isExpiring?'rgba(154,100,0,0.08)':'rgba(0,119,182,0.08)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-          <Globe size={17} color={isExpired?'#c0392b':isExpiring?'#9a6400':'#0077b6'} strokeWidth={1.8}/>
+          <Globe size={17} color={isExpired?'#b03425':isExpiring?'#9a6400':'#0077b6'} strokeWidth={1.8}/>
         </div>
 
         {/* Domain name + meta */}
@@ -673,7 +673,7 @@ export default function DomainManager({ user, nav }) {
               { label:'Active domains', val:domains.length,   color:'#0077b6',  bg:'rgba(0,119,182,0.06)',  border:'rgba(0,119,182,0.15)' },
               { label:'Agents online',  val:online,           color:online>0?'#00a550':'#7a8694', bg:online>0?'rgba(0,165,80,0.06)':'rgba(0,0,0,0.03)', border:online>0?'rgba(0,165,80,0.15)':'rgba(0,0,0,0.08)' },
               { label:'Live on server', val:liveOnServer,     color:liveOnServer>0?'#00a550':'#7a8694', bg:liveOnServer>0?'rgba(0,165,80,0.06)':'rgba(0,0,0,0.03)', border:liveOnServer>0?'rgba(0,165,80,0.15)':'rgba(0,0,0,0.08)' },
-              { label:'Expiring ≤30d',  val:expiringSoon,     color:expiringSoon>0?'#c0392b':'#00a550', bg:expiringSoon>0?'rgba(192,57,43,0.06)':'rgba(0,165,80,0.06)', border:expiringSoon>0?'rgba(192,57,43,0.15)':'rgba(0,165,80,0.15)' },
+              { label:'Expiring ≤30d',  val:expiringSoon,     color:expiringSoon>0?'#b03425':'#00a550', bg:expiringSoon>0?'rgba(192,57,43,0.06)':'rgba(0,165,80,0.06)', border:expiringSoon>0?'rgba(192,57,43,0.15)':'rgba(0,165,80,0.15)' },
             ].map(({ label, val, color, bg, border }) => (
               <div key={label} style={{ padding:'16px 20px', borderRadius:12, background:bg, border:`1px solid ${border}`, boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
                 <div style={{ fontSize:32, fontWeight:800, color, fontFamily:MONO, lineHeight:1, letterSpacing:'-1px', marginBottom:5 }}>{val}</div>

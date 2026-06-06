@@ -481,7 +481,7 @@ export default function CertTimeline({ user }) {
                                           : 'rgba(0,165,80,0.08)'
                                         const pillColor = d === null ? '#555555'
                                           : isPast ? '#888888'
-                                          : d <= 7  ? '#c0392b'
+                                          : d <= 7  ? '#b03425'
                                           : d <= 30 ? '#9a6400'
                                           : '#00a550'
 

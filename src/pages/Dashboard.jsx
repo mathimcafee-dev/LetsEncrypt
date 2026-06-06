@@ -1222,9 +1222,9 @@ function ScanPqcButton({ onDone }) {
           : <><Shield size={11}/> Scan PQC</>}
       </button>
       {result && (
-        <span style={{ fontSize:10, color: result.ok ? '#1a7e3b' : '#c0392b',
-          background: result.ok ? '#e8f7ee' : '#fde8e8',
-          border: `1px solid ${result.ok ? '#b8e2c8' : '#f5b8b8'}`,
+        <span style={{ fontSize:10, color: result.ok ? '#1a7d43' : '#b03425',
+          background: result.ok ? '#e3f5ea' : '#fae3df',
+          border: `1px solid ${result.ok ? '#bfe5cd' : '#eec3ba'}`,
           borderRadius:20, padding:'2px 9px', fontFamily:"'JetBrains Mono',monospace" }}>
           {result.ok ? `✓ ${result.scanned} cert${result.scanned!==1?'s':''} scanned` : `✗ ${result.error||'Failed'}`}
         </span>
@@ -1593,16 +1593,16 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   const fmtD       = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '--'
 
   // -- Action button style -------------------------------------------
-  const ABtn = ({ icon: Icon, label, onClick, color='#003768', disabled }) => (
+  const ABtn = ({ icon: Icon, label, onClick, color='#111111', disabled }) => (
     <button onClick={disabled ? undefined : onClick} disabled={disabled}
       style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 12px',
-        background:'#fff', border:'1px solid #dde4ef',
+        background:'#fff', border:'1px solid rgba(0,119,182,0.12)',
         borderRadius:7, cursor: disabled ? 'not-allowed' : 'pointer',
         color: disabled ? '#c0c8d8' : color,
         fontFamily:'inherit', fontSize:11, fontWeight:500, transition:'all .15s',
         opacity: disabled ? 0.5 : 1 }}
-      onMouseEnter={e => { if (!disabled) { e.currentTarget.style.background='#f0f5fb'; e.currentTarget.style.borderColor='#003768' }}}
-      onMouseLeave={e => { e.currentTarget.style.background='#fff'; e.currentTarget.style.borderColor='#dde4ef' }}>
+      onMouseEnter={e => { if (!disabled) { e.currentTarget.style.background='#f0f5fb'; e.currentTarget.style.borderColor='#111111' }}}
+      onMouseLeave={e => { e.currentTarget.style.background='#fff'; e.currentTarget.style.borderColor='rgba(0,119,182,0.12)' }}>
       {Icon && <Icon size={11}/>} {label}
     </button>
   )
@@ -1627,18 +1627,18 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
   }
 
   return (
-    <div style={{ background:'#fff', border:'1px solid #dde4ef',
+    <div style={{ background:'#fff', border:'1px solid rgba(0,119,182,0.12)',
       borderRadius:12, overflow:'hidden', marginTop:4, boxShadow:'0 2px 8px rgba(0,55,104,0.08)', animation:'fadeSlideUp 0.2s ease both' }}>
 
       {/* -- Status banner -- */}
       <div style={{ padding:'10px 18px', display:'flex', alignItems:'center', gap:10,
-        background: isExpired ? '#fde8e8' : isWarn ? '#fef9ec' : '#e8f7ee',
-        borderBottom:`1px solid ${isExpired?'#f5b8b8':isWarn?'#f5d78e':'#b8e2c8'}` }}>
+        background: isExpired ? '#fae3df' : isWarn ? '#fef9ec' : '#e3f5ea',
+        borderBottom:`1px solid ${isExpired?'#eec3ba':isWarn?'#ecd9a8':'#bfe5cd'}` }}>
         <div style={{ width:28, height:28, borderRadius:7, background:isExpired?'#fbd0d0':isWarn?'#fdefc0':'#c5e8d0', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-          {isExpired ? <AlertTriangle size={14} color="#c0392b"/> : isWarn ? <Clock size={14} color="#b87d00"/> : <CheckCircle size={14} color="#1a7e3b"/>}
+          {isExpired ? <AlertTriangle size={14} color="#b03425"/> : isWarn ? <Clock size={14} color="#9a6400"/> : <CheckCircle size={14} color="#1a7d43"/>}
         </div>
         <div style={{ flex:1 }}>
-          <div style={{ fontSize:12, fontWeight:600, color: isExpired?'#c0392b':isWarn?'#b87d00':'#1a7e3b' }}>
+          <div style={{ fontSize:12, fontWeight:600, color: isExpired?'#b03425':isWarn?'#9a6400':'#1a7d43' }}>
             {isExpired ? 'Certificate expired' : isWarn ? `Expires in ${days} days` : 'Certificate active and issued'}
           </div>
           <div style={{ fontSize:11, color:'#6a7a8a', marginTop:1 }}>
@@ -1646,12 +1646,12 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
           </div>
         </div>
         <button onClick={onClose}
-          style={{ background:'none', border:'none', cursor:'pointer', color:'#8a9ab5', fontSize:18, lineHeight:1, padding:'2px 6px' }}>×</button>
+          style={{ background:'none', border:'none', cursor:'pointer', color:'#7a8694', fontSize:18, lineHeight:1, padding:'2px 6px' }}>×</button>
       </div>
 
       {/* -- Action buttons row -- */}
       <div style={{ padding:'10px 18px', display:'flex', gap:6, flexWrap:'wrap',
-        borderBottom:'1px solid #e8edf5', background:'#f5f8fc' }}>
+        borderBottom:'1px solid #e8eef4', background:'#f0f4fa' }}>
         <ABtn icon={RotateCcw} label="Reissue SSL"
           onClick={() => certHistoryRef.current?.doAction('reissue')} disabled={!session}/>
         {cert._daysToRenewal != null && cert._daysToRenewal <= 30 && (
@@ -1662,48 +1662,48 @@ function CertDetail({ cert, onClose, onDelete, onInstall, onCpanel, nav, onRefre
         <ABtn icon={RefreshCw} label={refreshing ? 'Syncing…' : 'Sync status'} onClick={doRefresh} disabled={refreshing}/>
         <ABtn icon={Download} label="Certificate" onClick={() => cert.cert_pem && dl(cert.cert_pem, cert.domain+'-cert.pem')} disabled={!cert.cert_pem}/>
         {canCancel && !cancelConfirm && !cancelMsg && (
-          <ABtn icon={ShieldOff} label="Cancel order" color='#c0392b' onClick={() => setCancelConfirm(true)}/>
+          <ABtn icon={ShieldOff} label="Cancel order" color='#b03425' onClick={() => setCancelConfirm(true)}/>
         )}
         {canCancel && cancelConfirm && (
           <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <span style={{ fontSize:11, color:'#c0392b' }}>Cancel GGS #{cert.ggs_order_id}?</span>
+            <span style={{ fontSize:11, color:'#b03425' }}>Cancel GGS #{cert.ggs_order_id}?</span>
             <button onClick={doCancel} disabled={cancelling}
-              style={{ fontSize:11, fontWeight:600, color:'#fff', background:'#c0392b', border:'none',
+              style={{ fontSize:11, fontWeight:600, color:'#fff', background:'#b03425', border:'none',
                 borderRadius:6, padding:'5px 10px', cursor:'pointer', fontFamily:'inherit' }}>
               {cancelling ? 'Cancelling…' : 'Yes'}
             </button>
             <button onClick={() => setCancelConfirm(false)}
-              style={{ fontSize:11, color:'#5a7090', background:'#fff', border:'1px solid #dde4ef',
+              style={{ fontSize:11, color:'#3d4a58', background:'#fff', border:'1px solid rgba(0,119,182,0.12)',
                 borderRadius:6, padding:'5px 10px', cursor:'pointer', fontFamily:'inherit' }}>
               No
             </button>
           </div>
         )}
-        {cancelMsg && <span style={{ fontSize:11, color: cancelMsg.includes('Error') ? '#c0392b' : '#1a7e3b', alignSelf:'center' }}>{cancelMsg}</span>}
-        {refreshMsg && <span style={{ fontSize:11, color: refreshMsg.includes('Error') ? '#c0392b' : '#1a7e3b', alignSelf:'center' }}>{refreshMsg}</span>}
+        {cancelMsg && <span style={{ fontSize:11, color: cancelMsg.includes('Error') ? '#b03425' : '#1a7d43', alignSelf:'center' }}>{cancelMsg}</span>}
+        {refreshMsg && <span style={{ fontSize:11, color: refreshMsg.includes('Error') ? '#b03425' : '#1a7d43', alignSelf:'center' }}>{refreshMsg}</span>}
         <div style={{ marginLeft:'auto', display:'flex', gap:6 }}>
           {!delConfirm
-            ? <ABtn icon={X} label="Delete" color='#8a9ab5' onClick={() => setDel(true)}/>
-            : <ABtn icon={X} label="Confirm delete" color='#c0392b' onClick={() => onDelete(cert.id)}/>
+            ? <ABtn icon={X} label="Delete" color='#7a8694' onClick={() => setDel(true)}/>
+            : <ABtn icon={X} label="Confirm delete" color='#b03425' onClick={() => onDelete(cert.id)}/>
           }
         </div>
       </div>
 
       {/* -- Validity timeline bar -- */}
       {certStart && certEnd && (
-        <div style={{ padding:'12px 18px', borderBottom:'1px solid #e8edf5' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:'#8a9ab5', marginBottom:6 }}>
+        <div style={{ padding:'12px 18px', borderBottom:'1px solid #e8eef4' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:'#7a8694', marginBottom:6 }}>
             <span>{fmtD(cert.issued_at)} · SSL valid from</span>
-            <span style={{ color: isWarn||isExpired ? '#b87d00' : '#1a7e3b', fontWeight:600 }}>
+            <span style={{ color: isWarn||isExpired ? '#9a6400' : '#1a7d43', fontWeight:600 }}>
               {isExpired ? 'Expired' : `Next reissue in ${days} days`}
             </span>
             {subEnd && <span>{fmtD(subEnd)} · Subscription ends</span>}
           </div>
           <div style={{ position:'relative', height:10, borderRadius:5, overflow:'hidden',
-            background:'#e8edf5' }}>
+            background:'#e8eef4' }}>
             <div style={{ position:'absolute', left:0, top:0, bottom:0,
               width: certPct+'%', borderRadius:'5px 0 0 5px',
-              background: isExpired ? '#c0392b' : isWarn ? '#b87d00' : '#1a7e3b', opacity:.7 }}/>
+              background: isExpired ? '#b03425' : isWarn ? '#9a6400' : '#1a7d43', opacity:.7 }}/>
             <div style={{ position:'absolute', top:0, bottom:0, left:'calc('+todayPct+'% - 1px)',
               width:2, background:'white', borderRadius:1, opacity:0.7 }}/>
           </div>
@@ -2443,42 +2443,42 @@ function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
         alignItems:'center', gap:'0 0', padding:'12px 20px',
         cursor:'pointer', transition:'background .12s',
         background: selected ? '#f0f5fb' : '#fff',
-        borderLeft: selected ? '3px solid #003768' : '3px solid transparent',
-        borderBottom:'1px solid #f0f4f9' }}
+        borderLeft: selected ? '3px solid #111111' : '3px solid transparent',
+        borderBottom:'1px solid #f0f4fa' }}
       onMouseEnter={e=>{ if(!selected) e.currentTarget.style.background='#f8fafc' }}
       onMouseLeave={e=>{ if(!selected) e.currentTarget.style.background='#fff' }}>
 
       {/* # */}
-      <span style={{ fontSize:12, color:'#8a9ab5', fontVariantNumeric:'tabular-nums', fontFamily:"'JetBrains Mono',monospace" }}>{index}</span>
+      <span style={{ fontSize:12, color:'#7a8694', fontVariantNumeric:'tabular-nums', fontFamily:"'JetBrains Mono',monospace" }}>{index}</span>
 
       {/* Description */}
       <div style={{ minWidth:0 }}>
-        <div style={{ fontSize:13, fontWeight:600, color:'#003768', marginBottom:3,
+        <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:3,
           overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontFamily:"'JetBrains Mono',monospace" }}>
           {cert.domain}
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <span style={{ fontSize:11, fontWeight:500, color:'#0061a7' }}>
+          <span style={{ fontSize:11, fontWeight:500, color:'#0077b6' }}>
             {cert.cert_type || 'RapidSSL Standard'}
           </span>
           {cert.ggs_order_id && (
-            <span style={{ fontSize:10, color:'#8a9ab5', fontFamily:"'JetBrains Mono',monospace" }}>
+            <span style={{ fontSize:10, color:'#7a8694', fontFamily:"'JetBrains Mono',monospace" }}>
               · S{cert.ggs_order_id}
             </span>
           )}
-          <span style={{ fontSize:10, color:'#8a9ab5' }}>
+          <span style={{ fontSize:10, color:'#7a8694' }}>
             · {cert._order?.period || 1} year
           </span>
           {cert.install_method && (
-            <span style={{ fontSize:10, color:'#8a9ab5' }}>
+            <span style={{ fontSize:10, color:'#7a8694' }}>
               · {cert.install_method==='agent'?'Agent':'cPanel'}
             </span>
           )}
           {hasPendingReissue && (
             <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:20,
-              background:'#fef9ec', color:'#b87d00', border:'1px solid #f5d78e',
+              background:'#fef9ec', color:'#9a6400', border:'1px solid #ecd9a8',
               display:'inline-flex', alignItems:'center', gap:4 }}>
-              <span style={{ width:5, height:5, borderRadius:'50%', background:'#b87d00',
+              <span style={{ width:5, height:5, borderRadius:'50%', background:'#9a6400',
                 animation:'v3pulse 1s ease infinite' }}/>
               Reissue in progress
             </span>
@@ -2491,7 +2491,7 @@ function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
         <div style={{ fontSize:12, fontWeight:500, color:'#4a5568', fontFamily:"'JetBrains Mono',monospace" }}>
           {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB', { year:'numeric', month:'2-digit', day:'2-digit' }).split('/').reverse().join('-') : '--'}
         </div>
-        <div style={{ fontSize:11, color: isExpired ? '#c0392b' : isWarn ? '#b87d00' : '#1a7e3b', marginTop:2, fontWeight:500, fontFamily:"'JetBrains Mono',monospace" }}>
+        <div style={{ fontSize:11, color: isExpired ? '#b03425' : isWarn ? '#9a6400' : '#1a7d43', marginTop:2, fontWeight:500, fontFamily:"'JetBrains Mono',monospace" }}>
           {isExpired ? `expired ${Math.abs(days)}d ago` : `+ ${days} days`}
         </div>
       </div>
@@ -2500,16 +2500,16 @@ function CertRow({ cert, selected, onClick, index, hasPendingReissue }) {
       <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-end', gap:10 }}>
         <span style={{ display:'inline-flex', alignItems:'center', gap:5,
           fontSize:11, fontWeight:600, padding:'4px 12px', borderRadius:20,
-          background: isExpired ? '#fde8e8' : isWarn ? '#fef9ec' : '#e8f7ee',
-          color: isExpired ? '#c0392b' : isWarn ? '#b87d00' : '#1a7e3b',
-          border: `1px solid ${isExpired ? '#f5b8b8' : isWarn ? '#f5d78e' : '#b8e2c8'}`,
+          background: isExpired ? '#fae3df' : isWarn ? '#fef9ec' : '#e3f5ea',
+          color: isExpired ? '#b03425' : isWarn ? '#9a6400' : '#1a7d43',
+          border: `1px solid ${isExpired ? '#eec3ba' : isWarn ? '#ecd9a8' : '#bfe5cd'}`,
           fontFamily:"'JetBrains Mono',monospace" }}>
           <span style={{ width:6, height:6, borderRadius:'50%',
-            background: isExpired ? '#c0392b' : isWarn ? '#b87d00' : '#1a7e3b',
+            background: isExpired ? '#b03425' : isWarn ? '#9a6400' : '#1a7d43',
             animation: isActive && !isExpired && !isWarn ? 'v3pulse 2.5s ease infinite' : 'none' }}/>
           {isExpired ? 'Expired' : isWarn ? 'Expiring' : isActive ? 'Active' : (cert.status || 'Pending')}
         </span>
-        <ChevronRight size={13} color={selected ? '#003768' : '#c8d5e8'}
+        <ChevronRight size={13} color={selected ? '#111111' : '#c8d5e8'}
           style={{ transform: selected ? 'rotate(90deg)' : 'none', transition:'transform .2s', flexShrink:0 }}/>
       </div>
     </div>
@@ -2681,44 +2681,44 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
   const selectedCert = selected ? certs.find(c => c.id === selected) : null
 
   return (
-    <div style={{ background:'#f0f4f9', minHeight:'100vh', fontFamily:"'Inter',system-ui,sans-serif" }}>
+    <div style={{ background:'#f0f4fa', minHeight:'100vh', fontFamily:"'Inter',system-ui,sans-serif" }}>
       <style>{`
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
         @keyframes fadeSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         @keyframes v3pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
-        .dc-card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #dde4ef;box-shadow:0 1px 4px rgba(0,55,104,0.06)}
-        .dc-head{background:#003768;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:none}
-        .dc-head-title{font-size:10px;color:rgba(255,255,255,0.4);flex:1;text-align:center;font-family:'JetBrains Mono','Fira Mono',monospace;letter-spacing:.03em}
-        .dc-head-live{display:flex;align-items:center;gap:4px;font-size:9px;color:#4fc37a;font-family:'JetBrains Mono',monospace}
-        .dc-panel{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #dde4ef;box-shadow:0 1px 4px rgba(0,55,104,0.06)}
-        .dc-ph{background:#003768;padding:9px 16px;display:flex;align-items:center;justify-content:space-between}
-        .dc-ph-title{font-size:9px;font-weight:600;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:.08em;font-family:'JetBrains Mono',monospace}
-        .dc-ph-right{font-size:9px;color:#4fc37a;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:4px}
-        .dc-tab-row{display:flex;align-items:center;background:#f5f8fc;border-bottom:1px solid #dde4ef;padding:0 16px;overflow-x:auto;scrollbar-width:none}
-        .dc-tab{padding:9px 14px;font-size:11px;color:#8a9ab5;border:none;border-bottom:2px solid transparent;background:none;outline:none;cursor:pointer;font-family:'JetBrains Mono',monospace;white-space:nowrap;transition:color .15s;-webkit-appearance:none}
-        .dc-tab:hover{color:#003768}
-        .dc-tab.on{color:#003768;border-bottom:2px solid #003768;font-weight:600}
-        .dc-tc{font-size:9px;padding:1px 5px;border-radius:20px;background:#e8f1fb;color:#0061a7;margin-left:4px;font-family:'JetBrains Mono',monospace}
-        .dc-btn{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;border:1px solid #dde4ef;background:#fff;font-size:11px;color:#5a7090;cursor:pointer;font-family:inherit;transition:all .15s}
-        .dc-btn:hover{border-color:#003768;color:#003768}
-        .dc-btn.pri{background:#003768;border-color:#003768;color:#fff}
-        .dc-btn.pri:hover{background:#004d96}
+        .dc-card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid rgba(0,119,182,0.12);box-shadow:0 1px 4px rgba(0,119,182,0.05)}
+        .dc-head{background:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e8eef4}
+        .dc-head-title{font-size:12.5px;color:#111111;flex:1;text-align:left;font-family:'DM Sans','Inter',sans-serif;font-weight:800;letter-spacing:0}
+        .dc-head-live{display:flex;align-items:center;gap:5px;font-size:9px;color:#1a7d43;font-family:'JetBrains Mono',monospace;font-weight:700}
+        .dc-panel{background:#fff;border-radius:14px;overflow:hidden;border:1px solid rgba(0,119,182,0.12);box-shadow:0 1px 4px rgba(0,119,182,0.05)}
+        .dc-ph{background:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e8eef4}
+        .dc-ph-title{font-size:9.5px;font-weight:800;color:#5a6776;text-transform:uppercase;letter-spacing:.08em;font-family:'JetBrains Mono',monospace}
+        .dc-ph-right{font-size:9px;color:#1a7d43;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:4px;font-weight:700}
+        .dc-tab-row{display:flex;align-items:center;background:#f0f4fa;border-bottom:1px solid rgba(0,119,182,0.12);padding:0 16px;overflow-x:auto;scrollbar-width:none}
+        .dc-tab{padding:9px 14px;font-size:11px;color:#7a8694;border:none;border-bottom:2px solid transparent;background:none;outline:none;cursor:pointer;font-family:'JetBrains Mono',monospace;white-space:nowrap;transition:color .15s;-webkit-appearance:none}
+        .dc-tab:hover{color:#0077b6}
+        .dc-tab.on{color:#0077b6;border-bottom:2px solid #0077b6;font-weight:700}
+        .dc-tc{font-size:9px;padding:1px 5px;border-radius:20px;background:rgba(0,119,182,0.09);color:#0077b6;margin-left:4px;font-family:'JetBrains Mono',monospace}
+        .dc-btn{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;border:1px solid rgba(0,119,182,0.12);background:#fff;font-size:11px;color:#3d4a58;cursor:pointer;font-family:inherit;transition:all .15s}
+        .dc-btn:hover{border-color:#0077b6;color:#0077b6}
+        .dc-btn.pri{background:#0077b6;border-color:#0077b6;color:#fff}
+        .dc-btn.pri:hover{background:#0091d6}
       `}</style>
       <div style={{ maxWidth:1280, margin:'0 auto', padding:'20px 24px 80px' }}>
 
         {/* ── TOP NAV BAR ── */}
-        <div style={{ background:'#003768', borderRadius:12, padding:'12px 18px', marginBottom:14, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div style={{ marginBottom:16, display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
           <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <div style={{ width:32, height:32, borderRadius:8, background:'#0061a7', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#fff', flexShrink:0, fontFamily:"'JetBrains Mono',monospace", letterSpacing:'.04em' }}>SV</div>
+            <div style={{ width:32, height:32, borderRadius:8, background:'#0077b6', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#fff', flexShrink:0, fontFamily:"'JetBrains Mono',monospace", letterSpacing:'.04em' }}>SV</div>
             <div>
-              <div style={{ fontSize:13, fontWeight:600, color:'#fff', letterSpacing:'-0.2px' }}>Certificate Dashboard</div>
-              <div style={{ fontSize:10, color:'rgba(255,255,255,0.4)', fontFamily:"'JetBrains Mono',monospace" }}>{user.email} · {domainGroups.length} certificate{domainGroups.length!==1?'s':''}</div>
+              <div style={{ fontSize:22, fontWeight:900, color:'#111111', letterSpacing:'-0.01em', fontFamily:"'DM Sans','Inter',sans-serif" }}>Certificate Dashboard</div>
+              <div style={{ fontSize:11, color:'#5a6776', fontFamily:"'JetBrains Mono',monospace", marginTop:2 }}>{user.email} · {domainGroups.length} certificate{domainGroups.length!==1?'s':''} under management</div>
             </div>
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             {healthy === total && total > 0 && (
-              <div style={{ display:'flex', alignItems:'center', gap:5, fontSize:10, fontWeight:600, color:'#4fc37a', background:'rgba(79,195,122,0.12)', border:'1px solid rgba(79,195,122,0.3)', borderRadius:20, padding:'4px 11px' }}>
-                <div style={{ width:5, height:5, borderRadius:'50%', background:'#4fc37a' }}/>
+              <div style={{ display:'flex', alignItems:'center', gap:5, fontSize:10, fontWeight:600, color:'#00a550', background:'rgba(0,165,80,0.12)', border:'1px solid rgba(0,165,80,0.3)', borderRadius:20, padding:'4px 11px' }}>
+                <div style={{ width:5, height:5, borderRadius:'50%', background:'#00a550' }}/>
                 All healthy
               </div>
             )}
@@ -2730,13 +2730,37 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               try { await navigator.clipboard.writeText(url) } catch(_) {}
               setShareMsg('Link copied!')
               setTimeout(() => setShareMsg(''), 2500)
-            }} style={{ display:'flex', alignItems:'center', gap:6, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:8, padding:'7px 13px', fontSize:11, fontWeight:500, color:'rgba(255,255,255,0.8)', cursor:'pointer', fontFamily:'inherit', transition:'background .15s' }}
-              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.18)'}
-              onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}>
+            }} style={{ display:'flex', alignItems:'center', gap:6, background:'#fff', border:'1.5px solid rgba(0,119,182,0.12)', borderRadius:8, padding:'7px 13px', fontSize:11, fontWeight:700, color:'#0077b6', cursor:'pointer', fontFamily:"'DM Sans','Inter',sans-serif", transition:'background .15s' }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(0,119,182,0.06)'}
+              onMouseLeave={e=>e.currentTarget.style.background='#fff'}>
               <Share2 size={11}/> {shareMsg || 'Share SSL status'}
             </button>
           </div>
         </div>
+
+        {/* ── KPI STRIP ── */}
+        {!loading && total > 0 && (() => {
+          const expSoon = issuedCerts.filter(cc => { const d = daysLeft(cc.expires_at); return d !== null && d <= 30 && d >= 0 }).length
+          const liveN = issuedCerts.filter(cc=>cc.is_live_on_server).length
+          const autoN = issuedCerts.filter(cc=>cc.auto_renew_enabled!==false).length
+          const kpis = [
+            { k:'Active certs', v: total, d: `${liveN} live on server` },
+            { k:'Expiring \u226430d', v: expSoon, d: expSoon ? 'auto-renew armed' : 'none at risk', c: expSoon ? '#9a6400' : undefined },
+            { k:'Auto-renew', v: `${total?Math.round(autoN/total*100):0}%`, d: `${autoN} of ${total} certs`, c:'#1a7d43' },
+            { k:'Healthy', v: healthy, d: healthy===total ? 'entire fleet' : `of ${total}`, c:'#1a7d43' },
+          ]
+          return (
+            <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4,1fr)', gap:10, marginBottom:14 }}>
+              {kpis.map(x => (
+                <div key={x.k} style={{ background:'#fff', border:'1px solid rgba(0,119,182,0.12)', borderRadius:12, padding:'13px 16px' }}>
+                  <div style={{ fontSize:9, fontWeight:700, color:'#7a8694', textTransform:'uppercase', letterSpacing:'.06em', fontFamily:"'JetBrains Mono',monospace" }}>{x.k}</div>
+                  <div style={{ fontSize:21, fontWeight:900, fontFamily:"'DM Sans','Inter',sans-serif", marginTop:4, color:x.c||'#111111' }}>{x.v}</div>
+                  <div style={{ fontSize:10, marginTop:3, color:'#5a6776' }}>{x.d}</div>
+                </div>
+              ))}
+            </div>
+          )
+        })()}
 
         {/* ── FRESH STAT ROW ── */}
         {(() => {
@@ -2762,65 +2786,63 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
             {/* ── HERO POSTURE BANNER ── */}
             <div className="dc-card" style={{ marginBottom:14 }}>
               <div className="dc-head">
-                <div style={{ display:'flex', gap:4 }}>
-                  {['#ff5f57','#ffbd2e','#28c840'].map(c=><div key={c} style={{ width:8, height:8, borderRadius:'50%', background:c }}/>)}
-                </div>
+                
                 <div className="dc-head-title">Certificate posture · SSLVault</div>
-                <div className="dc-head-live"><div style={{ width:5, height:5, borderRadius:'50%', background:'#4fc37a' }}/>Live</div>
+                <div className="dc-head-live"><div style={{ width:5, height:5, borderRadius:'50%', background:'#00a550' }}/>Live</div>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'100px 1fr 160px', alignItems:'stretch' }}>
                 {/* Score ring */}
-                <div style={{ padding:'20px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, borderRight:'1px solid #e8edf5' }}>
+                <div style={{ padding:'20px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, borderRight:'1px solid #e8eef4' }}>
                   <div style={{ flexShrink:0, position:'relative', width:72, height:72 }}>
                     <svg width="72" height="72" viewBox="0 0 72 72" style={{ transform:'rotate(-90deg)', position:'absolute', top:0, left:0 }}>
-                      <circle cx="36" cy="36" r="28" fill="none" stroke="#e8edf5" strokeWidth="5"/>
-                      <circle cx="36" cy="36" r="28" fill="none" stroke={postureScore>=80?'#1a7e3b':postureScore>=50?'#b87d00':'#c0392b'} strokeWidth="5"
+                      <circle cx="36" cy="36" r="28" fill="none" stroke="#e8eef4" strokeWidth="5"/>
+                      <circle cx="36" cy="36" r="28" fill="none" stroke={postureScore>=80?'#1a7d43':postureScore>=50?'#9a6400':'#b03425'} strokeWidth="5"
                         strokeDasharray={`${2*Math.PI*28}`}
                         strokeDashoffset={`${2*Math.PI*28*(1-postureScore/100)}`}
                         strokeLinecap="round" style={{ transition:'stroke-dashoffset 1.2s ease' }}/>
                     </svg>
                     <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
-                      <div style={{ fontSize:18, fontWeight:700, color:postureScore>=80?'#1a7e3b':postureScore>=50?'#b87d00':'#c0392b', lineHeight:1, fontFamily:"'JetBrains Mono',monospace" }}>{postureScore}</div>
-                      <div style={{ fontSize:7, color:'#9aabc0', textTransform:'uppercase', letterSpacing:'0.1em', marginTop:1, fontFamily:"'JetBrains Mono',monospace" }}>score</div>
+                      <div style={{ fontSize:18, fontWeight:700, color:postureScore>=80?'#1a7d43':postureScore>=50?'#9a6400':'#b03425', lineHeight:1, fontFamily:"'JetBrains Mono',monospace" }}>{postureScore}</div>
+                      <div style={{ fontSize:7, color:'#7a8694', textTransform:'uppercase', letterSpacing:'0.1em', marginTop:1, fontFamily:"'JetBrains Mono',monospace" }}>score</div>
                     </div>
                   </div>
-                  <div style={{ fontSize:9, fontWeight:600, color:postureScore>=80?'#1a7e3b':postureScore>=50?'#b87d00':'#c0392b', background:postureScore>=80?'#e8f7ee':postureScore>=50?'#fef3d0':'#fde8e8', border:`1px solid ${postureScore>=80?'#b8e2c8':postureScore>=50?'#f5d78e':'#f5b8b8'}`, borderRadius:20, padding:'2px 10px', fontFamily:"'JetBrains Mono',monospace" }}>{scoreLabel}</div>
+                  <div style={{ fontSize:9, fontWeight:600, color:postureScore>=80?'#1a7d43':postureScore>=50?'#9a6400':'#b03425', background:postureScore>=80?'#e3f5ea':postureScore>=50?'#faf0d8':'#fae3df', border:`1px solid ${postureScore>=80?'#bfe5cd':postureScore>=50?'#ecd9a8':'#eec3ba'}`, borderRadius:20, padding:'2px 10px', fontFamily:"'JetBrains Mono',monospace" }}>{scoreLabel}</div>
                 </div>
                 {/* Bars */}
                 <div style={{ padding:'16px 20px', display:'flex', flexDirection:'column', justifyContent:'center', gap:5 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
-                    <span style={{ fontSize:14, fontWeight:600, color:'#003768' }}>Fleet posture</span>
-                    <span style={{ fontSize:9, padding:'2px 8px', borderRadius:20, background:'#e8f7ee', border:'1px solid #b8e2c8', color:'#1a7e3b', fontFamily:"'JetBrains Mono',monospace" }}>{total} cert{total!==1?'s':''}</span>
-                    <span style={{ fontSize:10, color:'#8a9ab5' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
+                    <span style={{ fontSize:14, fontWeight:600, color:'#111111' }}>Fleet posture</span>
+                    <span style={{ fontSize:9, padding:'2px 8px', borderRadius:20, background:'#e3f5ea', border:'1px solid #bfe5cd', color:'#1a7d43', fontFamily:"'JetBrains Mono',monospace" }}>{total} cert{total!==1?'s':''}</span>
+                    <span style={{ fontSize:10, color:'#7a8694' }}>{issuedCerts.filter(c=>c.is_live_on_server).length} live on server</span>
                   </div>
                   {bars.map(b => (
                     <div key={b.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                      <span style={{ fontSize:9, color:'#8a9ab5', width:64, flexShrink:0, textTransform:'uppercase', letterSpacing:'.05em', fontFamily:"'JetBrains Mono',monospace" }}>{b.label}</span>
-                      <div style={{ flex:1, height:3, background:'#e8edf5', borderRadius:2, overflow:'hidden' }}>
-                        <div style={{ height:'100%', width:`${b.pct}%`, background:b.pct===100?'#1a7e3b':'#0061a7', borderRadius:2, transition:'width 1s ease' }}/>
+                      <span style={{ fontSize:9, color:'#7a8694', width:64, flexShrink:0, textTransform:'uppercase', letterSpacing:'.05em', fontFamily:"'JetBrains Mono',monospace" }}>{b.label}</span>
+                      <div style={{ flex:1, height:3, background:'#e8eef4', borderRadius:2, overflow:'hidden' }}>
+                        <div style={{ height:'100%', width:`${b.pct}%`, background:b.pct===100?'#1a7d43':'#0077b6', borderRadius:2, transition:'width 1s ease' }}/>
                       </div>
-                      <span style={{ fontSize:9, color:b.pct===100?'#1a7e3b':'#0061a7', width:28, textAlign:'right', flexShrink:0, fontWeight:600, fontFamily:"'JetBrains Mono',monospace" }}>{b.pct}%</span>
+                      <span style={{ fontSize:9, color:b.pct===100?'#1a7d43':'#0077b6', width:28, textAlign:'right', flexShrink:0, fontWeight:600, fontFamily:"'JetBrains Mono',monospace" }}>{b.pct}%</span>
                     </div>
                   ))}
                 </div>
                 {/* Stat tiles + AI */}
-                <div style={{ borderLeft:'1px solid #e8edf5', padding:'16px', display:'flex', flexDirection:'column', gap:7, justifyContent:'center' }}>
+                <div style={{ borderLeft:'1px solid #e8eef4', padding:'16px', display:'flex', flexDirection:'column', gap:7, justifyContent:'center' }}>
                   {[
-                    { val:healthy, label:'Healthy', color:'#1a7e3b', bg:'#e8f7ee', border:'#b8e2c8', onClick:()=>setFilter('healthy') },
-                    { val:expiring+pendingDcv, label:'Attention', color:expiring+pendingDcv>0?'#b87d00':'#c0c8d8', bg:expiring+pendingDcv>0?'#fef9ec':'#f5f8fc', border:expiring+pendingDcv>0?'#f5d78e':'#dde4ef', onClick:()=>setFilter(expiring>0?'expiring':'all') },
+                    { val:healthy, label:'Healthy', color:'#1a7d43', bg:'#e3f5ea', border:'#bfe5cd', onClick:()=>setFilter('healthy') },
+                    { val:expiring+pendingDcv, label:'Attention', color:expiring+pendingDcv>0?'#9a6400':'#c0c8d8', bg:expiring+pendingDcv>0?'#fef9ec':'#f0f4fa', border:expiring+pendingDcv>0?'#ecd9a8':'rgba(0,119,182,0.12)', onClick:()=>setFilter(expiring>0?'expiring':'all') },
                   ].map(s=>(
                     <div key={s.label} onClick={s.onClick} style={{ padding:'10px 14px', borderRadius:9, background:s.bg, border:`1px solid ${s.border}`, textAlign:'center', cursor:'pointer', transition:'transform .15s' }}
                       onMouseEnter={e=>e.currentTarget.style.transform='translateY(-2px)'}
                       onMouseLeave={e=>e.currentTarget.style.transform='translateY(0)'}>
                       <div style={{ fontSize:22, fontWeight:700, color:s.color, lineHeight:1, fontFamily:"'JetBrains Mono',monospace" }}>{s.val}</div>
-                      <div style={{ fontSize:8, color:'#8a9ab5', marginTop:3, textTransform:'uppercase', letterSpacing:'.06em', fontFamily:"'JetBrains Mono',monospace" }}>{s.label}</div>
+                      <div style={{ fontSize:8, color:'#7a8694', marginTop:3, textTransform:'uppercase', letterSpacing:'.06em', fontFamily:"'JetBrains Mono',monospace" }}>{s.label}</div>
                     </div>
                   ))}
-                  <div onClick={()=>onOpenAI?.()} style={{ padding:'9px', borderRadius:9, background:'#e8f1fb', border:'1px solid #b8d0f0', textAlign:'center', cursor:'pointer', transition:'background .15s' }}
+                  <div onClick={()=>onOpenAI?.()} style={{ padding:'9px', borderRadius:9, background:'rgba(0,119,182,0.09)', border:'1px solid #b8d0f0', textAlign:'center', cursor:'pointer', transition:'background .15s' }}
                     onMouseEnter={e=>e.currentTarget.style.background='#d0e5f7'}
-                    onMouseLeave={e=>e.currentTarget.style.background='#e8f1fb'}>
-                    <Activity size={16} color="#0061a7"/>
-                    <div style={{ fontSize:8, color:'#0061a7', marginTop:2, fontFamily:"'JetBrains Mono',monospace" }}>AI</div>
+                    onMouseLeave={e=>e.currentTarget.style.background='rgba(0,119,182,0.09)'}>
+                    <Activity size={16} color="#0077b6"/>
+                    <div style={{ fontSize:8, color:'#0077b6', marginTop:2, fontFamily:"'JetBrains Mono',monospace" }}>AI</div>
                   </div>
                 </div>
               </div>
@@ -2950,22 +2972,22 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                   const isSel = cert.id === selected
                   return (
                     <div key={cert.id} onClick={() => setSelected(isSel ? null : cert.id)}
-                      style={{ background:'#fff', border:`1px solid ${isSel?'#003768':'#dde4ef'}`, borderRadius:12, overflow:'hidden', cursor:'pointer', transition:'all .15s', boxShadow:'0 1px 4px rgba(0,55,104,0.06)' }}
-                      onMouseEnter={e=>{ e.currentTarget.style.borderColor='#003768'; e.currentTarget.style.boxShadow='0 3px 10px rgba(0,55,104,0.1)' }}
-                      onMouseLeave={e=>{ e.currentTarget.style.borderColor=isSel?'#003768':'#dde4ef'; e.currentTarget.style.boxShadow='0 1px 4px rgba(0,55,104,0.06)' }}>
-                      <div style={{ background:'#003768', padding:'9px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                      style={{ background:'#fff', border:`1px solid ${isSel?'#111111':'rgba(0,119,182,0.12)'}`, borderRadius:12, overflow:'hidden', cursor:'pointer', transition:'all .15s', boxShadow:'0 1px 4px rgba(0,119,182,0.05)' }}
+                      onMouseEnter={e=>{ e.currentTarget.style.borderColor='#111111'; e.currentTarget.style.boxShadow='0 3px 10px rgba(0,55,104,0.1)' }}
+                      onMouseLeave={e=>{ e.currentTarget.style.borderColor=isSel?'#111111':'rgba(0,119,182,0.12)'; e.currentTarget.style.boxShadow='0 1px 4px rgba(0,119,182,0.05)' }}>
+                      <div style={{ background:'#111111', padding:'9px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                         <span style={{ fontSize:12, fontWeight:600, color:'#fff', fontFamily:"'JetBrains Mono',monospace", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cert.domain}</span>
-                        <span style={{ fontSize:8, fontWeight:600, color:notLive?'#f5a623':isExp?'#ff6b6b':isWarn?'#fbbf24':'#4fc37a', background:notLive?'rgba(245,166,35,0.15)':isExp?'rgba(255,107,107,0.15)':isWarn?'rgba(251,191,36,0.15)':'rgba(79,195,122,0.15)', border:`1px solid ${notLive?'rgba(245,166,35,0.35)':isExp?'rgba(255,107,107,0.35)':isWarn?'rgba(251,191,36,0.35)':'rgba(79,195,122,0.35)'}`, borderRadius:20, padding:'2px 7px', fontFamily:"'JetBrains Mono',monospace", flexShrink:0 }}>
+                        <span style={{ fontSize:8, fontWeight:600, color:notLive?'#f5a623':isExp?'#ff6b6b':isWarn?'#fbbf24':'#00a550', background:notLive?'rgba(245,166,35,0.15)':isExp?'rgba(255,107,107,0.15)':isWarn?'rgba(251,191,36,0.15)':'rgba(0,165,80,0.15)', border:`1px solid ${notLive?'rgba(245,166,35,0.35)':isExp?'rgba(255,107,107,0.35)':isWarn?'rgba(251,191,36,0.35)':'rgba(0,165,80,0.35)'}`, borderRadius:20, padding:'2px 7px', fontFamily:"'JetBrains Mono',monospace", flexShrink:0 }}>
                           {notLive?'INSTALL':isExp?'EXPIRED':isWarn?'EXPIRING':'LIVE'}
                         </span>
                       </div>
                       <div style={{ padding:'12px 14px' }}>
-                        <div style={{ fontSize:10, color:'#8a9ab5', marginBottom:8, fontFamily:"'JetBrains Mono',monospace" }}>{cert.cert_type||'RapidSSL Standard'} · {cert.install_method==='cpanel'?'cPanel':cert.install_method==='agent'?'Agent':'Direct'}</div>
-                        <div style={{ fontSize:26, fontWeight:700, color:'#003768', lineHeight:1, marginBottom:3, fontFamily:"'JetBrains Mono',monospace" }}>{d==null?'--':Math.max(0,d)}</div>
-                        <div style={{ fontSize:10, color:'#8a9ab5', marginBottom:9, fontFamily:"'JetBrains Mono',monospace" }}>days · {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '--'}</div>
+                        <div style={{ fontSize:10, color:'#7a8694', marginBottom:8, fontFamily:"'JetBrains Mono',monospace" }}>{cert.cert_type||'RapidSSL Standard'} · {cert.install_method==='cpanel'?'cPanel':cert.install_method==='agent'?'Agent':'Direct'}</div>
+                        <div style={{ fontSize:26, fontWeight:700, color:'#111111', lineHeight:1, marginBottom:3, fontFamily:"'JetBrains Mono',monospace" }}>{d==null?'--':Math.max(0,d)}</div>
+                        <div style={{ fontSize:10, color:'#7a8694', marginBottom:9, fontFamily:"'JetBrains Mono',monospace" }}>days · {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '--'}</div>
                         <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
-                          {cert.auto_renew_enabled!==false && <span style={{ fontSize:8, padding:'2px 7px', borderRadius:20, background:'#e8f7ee', border:'1px solid #b8e2c8', color:'#1a7e3b', fontFamily:"'JetBrains Mono',monospace", fontWeight:600 }}>Auto-renew</span>}
-                          <span style={{ fontSize:8, padding:'2px 7px', borderRadius:20, background:notLive?'#fde8e8':isExp?'#fde8e8':isWarn?'#fef9ec':'#e8f7ee', border:`1px solid ${notLive?'#f5b8b8':isExp?'#f5b8b8':isWarn?'#f5d78e':'#b8e2c8'}`, color:notLive?'#c0392b':isExp?'#c0392b':isWarn?'#b87d00':'#1a7e3b', fontFamily:"'JetBrains Mono',monospace", fontWeight:600 }}>
+                          {cert.auto_renew_enabled!==false && <span style={{ fontSize:8, padding:'2px 7px', borderRadius:20, background:'#e3f5ea', border:'1px solid #bfe5cd', color:'#1a7d43', fontFamily:"'JetBrains Mono',monospace", fontWeight:600 }}>Auto-renew</span>}
+                          <span style={{ fontSize:8, padding:'2px 7px', borderRadius:20, background:notLive?'#fae3df':isExp?'#fae3df':isWarn?'#fef9ec':'#e3f5ea', border:`1px solid ${notLive?'#eec3ba':isExp?'#eec3ba':isWarn?'#ecd9a8':'#bfe5cd'}`, color:notLive?'#b03425':isExp?'#b03425':isWarn?'#9a6400':'#1a7d43', fontFamily:"'JetBrains Mono',monospace", fontWeight:600 }}>
                             {notLive?'Install pending':isExp?'Expired':isWarn?'Expiring':'Live'}
                           </span>
                         </div>
@@ -2976,12 +2998,12 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 {/* Issue new slot */}
                 <div onClick={()=>nav&&nav('/issue-cert')}
                   style={{ background:'#fff', border:'2px dashed #c8d5e8', borderRadius:12, cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8, minHeight:130, transition:'all .15s' }}
-                  onMouseEnter={e=>{ e.currentTarget.style.borderColor='#003768'; e.currentTarget.style.background='#f5f8fc' }}
+                  onMouseEnter={e=>{ e.currentTarget.style.borderColor='#111111'; e.currentTarget.style.background='#f0f4fa' }}
                   onMouseLeave={e=>{ e.currentTarget.style.borderColor='#c8d5e8'; e.currentTarget.style.background='#fff' }}>
-                  <div style={{ width:32, height:32, borderRadius:8, background:'#e8f1fb', border:'1px solid #b8d0f0', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <Plus size={16} color="#0061a7"/>
+                  <div style={{ width:32, height:32, borderRadius:8, background:'rgba(0,119,182,0.09)', border:'1px solid #b8d0f0', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <Plus size={16} color="#0077b6"/>
                   </div>
-                  <span style={{ fontSize:11, color:'#8a9ab5' }}>Issue new certificate</span>
+                  <span style={{ fontSize:11, color:'#7a8694' }}>Issue new certificate</span>
                 </div>
               </div>
 
@@ -3012,7 +3034,7 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                 <div className="dc-panel">
                   <div className="dc-ph">
                     <span className="dc-ph-title">CA/B Forum mandate readiness</span>
-                    <div className="dc-ph-right"><div style={{ width:5, height:5, borderRadius:'50%', background:'#4fc37a' }}/>{activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=200}).length}/{activeCerts.length} compliant</div>
+                    <div className="dc-ph-right"><div style={{ width:5, height:5, borderRadius:'50%', background:'#00a550' }}/>{activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=200}).length}/{activeCerts.length} compliant</div>
                   </div>
                   <div style={{ padding:'14px 16px' }}>
                   {[
@@ -3021,12 +3043,12 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                     { year:'Mar 2029', max:47,  label:'47d max',  ready:activeCerts.filter(c=>{const d=daysLeft(c.expires_at);return d!=null&&d<=47}).length  },
                   ].map((m,i,arr)=>{
                     const pct = activeCerts.length>0?(m.ready/activeCerts.length)*100:0
-                    const col = m.max===200?'#c0392b':m.max===100?'#b87d00':'#0061a7'
+                    const col = m.max===200?'#b03425':m.max===100?'#9a6400':'#0077b6'
                     return (
-                      <div key={m.year} style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0', borderBottom:i<arr.length-1?'1px solid #f0f4f9':'none' }}>
-                        <span style={{ fontSize:10, color:'#8a9ab5', width:54, flexShrink:0, fontFamily:"'JetBrains Mono',monospace" }}>{m.year}</span>
+                      <div key={m.year} style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0', borderBottom:i<arr.length-1?'1px solid #f0f4fa':'none' }}>
+                        <span style={{ fontSize:10, color:'#7a8694', width:54, flexShrink:0, fontFamily:"'JetBrains Mono',monospace" }}>{m.year}</span>
                         <span style={{ fontSize:11, fontWeight:600, color:col, width:60, flexShrink:0, fontFamily:"'JetBrains Mono',monospace" }}>{m.label}</span>
-                        <div style={{ flex:1, height:4, background:'#e8edf5', borderRadius:2, overflow:'hidden' }}>
+                        <div style={{ flex:1, height:4, background:'#e8eef4', borderRadius:2, overflow:'hidden' }}>
                           <div style={{ height:'100%', width:`${pct}%`, background:col, borderRadius:2, transition:'width 0.8s ease' }}/>
                         </div>
                         <span style={{ fontSize:10, color:col, width:28, textAlign:'right', flexShrink:0, fontFamily:"'JetBrains Mono',monospace" }}>{m.ready}/{activeCerts.length}</span>
@@ -3045,13 +3067,13 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                   <div style={{ padding:'14px 16px' }}>
                   <div style={{ display:'flex', gap:0, marginBottom:8 }}>
                     {months.map((m,i)=>(
-                      <div key={m} style={{ flex:1, fontSize:8, color:i===now.getMonth()?'#003768':'#c0c8d8', textAlign:'center', fontWeight:i===now.getMonth()?700:400, fontFamily:"'JetBrains Mono',monospace" }}>{m.slice(0,1)}</div>
+                      <div key={m} style={{ flex:1, fontSize:8, color:i===now.getMonth()?'#111111':'#c0c8d8', textAlign:'center', fontWeight:i===now.getMonth()?700:400, fontFamily:"'JetBrains Mono',monospace" }}>{m.slice(0,1)}</div>
                     ))}
                   </div>
                   {activeCerts.map((cert,i)=>{
                     const d = daysLeft(cert.expires_at)
                     const notLive = !cert.is_live_on_server
-                    const col = notLive?'#0061a7':d!=null&&d<=0?'#c0392b':d!=null&&d<=30?'#b87d00':'#1a7e3b'
+                    const col = notLive?'#0077b6':d!=null&&d<=0?'#b03425':d!=null&&d<=30?'#9a6400':'#1a7d43'
                     const issuedP = tlPct(cert.issued_at)
                     const expiryP = tlPct(cert.expires_at)
                     const activeW = Math.max(Math.min(todayPct,expiryP)-issuedP,0)
@@ -3059,24 +3081,24 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
                     const shortName = cert.domain.replace(/^www\./,'').split('.')[0]
                     return (
                       <div key={cert.id} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:i<activeCerts.length-1?8:0 }}>
-                        <div style={{ width:64, flexShrink:0, fontSize:11, fontWeight:600, color:'#003768', fontFamily:"'JetBrains Mono',monospace", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{shortName.length>7?shortName.slice(0,6)+'..':shortName}</div>
-                        <div style={{ flex:1, height:8, background:'#e8edf5', borderRadius:3, position:'relative', overflow:'hidden' }}>
+                        <div style={{ width:64, flexShrink:0, fontSize:11, fontWeight:600, color:'#111111', fontFamily:"'JetBrains Mono',monospace", overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{shortName.length>7?shortName.slice(0,6)+'..':shortName}</div>
+                        <div style={{ flex:1, height:8, background:'#e8eef4', borderRadius:3, position:'relative', overflow:'hidden' }}>
                           <div style={{ position:'absolute', left:`${issuedP*100}%`, top:0, bottom:0, width:`${activeW*100}%`, background:`${col}50`, borderRight:`2px solid ${col}` }}/>
                           <div style={{ position:'absolute', left:`${Math.min(todayPct,expiryP)*100}%`, top:0, bottom:0, width:`${futureW*100}%`, background:`${col}20` }}/>
                           <div style={{ position:'absolute', top:0, bottom:0, left:`${todayPct*100}%`, width:1.5, background:'#f5a623' }}/>
                         </div>
                         <div style={{ width:36, textAlign:'right', fontSize:11, fontWeight:700, fontFamily:"'JetBrains Mono',monospace", color:col, flexShrink:0 }}>{d==null?'--':d<=0?'EXP':`${d}d`}</div>
-                        <span style={{ fontSize:8, fontWeight:600, padding:'2px 6px', borderRadius:20, width:46, textAlign:'center', flexShrink:0, background:notLive?'#fde8e8':'#e8f7ee', color:notLive?'#c0392b':'#1a7e3b', border:`1px solid ${notLive?'#f5b8b8':'#b8e2c8'}`, fontFamily:"'JetBrains Mono',monospace" }}>
+                        <span style={{ fontSize:8, fontWeight:600, padding:'2px 6px', borderRadius:20, width:46, textAlign:'center', flexShrink:0, background:notLive?'#fae3df':'#e3f5ea', color:notLive?'#b03425':'#1a7d43', border:`1px solid ${notLive?'#eec3ba':'#bfe5cd'}`, fontFamily:"'JetBrains Mono',monospace" }}>
                           {notLive?'PENDING':'LIVE'}
                         </span>
                       </div>
                     )
                   })}
                   <div style={{ marginTop:10, display:'flex', gap:12 }}>
-                    <span style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'#8a9ab5', fontFamily:"'JetBrains Mono',monospace" }}>
+                    <span style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'#7a8694', fontFamily:"'JetBrains Mono',monospace" }}>
                       <span style={{ width:14, height:3, background:'rgba(0,97,167,0.45)', display:'inline-block', borderRadius:2 }}/>Valid
                     </span>
-                    <span style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'#b87d00', fontFamily:"'JetBrains Mono',monospace" }}>
+                    <span style={{ display:'flex', alignItems:'center', gap:4, fontSize:9, color:'#9a6400', fontFamily:"'JetBrains Mono',monospace" }}>
                       <span style={{ width:1.5, height:10, background:'#f5a623', display:'inline-block', borderRadius:1 }}/>Today
                     </span>
                   </div>
@@ -3532,12 +3554,12 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               <div style={{ marginLeft:'auto', display:'flex', gap:6, alignItems:'center', padding:'6px 0' }}>
                 <div style={{ position:'relative' }}>
                   <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search domains…"
-                    style={{ background:'#f5f8fc', border:'1px solid #dde4ef', borderRadius:7, color:'#003768',
+                    style={{ background:'#f0f4fa', border:'1px solid rgba(0,119,182,0.12)', borderRadius:7, color:'#111111',
                       fontSize:11, padding:'6px 10px 6px 28px', width:180, outline:'none', fontFamily:"'JetBrains Mono',monospace",
                       transition:'border-color .15s' }}
-                    onFocus={e=>e.target.style.borderColor='#003768'}
-                    onBlur={e=>e.target.style.borderColor='#dde4ef'}/>
-                  <Globe size={11} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:'#8a9ab5', pointerEvents:'none' }}/>
+                    onFocus={e=>e.target.style.borderColor='#111111'}
+                    onBlur={e=>e.target.style.borderColor='rgba(0,119,182,0.12)'}/>
+                  <Globe size={11} style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:'#7a8694', pointerEvents:'none' }}/>
                 </div>
                 <ScanPqcButton onDone={load}/>
                 <button onClick={() => onIssue ? onIssue() : nav('/buy')} className="dc-btn pri" style={{ display:'flex', alignItems:'center', gap:5 }}>
@@ -3548,16 +3570,16 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
 
             {loading ? (
               <div style={{ padding:'48px 16px', textAlign:'center' }}>
-                <RefreshCw size={20} style={{ color:'#8a9ab5', animation:'v3pulse 1s linear infinite' }}/>
-                <div style={{ fontSize:12, color:'#8a9ab5', marginTop:10 }}>Loading…</div>
+                <RefreshCw size={20} style={{ color:'#7a8694', animation:'v3pulse 1s linear infinite' }}/>
+                <div style={{ fontSize:12, color:'#7a8694', marginTop:10 }}>Loading…</div>
               </div>
             ) : visible.length === 0 ? (
               <div style={{ padding:'48px 16px', textAlign:'center' }}>
-                <div style={{ width:44, height:44, borderRadius:10, background:'#e8f1fb', border:'1px solid #b8d0f0', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 12px' }}>
-                  <Shield size={20} color="#0061a7"/>
+                <div style={{ width:44, height:44, borderRadius:10, background:'rgba(0,119,182,0.09)', border:'1px solid #b8d0f0', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 12px' }}>
+                  <Shield size={20} color="#0077b6"/>
                 </div>
-                <div style={{ fontSize:13, fontWeight:600, color:'#003768', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
-                <div style={{ fontSize:12, color:'#8a9ab5', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#111111', marginBottom:6 }}>{total===0?'No certificates yet':'No results'}</div>
+                <div style={{ fontSize:12, color:'#7a8694', marginBottom:16 }}>{total===0?'Issue your first SSL certificate to get started.':'Try a different filter.'}</div>
                 {total===0 && (
                   <button onClick={() => onIssue ? onIssue() : nav('/buy')} className="dc-btn pri" style={{ margin:'0 auto', display:'flex', alignItems:'center', gap:5 }}>
                     Issue your first certificate
@@ -3568,11 +3590,11 @@ function LoggedInDashboard({ user, nav, onIssue, onOpenAI }) {
               <>
                 {/* Table header */}
                 <div style={{ display:'grid', gridTemplateColumns:'40px 1fr 180px 140px',
-                  padding:'8px 20px', background:'#fafbfc', borderBottom:'1px solid #e8edf5' }}>
+                  padding:'8px 20px', background:'#fafbfc', borderBottom:'1px solid #e8eef4' }}>
                   <span/>
-                  <span style={{ fontSize:9, fontWeight:600, color:'#8a9ab5', textTransform:'uppercase', letterSpacing:'.07em', fontFamily:"'JetBrains Mono',monospace" }}>Description</span>
-                  <span style={{ fontSize:9, fontWeight:600, color:'#8a9ab5', textTransform:'uppercase', letterSpacing:'.07em', textAlign:'right', paddingRight:24, fontFamily:"'JetBrains Mono',monospace" }}>Expires</span>
-                  <span style={{ fontSize:9, fontWeight:600, color:'#8a9ab5', textTransform:'uppercase', letterSpacing:'.07em', textAlign:'right', paddingRight:10, fontFamily:"'JetBrains Mono',monospace" }}>Status</span>
+                  <span style={{ fontSize:9, fontWeight:600, color:'#7a8694', textTransform:'uppercase', letterSpacing:'.07em', fontFamily:"'JetBrains Mono',monospace" }}>Description</span>
+                  <span style={{ fontSize:9, fontWeight:600, color:'#7a8694', textTransform:'uppercase', letterSpacing:'.07em', textAlign:'right', paddingRight:24, fontFamily:"'JetBrains Mono',monospace" }}>Expires</span>
+                  <span style={{ fontSize:9, fontWeight:600, color:'#7a8694', textTransform:'uppercase', letterSpacing:'.07em', textAlign:'right', paddingRight:10, fontFamily:"'JetBrains Mono',monospace" }}>Status</span>
                 </div>
                 {domainGroups.map((cert, idx) => {
                   // Check if this cert has an active pending/issued reissue order

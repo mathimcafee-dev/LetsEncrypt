@@ -433,7 +433,7 @@ export default function CertInventory({ user, nav, onIssue }) {
   const total    = certs.filter(c => c.status!=='revoked'&&c.status!=='sandbox_revoked').length
 
   return (
-    <div style={{ padding:'24px 28px 60px', fontFamily:"'Segoe UI',system-ui,sans-serif" }}>
+    <div style={{ padding:'24px 28px 60px', fontFamily:"'Inter',system-ui,sans-serif" }}>
       {/* Header */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
         <div>

@@ -19,10 +19,10 @@ const BG     = 'rgba(0,119,182,0.06)'
 const BORDER = 'rgba(0,119,182,0.12)'
 
 // ── Design tokens ─────────────────────────────────────────────────────
-function scoreColor(s) { return s >= 80 ? '#00a550' : s >= 50 ? '#9a6400' : '#c0392b' }
+function scoreColor(s) { return s >= 80 ? '#00a550' : s >= 50 ? '#9a6400' : '#b03425' }
 function scoreLbl(s)   { return s >= 80 ? 'STRONG' : s >= 50 ? 'PARTIAL' : 'WEAK' }
 function severityColor(sev) {
-  return sev === 'critical' ? '#c0392b' : sev === 'high' ? '#9a6400' : sev === 'medium' ? '#0077b6' : '#7a8694'
+  return sev === 'critical' ? '#b03425' : sev === 'high' ? '#9a6400' : sev === 'medium' ? '#0077b6' : '#7a8694'
 }
 function fmtTs(iso) {
   if (!iso) return '—'
@@ -43,9 +43,9 @@ const EVENT_META = {
   dcv_validated:        { label:'DCV Validated',            color:'#0077b6',  bg:'rgba(0,119,182,0.08)',   icon: CheckCircle },
   key_rotated:          { label:'Key Rotated',              color:'#9a6400',  bg:'rgba(154,100,0,0.08)',   icon: Key },
   auto_renew_triggered: { label:'Auto-Renewal Triggered',   color:'#00a550',  bg:'rgba(0,165,80,0.08)',    icon: Zap },
-  revoked:              { label:'Certificate Revoked',      color:'#c0392b',  bg:'rgba(192,57,43,0.08)',   icon: XCircle },
+  revoked:              { label:'Certificate Revoked',      color:'#b03425',  bg:'rgba(192,57,43,0.08)',   icon: XCircle },
   agent_heartbeat:      { label:'Agent Heartbeat',          color:'#7a8694',  bg:'rgba(122,134,148,0.08)', icon: Activity },
-  gap_flagged:          { label:'Gap Detected',             color:'#c0392b',  bg:'rgba(192,57,43,0.08)',   icon: AlertTriangle },
+  gap_flagged:          { label:'Gap Detected',             color:'#b03425',  bg:'rgba(192,57,43,0.08)',   icon: AlertTriangle },
   expiry_warning:       { label:'Expiry Warning',           color:'#9a6400',  bg:'rgba(154,100,0,0.08)',   icon: Clock },
 }
 
@@ -54,7 +54,7 @@ const FRAMEWORK_COLORS = {
   'ISO':   { color:'#00a550', bg:'rgba(0,165,80,0.08)',   border:'rgba(0,165,80,0.2)',   label:'ISO 27001:2022' },
   'CABF':  { color:'#9a6400', bg:'rgba(154,100,0,0.08)',  border:'rgba(154,100,0,0.2)',  label:'CA/B Forum SC-081v3' },
   'NIS2':  { color:'#7a8694', bg:'rgba(122,134,148,0.08)',border:'rgba(122,134,148,0.2)',label:'NIS2 Article 21' },
-  'PCI':   { color:'#c0392b', bg:'rgba(192,57,43,0.08)',  border:'rgba(192,57,43,0.2)',  label:'PCI DSS v4' },
+  'PCI':   { color:'#b03425', bg:'rgba(192,57,43,0.08)',  border:'rgba(192,57,43,0.2)',  label:'PCI DSS v4' },
 }
 
 // ── API call helper ────────────────────────────────────────────────────
@@ -712,7 +712,7 @@ export default function ComplianceWitness({ user }) {
 <html><head><meta charset="utf-8"><title>Certificate Compliance Evidence Report — SSLVault</title>
 <style>
   :root { --blue:#0077b6; --ink:#0d1117; --mut:#5a6776; --bd2:#d8e6f2; --bg:#f4f8fc; }
-  body { font-family:'Segoe UI',system-ui,sans-serif; color:#1a232e; max-width:980px; margin:0 auto; padding:36px 32px; line-height:1.5; font-size:13px; }
+  body { font-family:'Inter',system-ui,sans-serif; color:#1a232e; max-width:980px; margin:0 auto; padding:36px 32px; line-height:1.5; font-size:13px; }
   .header { border-bottom:3px solid var(--blue); padding-bottom:18px; margin-bottom:18px; display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
   .header h1 { font-size:25px; margin:0 0 4px; color:var(--blue); }
   .header .sub { font-size:12px; color:var(--mut); }
@@ -1015,7 +1015,7 @@ export default function ComplianceWitness({ user }) {
                   { label: 'Readiness', value: avgReadiness, suffix: '/100', color: scoreColor(avgReadiness), sub: `${dossiers.length} domain${dossiers.length !== 1 ? 's' : ''}` },
                   ...(avgCont !== null ? [{ label: 'Continuity', value: avgCont, suffix: '%', color: incidents === 0 && avgCont >= 99 ? '#00a550' : '#9a6400', sub: `${incidents} expiry incident${incidents !== 1 ? 's' : ''}` }] : []),
                   { label: 'Ledger Events', value: events.length, suffix: '', color: '#0d1117', sub: 'hash-chained' },
-                  { label: 'Open Gaps', value: totalGaps, suffix: '', color: criticalGaps > 0 ? '#c0392b' : totalGaps > 0 ? '#9a6400' : '#00a550', sub: criticalGaps > 0 ? `${criticalGaps} critical` : totalGaps > 0 ? 'minor only' : 'all clear' },
+                  { label: 'Open Gaps', value: totalGaps, suffix: '', color: criticalGaps > 0 ? '#b03425' : totalGaps > 0 ? '#9a6400' : '#00a550', sub: criticalGaps > 0 ? `${criticalGaps} critical` : totalGaps > 0 ? 'minor only' : 'all clear' },
                 ]
                 return stats.map((s, i) => (
                   <div key={s.label} style={{ padding: '10px 18px', borderLeft: i > 0 ? `1px solid ${BORDER}` : 'none' }}>
@@ -1079,7 +1079,7 @@ export default function ComplianceWitness({ user }) {
                   <span style={{ fontSize: 9, fontWeight: 800, background: BG, color: BLUE, border: `1px solid ${BORDER}`, borderRadius: 20, padding: '1px 6px' }}>{shareTokens.length}</span>
                 )}
                 {id === 'dossiers' && criticalGaps > 0 && (
-                  <span style={{ fontSize: 9, fontWeight: 800, background: 'rgba(192,57,43,0.1)', color: '#c0392b', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 20, padding: '1px 6px' }}>{criticalGaps}</span>
+                  <span style={{ fontSize: 9, fontWeight: 800, background: 'rgba(192,57,43,0.1)', color: '#b03425', border: '1px solid rgba(192,57,43,0.2)', borderRadius: 20, padding: '1px 6px' }}>{criticalGaps}</span>
                 )}
               </button>
             ))}
@@ -1175,7 +1175,7 @@ export default function ComplianceWitness({ user }) {
                           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', fontSize: 11, color: '#7a8694' }}>
                             {tok.domain && <span style={{ fontFamily: MONO, color: BLUE }}>{tok.domain}</span>}
                             <span>Created {fmtDate(tok.created_at)}</span>
-                            <span style={{ color: expired ? '#c0392b' : '#00a550' }}>
+                            <span style={{ color: expired ? '#b03425' : '#00a550' }}>
                               {expired ? 'Expired' : `Expires ${fmtDate(tok.expires_at)}`}
                             </span>
                             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -1192,7 +1192,7 @@ export default function ComplianceWitness({ user }) {
                             <Copy size={10}/> Copy
                           </button>
                           <button onClick={() => revokeToken(tok.id)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: F, background: 'rgba(192,57,43,0.06)', border: '1px solid rgba(192,57,43,0.15)', color: '#c0392b' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: F, background: 'rgba(192,57,43,0.06)', border: '1px solid rgba(192,57,43,0.15)', color: '#b03425' }}>
                             <X size={10}/> Revoke
                           </button>
                         </div>
@@ -1257,7 +1257,7 @@ export default function ComplianceWitness({ user }) {
                     const avgAuditScore = dossiers.length ? Math.round(dossiers.reduce((s,d)=>s+(d.audit_score||0),0)/dossiers.length) : 0
                     const openGapsN = dossiers.reduce((s,d)=>s+((d.gaps||[]).length),0)
                     const critN = dossiers.reduce((s,d)=>s+((d.gaps||[]).filter(g=>g.severity==='critical').length),0)
-                    const urgCol = past ? '#7a8694' : days <= 14 ? '#c0392b' : days <= 45 ? '#9a6400' : '#00a550'
+                    const urgCol = past ? '#7a8694' : days <= 14 ? '#b03425' : days <= 45 ? '#9a6400' : '#00a550'
                     return (
                       <div key={ad.id} style={{ background: '#fff', border: `1px solid ${past ? BORDER : urgCol + '33'}`, borderRadius: 12, padding: '16px 18px', opacity: past ? 0.55 : 1 }}>
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
@@ -1280,7 +1280,7 @@ export default function ComplianceWitness({ user }) {
                         </div>
                         <div style={{ background: 'rgba(0,119,182,0.04)', border: `1px solid ${BORDER}`, borderRadius: 8, padding: '8px 11px', fontSize: 11, color: '#3d4a58', lineHeight: 1.7 }}>
                           Evidence readiness: <strong style={{ color: scoreColor(avgAuditScore) }}>{avgAuditScore}/100</strong><br/>
-                          Open items: <strong>{openGapsN}</strong>{critN > 0 && <span style={{ color: '#c0392b' }}> · {critN} critical — fix before audit</span>}
+                          Open items: <strong>{openGapsN}</strong>{critN > 0 && <span style={{ color: '#b03425' }}> · {critN} critical — fix before audit</span>}
                         </div>
                       </div>
                     )
@@ -1350,7 +1350,7 @@ export default function ComplianceWitness({ user }) {
                   style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '12px 26px', background: schedSaving ? 'rgba(0,119,182,0.4)' : BLUE, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: schedSaving ? 'not-allowed' : 'pointer', fontFamily: F, boxShadow: '0 4px 14px rgba(0,119,182,0.3)' }}>
                   <Mail size={13}/> {schedSaving ? 'Saving…' : 'Save Settings'}
                 </button>
-                {schedMsg && <div style={{ marginTop: 12, fontSize: 12, color: schedMsg.startsWith('Error') ? '#c0392b' : '#00a550', fontWeight: 600 }}>{schedMsg}</div>}
+                {schedMsg && <div style={{ marginTop: 12, fontSize: 12, color: schedMsg.startsWith('Error') ? '#b03425' : '#00a550', fontWeight: 600 }}>{schedMsg}</div>}
               </div>
             </div>
           )}
@@ -1468,7 +1468,7 @@ function DossierCard({ dossier, onShare, controls }) {
         {/* Gap badges */}
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           {critGaps.length > 0 && (
-            <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 20, background: 'rgba(192,57,43,0.1)', color: '#c0392b', border: '1px solid rgba(192,57,43,0.2)' }}>
+            <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 20, background: 'rgba(192,57,43,0.1)', color: '#b03425', border: '1px solid rgba(192,57,43,0.2)' }}>
               {critGaps.length} critical
             </span>
           )}
@@ -1501,7 +1501,7 @@ function DossierCard({ dossier, onShare, controls }) {
               {dossier.continuity_pct !== null && dossier.continuity_pct !== undefined && (
                 <div style={{ background: '#fff', border: `1px solid ${BORDER}`, borderRadius: 10, padding: '12px 14px' }}>
                   <div style={{ fontSize: 9, fontWeight: 800, color: '#7a8694', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Coverage Continuity</div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: (dossier.expiry_incidents||0) === 0 ? '#00a550' : '#c0392b', fontFamily: "'JetBrains Mono',monospace" }}>{dossier.continuity_pct}%</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: (dossier.expiry_incidents||0) === 0 ? '#00a550' : '#b03425', fontFamily: "'JetBrains Mono',monospace" }}>{dossier.continuity_pct}%</div>
                   <div style={{ fontSize: 10, color: '#7a8694', marginTop: 3 }}>{dossier.expiry_incidents||0} expiry incident{(dossier.expiry_incidents||0)!==1?'s':''}</div>
                 </div>
               )}
@@ -1529,7 +1529,7 @@ function DossierCard({ dossier, onShare, controls }) {
               {dossier.ct_check && dossier.ct_check.status === 'ok' && (
                 <div style={{ background: '#fff', border: `1px solid ${dossier.ct_check.verdict === 'no_shadow_certs' ? 'rgba(0,165,80,0.2)' : 'rgba(192,57,43,0.25)'}`, borderRadius: 10, padding: '12px 14px' }}>
                   <div style={{ fontSize: 9, fontWeight: 800, color: '#7a8694', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>CT Log Verification</div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: dossier.ct_check.verdict === 'no_shadow_certs' ? '#00a550' : '#c0392b' }}>{dossier.ct_check.verdict === 'no_shadow_certs' ? '✓ No shadow certs' : `⚠ ${dossier.ct_check.unknown_entries} unknown`}</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: dossier.ct_check.verdict === 'no_shadow_certs' ? '#00a550' : '#b03425' }}>{dossier.ct_check.verdict === 'no_shadow_certs' ? '✓ No shadow certs' : `⚠ ${dossier.ct_check.unknown_entries} unknown`}</div>
                   <div style={{ fontSize: 10, color: '#7a8694', marginTop: 3 }}>{dossier.ct_check.total_ct_entries} public CT entries checked</div>
                 </div>
               )}
@@ -1547,7 +1547,7 @@ function DossierCard({ dossier, onShare, controls }) {
               <div key={key} style={{ background: '#fff', border: `1px solid ${fc.border}`, borderRadius: 11, padding: '14px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                   <span style={{ fontSize: 9, fontWeight: 800, padding: '2px 7px', borderRadius: 4, background: fc.bg, color: fc.color, border: `1px solid ${fc.border}` }}>{label}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: ctrls.length > 0 ? '#00a550' : '#c0392b' }}>{ctrls.length} control{ctrls.length !== 1 ? 's' : ''}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: ctrls.length > 0 ? '#00a550' : '#b03425' }}>{ctrls.length} control{ctrls.length !== 1 ? 's' : ''}</span>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {ctrls.length === 0
