@@ -498,7 +498,7 @@ export default function Home({ nav }) {
               {/* Eyebrow pill */}
               <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.18)',borderRadius:99,padding:'6px 14px',marginBottom:28}}>
                 <span style={{width:6,height:6,borderRadius:'50%',background:'#00a550',flexShrink:0,animation:'blink 2.4s ease infinite'}}/>
-                <span style={{fontSize:10,fontWeight:700,color:'rgba(255,255,255,0.8)',letterSpacing:'.1em',fontFamily:MONO}}>CERTIFIED PKI SPECIALIST · NETHERLANDS</span>
+                <span style={{fontSize:10,fontWeight:700,color:'rgba(255,255,255,0.8)',letterSpacing:'.1em',fontFamily:MONO}}>CERTIFIED PKI SPECIALIST</span>
               </div>
 
               {/* Headline */}
