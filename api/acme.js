@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const SUPABASE_URL = 'https://frthcwkntciaakqsppss.supabase.co'
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || ''
-const VERCEL_TOKEN = process.env.VERCEL_TOKEN_DNS || 'vcp_4ttE07I4h2Ej8kfcQTchDbBYVey4AKM8xSMhTNakQLs9SkrrXt4Q0FHy'
+const VERCEL_TOKEN = process.env.VERCEL_TOKEN_DNS || ''
 const VERCEL_TEAM = 'team_bOUWIT8dmfwi4CPGcRqt7Oq1'
 const DOMAIN_NAME = 'easysecurity.in'
 
