@@ -31,7 +31,6 @@ import SLADashboard from './SLADashboard'
 import ComplianceCentre from './ComplianceCentre'
 import ComplianceWitness from './ComplianceWitness'
 import CertBind from './CertBind'
-import SslMonitor from './SslMonitor'
 import KeyIntelligence from './KeyIntelligence'
 import Pricing from './Pricing'
 import { F, DM, MONO, BLUE, BLUE2, INK, BG, BORDER, LINE, MUTED, MUTED2, BODY, GRN, RED, GRAD, SHADOW_LG } from '../components/AppKit'
@@ -90,7 +89,6 @@ export default function CLMHome({ user, nav, initialSection }) {
     ]},
     { group:'Automate', items:[
       {id:'domain-manager',    label:'Domain Manager',   icon:Globe},
-      {id:'ssl-monitor',       label:'SSL Monitor',      icon:Radar, badge:'NEW'},
     ]},
     { group:'Secure', items:[
       {id:'key-intelligence',  label:'Key Vault',        icon:KeyRound},
@@ -113,7 +111,7 @@ export default function CLMHome({ user, nav, initialSection }) {
     'renewal-calendar':'Renewal calendar', certvault:'CertVault', certbind:'CertBind',
     'domain-manager':'Domain Manager', 'my-servers':'Domain Manager',
     'infrastructure':'Domain Manager', 'servers':'Domain Manager', 'agent-health':'Domain Manager',
-    shield:'PKI Intelligence', 'ssl-monitor':'SSL Monitor',
+    shield:'PKI Intelligence',
     'cert-changelog':'Activity log', 'ca-intelligence':'PKI Intelligence', 'sla-dashboard':'SLA Coverage', 'compliance-centre':'Mandate Readiness', 'compliance-witness':'Compliance Witness',
     'admin-calendar':'Admin Calendar',
     'cert-timeline':'Cert Timeline',
@@ -130,7 +128,6 @@ export default function CLMHome({ user, nav, initialSection }) {
     if(sec==='kb')               return <KnowledgeBase nav={sideNav}/>
     if(sec==='pricing')          return <Pricing nav={sideNav}/>
     if(sec==='domain-manager')   return <DomainManager user={user} nav={sideNav}/>
-    if(sec==='ssl-monitor')      return <SslMonitor user={user}/>
     if(sec==='my-servers')       return <MyServers user={user}/>
     if(sec==='infrastructure')   return <MyServers user={user}/>
     if(sec==='servers')          return <MyServers user={user}/>

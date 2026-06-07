@@ -125,7 +125,7 @@ const _build = 1779297041 // cache bust
   }
 
   // Home page has its own nav built-in — exclude it to avoid duplicate
-  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness', '/domain-manager', '/issue-cert', '/cert-timeline', '/compliance-centre', '/security-monitor', '/ssl-monitor', '/posture', '/sla-dashboard', '/sla-report', '/witness', '/verify']
+  const SELF_NAV_PAGES = ['/', '/knowledge-base', '/install', '/about', '/pricing', '/contact', '/privacy', '/terms', '/certbind', '/dns-providers', '/settings', '/keylocker', '/servers', '/renewal-calendar', '/ssl-health-score', '/readiness', '/domain-manager', '/issue-cert', '/cert-timeline', '/compliance-centre', '/security-monitor', '/posture', '/sla-dashboard', '/sla-report', '/witness', '/verify']
   const showPublicNav = !authLoading && !user && !SELF_NAV_PAGES.includes(page)
 
   return (
@@ -147,7 +147,6 @@ const _build = 1779297041 // cache bust
       {page === '/cert-timeline' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="cert-timeline" /> : <Auth nav={nav} />)}
       {page === '/compliance-centre' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="compliance-centre" /> : <Auth nav={nav} />)}
       {page === '/security-monitor' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="shield" /> : <Auth nav={nav} />)}
-      {page === '/ssl-monitor' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="ssl-monitor" /> : <Auth nav={nav} />)}
       {page === '/posture' && (authLoading ? null : user ? <CLMHome user={user} nav={nav} initialSection="posture" /> : <Auth nav={nav} />)}
       {page === '/sla-report' && <SLAReportViewer />}
       {page === '/witness' && <WitnessViewer />}
